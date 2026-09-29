@@ -191,21 +191,20 @@ def s_toffee():   # D5 — added; the deck lists toffee but gives it no screen
         ladder("p2", T, False, range(0, 5), [], ("note", "नोट"), zero_line="₹10 का नोट ₹5 से ज़्यादा है।"))
 
 def s_juice():
+    # round 2d (user): no «हो गया» — juice completes at ₹17 like every other build screen
     T = 17
-    under = {}
-    for X in list(range(1, 8)) + list(range(10, 17)):
-        under[str(X)] = vo("vo_p3_u%d" % X, "अभी कुल ₹%d हुए हैं। ₹17 के लिए ₹%d और चाहिए। और सिक्के या नोट रखिए।" % (X, T - X))
     return s_practice("P3", "practice", T, "obj_juice", ["n10", "c1"],
         vo("vo_p3_prompt", "परी को ₹17 का जूस पैकेट लेना है। ₹10 के नोट और ₹1 के सिक्कों से ₹17 बनाइए।"),
         vo("vo_p3_done", "शाबाश! एक ₹10 का नोट और सात ₹1 के सिक्के — कुल मिलाकर बने ₹17। अब परी जूस पैकेट खरीद सकती है।"),
         ladder("p3", T, False, range(10, 17), [7], ("note", "नोट")),
-        check_label="हो गया", under=under, tag_fx="glow")
+        tag_fx="glow")
 
 def s_done():
     return {"id": "P4", "phase": "practice", "eis": "iconic", "type": "MONEY_DONE",
             "prompt_hi": "परी की पिकनिक की खरीदारी पूरी हुई!",
             "audio": {"prompt": vo("vo_p4_prompt", "शाबाश! आपने ₹10 और ₹1 का उपयोग करके सभी धनराशियाँ बनाईं। परी की पिकनिक की खरीदारी पूरी हुई!")},
-            "data": {"items": ["कॉपी", "चिप्स", "चॉकलेट", "प्लेटें", "टॉफ़ी"]}}
+            "data": {"items": [{"name": n, "price": p, "img": im} for n, p, im in LIST],
+                     "pari_img": "pari_celebrate"}}
 
 # mastery shop (D3: all 8 from the mockup). The SME wrote the praise line for सेब/केले/अंगूर/आम;
 # the other four are written in the same pattern (flagged in CHANGES.md).

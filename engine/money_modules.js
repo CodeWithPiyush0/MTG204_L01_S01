@@ -416,8 +416,8 @@
       if(d.prompt_delayed) $("promptText").textContent = "";
 
       const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : ""));
-      const item = el("div", "mn-item", (d.item_name ? '<div class="mn-item-name">' + d.item_name + '</div>' : "") +
-                                       '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="">' +
+      /* round 2d: picture + price tag in a card, no name text (the name is the image's alt) */
+      const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="' + (d.item_name || "") + '">' +
                                        '<div class="mn-tag"><span>₹' + T + '</span></div>');
       const tcol = el("div", "mn-tcol");
       const tgt = el("div", "mn-target");
@@ -624,21 +624,31 @@
   };
 
   /* ================================================================ MONEY_DONE (p18) */
+  /* round 2d (user mockup): celebrating Pari + Pari's list again (the p8 rows), every row green with a
+     tick — rows arrive one by one, each tick pops as its row lands. Entrance = transitions (see the
+     p8 note on why not keyframes). */
   SlideModules.MONEY_DONE = {
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
-      const root = el("div", "mn-done-card");
-      const grid = el("div", "mn-done-grid");
-      d.items.forEach((nm, i)=>{
-        const r = el("div", "mn-done-i", '<span class="mn-tick">✓</span><span>' + nm + '</span>');
-        r.querySelector(".mn-tick").style.animationDelay = (500 + i * 380) + "ms";
-        grid.appendChild(r);
-        setTimeout(sfxPop, 500 + i * 380);
+      /* "mn-fin", NOT "mn-done": .mn-done is the build screens' solved-target state, and sharing the
+         name collapsed every solved drop zone to 8 px */
+      const root = el("div", "mn-fin");
+      if(d.pari_img) root.appendChild(el("img", "mn-fin-pari mn-pop")).src = img(d.pari_img);
+      const list = el("div", "mn-list mn-fin-list");
+      const STEP = 380, T0 = 450;
+      d.items.forEach((it, i)=>{
+        const r = el("div", "mn-li mn-li-ok mn-li-wait",
+          '<span class="mn-li-ic"><img src="' + img(it.img) + '" alt="" draggable="false"></span>' +
+          '<span class="mn-li-n">' + it.name + '</span>' +
+          '<span class="mn-li-p"><span>₹' + it.price + '</span></span>' +
+          '<span class="mn-li-tick"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M5 12.5l4.3 4.3L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
+        list.appendChild(r);
+        setTimeout(()=>{ if(!r.isConnected) return; r.classList.remove("mn-li-wait"); sfxPop(); }, T0 + i * STEP);
       });
-      root.append(grid, el("div", "mn-done-count", d.items.length + " / " + d.items.length));
+      root.appendChild(list);
       host.appendChild(root);
-      setTimeout(()=>{ if(typeof confettiCannon === "function" && root.isConnected) confettiCannon(); }, 500 + d.items.length * 380);
+      setTimeout(()=>{ if(typeof confettiCannon === "function" && root.isConnected) confettiCannon(); }, T0 + d.items.length * STEP);
       mood("celebrate");
       state.replayAudio = ()=> say(A(slide, "prompt"));
       say(A(slide, "prompt"), ()=> setNavActive(true));

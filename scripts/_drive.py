@@ -55,8 +55,10 @@ idx = {s: i for i, s in enumerate(js("return CARD.slides.map(s=>s.id)"))}
 # ---------------- T2 identify ₹10: wrong then right
 mount(idx["T2"])
 cards = "document.querySelectorAll('.mn-card')"
-js(cards + "[1].click()"); w(0.6); shot("T2_wrong")   # reveal is up from 0.38 s until 0.5 s after the (stubbed, 60 ms) VO
-check("T2 wrong -> reveal shown + card red", js("return document.querySelector('.mn-reveal').classList.contains('show') && " + cards + "[1].classList.contains('mn-bad')"))
+# the reveal is up only while its (stubbed, 60 ms) VO plays + 0.5 s, so record whether it EVER showed
+js("window.__rev=false; const r=document.querySelector('.mn-reveal'); new MutationObserver(()=>{ if(r.classList.contains('show')) window.__rev=true; }).observe(r,{attributes:true});")
+js(cards + "[1].click()"); w(0.6); shot("T2_wrong"); w(0.8)
+check("T2 wrong -> reveal shown + card red", js("return window.__rev && " + cards + "[1].classList.contains('mn-bad')"))
 check("T2 wrong VO", "vo_t2_wrong" in st()["said"], st())
 w(1.2)
 js(cards + "[0].click()"); w(0.6); shot("T2_right")
@@ -102,16 +104,18 @@ s = st()
 check("G4 tens ladder A3: ₹10 off, ₹1 glows, VO", "c10" in s["off"] and "c1" in s["glow"] and "vo_ones_use_5" in s["said"], s)
 check("G4 tens A2 VO said", "vo_g4_t20" in js("return window.__said"), js("return window.__said"))
 
-# ---------------- P3 juice: check button
+# ---------------- P3 juice: completes on its own at ₹17 (no «हो गया», round 2d)
 mount(idx["P3"]); w(0.6)
-for n in range(3): js("drag(src('c1'), %s)" % T); w(0.3)
-js("document.querySelector('.mn-check').click()"); w(0.5)
-s = st(); check("P3 check under -> VO u3", "vo_p3_u3" in s["said"] and not s["finished"], s)
+check("P3 has no check button", js("return !document.querySelector('.mn-check')"))
 js("drag(src('n10'), %s)" % T); w(0.3)
-for n in range(4): js("drag(src('c1'), %s)" % T); w(0.3)
-s = st(); check("P3 reached ₹17 but waits for हो गया", s["total"] == "₹17" and not s["finished"], s)
-js("document.querySelector('.mn-check').click()"); w(0.8); shot("P3_done")
-check("P3 हो गया -> finished", st()["finished"], st())
+for n in range(7): js("drag(src('c1'), %s)" % T); w(0.3)
+w(0.5); s = st(); shot("P3_done")
+check("P3 -> ₹17 finished by itself", s["total"] == "₹17" and s["finished"], s)
+
+# ---------------- P4 completion list
+mount(idx["P4"]); w(3.2); shot("P4_done")
+check("P4 5 green rows with ticks, all shown", js("return document.querySelectorAll('.mn-li-ok:not(.mn-li-wait) .mn-li-tick').length") == 5)
+check("P4 celebrating Pari", js("return !!document.querySelector('.mn-fin-pari')"))
 
 # ---------------- M1 shop
 mount(idx["M1"]); w(1); shot("M1_choose")

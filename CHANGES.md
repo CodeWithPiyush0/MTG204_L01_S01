@@ -166,3 +166,13 @@ Deck page refs = the deck's slide number (S#) and the page label printed on it (
 | C4 | Copy ₹14 (p6): only the NOTE auto-placed; the child drags every coin | ✅ | Demo coin removed; the child places four ₹1 (the 3rd coin reuses «अब एक रुपए का और सिक्का रखो।» — no new VO). drive: `G2 demo placed ONLY the ₹10 note`, `G2 child places 4 coins -> ₹14 finished`. |
 | C5 | Build screens p6–p11: the uploaded layout; note + coin centred in the tray | ✅ | Item name above the picture (no card), yellow price tag, dashed drop zone with कुल top-right, full-width cream coin tray with the money centred; juice's «हो गया» sits at the tray's right end and its total moved to the same top-right place (layout identical on all six). Placed money enlarged. |
 - Checks: `_drive.py` 36/36 on build and dist · dist 9.89 MB · receipt `17 pass · 3 FAIL · 7 warn` (the same 3 deliberate FAILs).
+
+## Round 2d — user review (2026-09-29 evening)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| D-1 | New cover + Pari-in-the-market images | ✅ | (cover replaced again by the 11:37 PM version — Pari on the RIGHT, Swiftie back bottom-LEFT, override removed) `import_team_art.py` maps the cover → `scn_landing`, the 10:34 PM market → `scn_market`. The new cover paints Pari bottom-LEFT, so on the landing Swiftie + her audio chip moved to the bottom-RIGHT corner (otherwise she stands on Pari's legs). |
+| D-2 | Juice (page 11): remove «हो गया», same as the other build screens | ✅ | Juice completes by itself at ₹17. **Reverses decision D2** (the deck's S13 mockup + S15 note). The 14 «अभी कुल ₹X हुए हैं…» clips it used were pruned. drive: `P3 has no check button`, `P3 -> ₹17 finished by itself`. |
+| D-3 | Completion (page 12): page-5 list, every card green + tick, celebrating Pari exactly like the screenshot | ✅ | Pari (`pari_celebrate`) redrawn by Gemini from a crop of the user's screenshot (same pose, fists up, eyes closed, foot kicked back); rows = picture · name · price tag · green ✓, arriving one by one with a pop, then confetti. The deck's «5 / 5» count is dropped (not in the user's mockup). drive: `P4 5 green rows with ticks, all shown`, `P4 celebrating Pari`. |
+| D-4 | Build screens: picture + price tag in a card, no name text | ✅ | Light card (`#F7FBFF`, blue border) around the item picture + yellow tag; the name is kept only as the image's alt text. |
+- Bug found + fixed in the same round: the completion screen's new root class `.mn-done` collided with the build screens' solved-target class and collapsed every solved drop zone to 8 px — renamed `.mn-fin`.
+- Checks: `_drive.py` 37 checks, 0 FAIL on build and dist · dist 9.75 MB · receipt `17 pass · 3 FAIL · 7 warn` (the same 3 deliberate FAILs).

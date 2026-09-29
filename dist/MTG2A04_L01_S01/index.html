@@ -3979,7 +3979,9 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .sg-card.sg-scene{width:1040px;height:574px;background-size:cover;background-position:center;background-repeat:no-repeat;
   border:8px solid #fff;border-radius:40px;box-shadow:0 18px 40px rgba(0,47,118,.25);}
 .sg-card.sg-scene .sg-content{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0;padding:0;}
-.start-gate .sg-card.sg-scene .sg-btn{bottom:-40px;}
+/* user 2026-09-29: the play button sits INSIDE the scene (over the empty path), a little bigger */
+.start-gate .sg-card.sg-scene .sg-btn,
+.start-gate .sg-card.sg-scene .sg-btn.sg-waiting{bottom:30px;width:140px;height:140px;}
 /* market scene (p7): an opaque painting, framed like a card rather than floated like a cut-out */
 .mn-scene-img.is-scene{height:340px;border-radius:26px;border:6px solid #fff;box-shadow:0 12px 26px rgba(11,61,140,.16);filter:none;}
 /* dev navigator: room for the content labels */
@@ -4033,6 +4035,28 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .mn-li{opacity:1;transform:none;transition:opacity .35s ease-out,transform .4s cubic-bezier(.3,1.35,.5,1),background .25s,border-color .25s,box-shadow .25s;}
 .mn-li.mn-li-wait{opacity:0;transform:translateX(-40px) scale(.92);}
 .mn-li.mn-say{background:#FFF6D8;border-color:#F4B63F;box-shadow:0 0 0 5px rgba(252,183,23,.28),0 6px 14px rgba(116,60,0,.12);transform:scale(1.035);}
+
+
+/* ======================= round 2d (user, 2026-09-29 evening) ======================= */
+/* build screens: the picture + price tag sit in a light card again; no name text */
+.mn-item{width:220px;height:292px;background:#F7FBFF;border:3px solid #BFDDFB;border-radius:28px;box-shadow:0 8px 18px rgba(11,61,140,.08);
+  gap:16px;justify-content:center;}
+.mn-item-name{display:none;}
+.mn-item-img{width:160px;height:160px;}
+.mn-item.mn-bought{border-color:var(--correct);background:#EFFCF2;box-shadow:0 0 0 6px rgba(0,177,50,.16);}
+
+/* completion (p18): celebrating Pari + the list, every row green with a tick */
+.mn-fin{flex:1;display:flex;align-items:center;justify-content:center;gap:30px;}
+.mn-fin-pari{height:410px;width:auto;flex:0 0 auto;filter:drop-shadow(0 10px 14px rgba(11,61,140,.14));}
+.mn-fin-list{margin:0;width:600px;gap:10px;padding:18px 20px;}
+.mn-li.mn-li-ok{height:66px;background:#E9F8EC;border-color:#A8E2B4;}
+.mn-li-tick{flex:0 0 auto;width:46px;height:46px;border-radius:50%;background:#2DB34A;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 0 rgba(0,90,30,.25);transition:transform .35s cubic-bezier(.3,1.6,.5,1) .15s;}
+.mn-li.mn-li-wait .mn-li-tick{transform:scale(0);}
+.mn-fin-list .mn-li-n{font-size:32px;}
+.mn-fin-list .mn-li-p span{font-size:28px;padding:7px 14px;min-width:80px;}
+/* (round 2d moved Swiftie bottom-right for a cover with Pari on the left; the 11:37 PM cover puts
+   Pari on the right, so Swiftie is back in her standard bottom-left place - no override) */
 
 /* == MONEY STYLES :: END == */
 </style>
@@ -4704,23 +4728,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     },
     "eq_in_band": true,
     "no_engine_idle": true,
-    "check_label": "हो गया",
-    "under": {
-     "1": "vo_p3_u1",
-     "2": "vo_p3_u2",
-     "3": "vo_p3_u3",
-     "4": "vo_p3_u4",
-     "5": "vo_p3_u5",
-     "6": "vo_p3_u6",
-     "7": "vo_p3_u7",
-     "10": "vo_p3_u10",
-     "11": "vo_p3_u11",
-     "12": "vo_p3_u12",
-     "13": "vo_p3_u13",
-     "14": "vo_p3_u14",
-     "15": "vo_p3_u15",
-     "16": "vo_p3_u16"
-    },
     "tag_fx": "glow"
    },
    "dev_label": "p16 · जूस ₹17 (हो गया)"
@@ -4736,12 +4743,33 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    },
    "data": {
     "items": [
-     "कॉपी",
-     "चिप्स",
-     "चॉकलेट",
-     "प्लेटें",
-     "टॉफ़ी"
-    ]
+     {
+      "name": "कॉपी",
+      "price": 14,
+      "img": "obj_copy"
+     },
+     {
+      "name": "चिप्स",
+      "price": 20,
+      "img": "obj_chips"
+     },
+     {
+      "name": "चॉकलेट",
+      "price": 25,
+      "img": "obj_chocolate"
+     },
+     {
+      "name": "प्लेटों का पैकेट",
+      "price": 35,
+      "img": "obj_plates"
+     },
+     {
+      "name": "टॉफ़ी",
+      "price": 5,
+      "img": "obj_toffee"
+     }
+    ],
+    "pari_img": "pari_celebrate"
    },
    "dev_label": "p18 · खरीदारी पूरी"
   },
@@ -4983,20 +5011,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_p2_t2": "assets/Audio/vo_p2_t2.ogg",
    "vo_p2_t3": "assets/Audio/vo_p2_t3.ogg",
    "vo_p2_t4": "assets/Audio/vo_p2_t4.ogg",
-   "vo_p3_u1": "assets/Audio/vo_p3_u1.ogg",
-   "vo_p3_u2": "assets/Audio/vo_p3_u2.ogg",
-   "vo_p3_u3": "assets/Audio/vo_p3_u3.ogg",
-   "vo_p3_u4": "assets/Audio/vo_p3_u4.ogg",
-   "vo_p3_u5": "assets/Audio/vo_p3_u5.ogg",
-   "vo_p3_u6": "assets/Audio/vo_p3_u6.ogg",
-   "vo_p3_u7": "assets/Audio/vo_p3_u7.ogg",
-   "vo_p3_u10": "assets/Audio/vo_p3_u10.ogg",
-   "vo_p3_u11": "assets/Audio/vo_p3_u11.ogg",
-   "vo_p3_u12": "assets/Audio/vo_p3_u12.ogg",
-   "vo_p3_u13": "assets/Audio/vo_p3_u13.ogg",
-   "vo_p3_u14": "assets/Audio/vo_p3_u14.ogg",
-   "vo_p3_u15": "assets/Audio/vo_p3_u15.ogg",
-   "vo_p3_u16": "assets/Audio/vo_p3_u16.ogg",
    "vo_p3_prompt": "assets/Audio/vo_p3_prompt.ogg",
    "vo_p3_done": "assets/Audio/vo_p3_done.ogg",
    "vo_p3_t10": "assets/Audio/vo_p3_t10.ogg",
@@ -5142,20 +5156,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_p2_t2": "कुल दो रुपये हुए। पाँच रुपये के लिए तीन रुपये और चाहिए।",
    "vo_p2_t3": "कुल तीन रुपये हुए। पाँच रुपये के लिए दो रुपये और चाहिए।",
    "vo_p2_t4": "कुल चार रुपये हुए। पाँच रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p3_u1": "अभी कुल एक रुपये हुए हैं। सत्रह रुपये के लिए सोलह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u2": "अभी कुल दो रुपये हुए हैं। सत्रह रुपये के लिए पंद्रह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u3": "अभी कुल तीन रुपये हुए हैं। सत्रह रुपये के लिए चौदह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u4": "अभी कुल चार रुपये हुए हैं। सत्रह रुपये के लिए तेरह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u5": "अभी कुल पाँच रुपये हुए हैं। सत्रह रुपये के लिए बारह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u6": "अभी कुल छह रुपये हुए हैं। सत्रह रुपये के लिए ग्यारह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u7": "अभी कुल सात रुपये हुए हैं। सत्रह रुपये के लिए दस रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u10": "अभी कुल दस रुपये हुए हैं। सत्रह रुपये के लिए सात रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u11": "अभी कुल ग्यारह रुपये हुए हैं। सत्रह रुपये के लिए छह रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u12": "अभी कुल बारह रुपये हुए हैं। सत्रह रुपये के लिए पाँच रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u13": "अभी कुल तेरह रुपये हुए हैं। सत्रह रुपये के लिए चार रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u14": "अभी कुल चौदह रुपये हुए हैं। सत्रह रुपये के लिए तीन रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u15": "अभी कुल पंद्रह रुपये हुए हैं। सत्रह रुपये के लिए दो रुपये और चाहिए। और सिक्के या नोट रखिए।",
-   "vo_p3_u16": "अभी कुल सोलह रुपये हुए हैं। सत्रह रुपये के लिए एक रुपये और चाहिए। और सिक्के या नोट रखिए।",
    "vo_p3_prompt": "परी को सत्रह रुपये का जूस पैकेट लेना है। दस रुपये के नोट और एक रुपये के सिक्कों से सत्रह रुपये बनाइए।",
    "vo_p3_done": "शाबाश! एक दस रुपये का नोट और सात एक रुपये के सिक्के, कुल मिलाकर बने सत्रह रुपये। अब परी जूस पैकेट खरीद सकती है।",
    "vo_p3_t10": "कुल दस रुपये हुए। सत्रह रुपये के लिए सात रुपये और चाहिए।",
@@ -5291,20 +5291,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_p2_t2": 4530,
    "vo_p2_t3": 4370,
    "vo_p2_t4": 4210,
-   "vo_p3_u1": 7210,
-   "vo_p3_u2": 6610,
-   "vo_p3_u3": 6730,
-   "vo_p3_u4": 6290,
-   "vo_p3_u5": 7050,
-   "vo_p3_u6": 7130,
-   "vo_p3_u7": 6170,
-   "vo_p3_u10": 7690,
-   "vo_p3_u11": 6690,
-   "vo_p3_u12": 7210,
-   "vo_p3_u13": 7090,
-   "vo_p3_u14": 6890,
-   "vo_p3_u15": 7210,
-   "vo_p3_u16": 6650,
    "vo_p3_prompt": 8330,
    "vo_p3_done": 9770,
    "vo_p3_t10": 4730,
@@ -5403,6 +5389,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "obj_tomatoes": "assets/Images/obj_tomatoes.webp",
    "pari_basket": "assets/Images/pari_basket.webp",
    "pari_basket_full": "assets/Images/pari_basket_full.webp",
+   "pari_celebrate": "assets/Images/pari_celebrate.webp",
    "scn_landing": "assets/Images/scn_landing.webp",
    "scn_market": "assets/Images/scn_market.webp"
   },
@@ -5822,7 +5809,7 @@ function _chainMs(srcs, gapMs){
    no reason to fetch it again and the reviewer keeps hearing the previous take. __AUDIO_V is
    stamped by the builder from the CONTENT of the audio folder, so it changes exactly when a clip
    changes and not otherwise - a fresh URL on every build would defeat caching for no reason. */
-var __AUDIO_V = "11b01e95310b";
+var __AUDIO_V = "71473134c172";
 function _av(src){
   if(typeof src !== "string" || src.indexOf("assets/Audio/") < 0) return src;
   return src.indexOf("?") >= 0 ? src : src + "?v=" + __AUDIO_V;
@@ -16809,8 +16796,8 @@ if(document.fonts && document.fonts.load){
       if(d.prompt_delayed) $("promptText").textContent = "";
 
       const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : ""));
-      const item = el("div", "mn-item", (d.item_name ? '<div class="mn-item-name">' + d.item_name + '</div>' : "") +
-                                       '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="">' +
+      /* round 2d: picture + price tag in a card, no name text (the name is the image's alt) */
+      const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="' + (d.item_name || "") + '">' +
                                        '<div class="mn-tag"><span>₹' + T + '</span></div>');
       const tcol = el("div", "mn-tcol");
       const tgt = el("div", "mn-target");
@@ -17017,21 +17004,31 @@ if(document.fonts && document.fonts.load){
   };
 
   /* ================================================================ MONEY_DONE (p18) */
+  /* round 2d (user mockup): celebrating Pari + Pari's list again (the p8 rows), every row green with a
+     tick — rows arrive one by one, each tick pops as its row lands. Entrance = transitions (see the
+     p8 note on why not keyframes). */
   SlideModules.MONEY_DONE = {
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
-      const root = el("div", "mn-done-card");
-      const grid = el("div", "mn-done-grid");
-      d.items.forEach((nm, i)=>{
-        const r = el("div", "mn-done-i", '<span class="mn-tick">✓</span><span>' + nm + '</span>');
-        r.querySelector(".mn-tick").style.animationDelay = (500 + i * 380) + "ms";
-        grid.appendChild(r);
-        setTimeout(sfxPop, 500 + i * 380);
+      /* "mn-fin", NOT "mn-done": .mn-done is the build screens' solved-target state, and sharing the
+         name collapsed every solved drop zone to 8 px */
+      const root = el("div", "mn-fin");
+      if(d.pari_img) root.appendChild(el("img", "mn-fin-pari mn-pop")).src = img(d.pari_img);
+      const list = el("div", "mn-list mn-fin-list");
+      const STEP = 380, T0 = 450;
+      d.items.forEach((it, i)=>{
+        const r = el("div", "mn-li mn-li-ok mn-li-wait",
+          '<span class="mn-li-ic"><img src="' + img(it.img) + '" alt="" draggable="false"></span>' +
+          '<span class="mn-li-n">' + it.name + '</span>' +
+          '<span class="mn-li-p"><span>₹' + it.price + '</span></span>' +
+          '<span class="mn-li-tick"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M5 12.5l4.3 4.3L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
+        list.appendChild(r);
+        setTimeout(()=>{ if(!r.isConnected) return; r.classList.remove("mn-li-wait"); sfxPop(); }, T0 + i * STEP);
       });
-      root.append(grid, el("div", "mn-done-count", d.items.length + " / " + d.items.length));
+      root.appendChild(list);
       host.appendChild(root);
-      setTimeout(()=>{ if(typeof confettiCannon === "function" && root.isConnected) confettiCannon(); }, 500 + d.items.length * 380);
+      setTimeout(()=>{ if(typeof confettiCannon === "function" && root.isConnected) confettiCannon(); }, T0 + d.items.length * STEP);
       mood("celebrate");
       state.replayAudio = ()=> say(A(slide, "prompt"));
       say(A(slide, "prompt"), ()=> setNavActive(true));

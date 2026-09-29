@@ -23,9 +23,9 @@ SHEETS = {
     "ChatGPT Image Sep 29, 2026, 05_01_45 PM.png": ["obj_apple", "obj_bananas", "obj_carrots", "obj_tomatoes"],
     "ChatGPT Image Sep 29, 2026, 05_01_53 PM.png": ["obj_grapes", "obj_oranges"],
 }
-SCENES = {
-    "ChatGPT Image Sep 29, 2026, 10_41_58 AM.png": "scn_landing",
-    "ChatGPT Image Sep 29, 2026, 10_48_00 AM.png": "scn_market",
+SCENES = {   # round 2d (2026-09-29 evening): the new cover + market replace the morning versions
+    "ChatGPT Image Sep 29, 2026, 11_37_55 PM.png": "scn_landing",   # 11:37 PM cover: Pari on the RIGHT
+    "ChatGPT Image Sep 29, 2026, 10_34_28 PM.png": "scn_market",
 }
 A_MIN = 40        # alpha counted as "ink"
 GAP = 12          # empty columns that separate two items

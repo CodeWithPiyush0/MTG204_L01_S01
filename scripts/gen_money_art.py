@@ -64,6 +64,12 @@ ART = {
   "pari_basket_full":  (PARI + "She is very happy, one arm raised in joy, holding a red shopping basket full of "
                         "fruits and vegetables (apple, bananas, carrots, grapes, mangoes).",
                         ["pari_ref.png"], "blue"),
+  "pari_celebrate":    ("Redraw EXACTLY the girl in the reference picture, in EXACTLY the same pose: jumping for joy "
+                        "with both fists raised above her shoulders, eyes closed in a big happy laugh, one foot kicked "
+                        "back, braids flying, pink dupatta flowing behind her, teal bag at her hip. Same face, hair, "
+                        "yellow kurta with small pink flowers, pink salwar, brown sandals, same colours and the same "
+                        "art style, full body. Draw ONLY the girl: no confetti, no sparkles, no shapes, no floor shadow.",
+                        ["pari_celebrate_ref.png"], "blue"),
   # ---------------- shopping items (practice screens) ----------------
   "obj_copy":      ("A school exercise notebook (कॉपी) with a plain orange cover and a white label, slightly angled", [], "green"),
   "obj_chips":     ("A puffy packet of potato chips, yellow and red packet with a picture of chips, no brand name or letters", [], "green"),
