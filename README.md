@@ -39,3 +39,11 @@ PYTHONUTF8=1 python scripts/make_dist.py
 DIST=1 PYTHONUTF8=1 python scripts/_drive.py <outdir>          # smoke-test the delivery copy
 ```
 Serve with `python -m http.server` from this folder (or from `dist/MTG2A04_L01_S01/`).
+
+## Deploy (Vercel)
+`vercel.json` serves **`dist/MTG2A04_L01_S01/`** (its `index.html` is the site root), and `.vercelignore`
+uploads only `dist/` + `vercel.json`. No build step runs on Vercel.
+- Import the repo in Vercel with Framework Preset **Other**; leave Build / Output settings empty —
+  `vercel.json` sets them. (CLI: `vercel` then `vercel --prod` from this folder.)
+- **Run `python scripts/make_dist.py` before every push** — Vercel serves whatever `dist/` holds.
+- `.vercel/` (created by the CLI) is local and git-ignored.

@@ -1,0 +1,11 @@
+# Only the optimised delivery copy reaches Vercel. vercel.json serves dist/MTG2A04_L01_S01/
+# (index.html at its root), so everything else in this repo is authoring material: the working
+# build with raw-WAV audio and full-size PNGs (~55 MB), the engine sources, the build scripts,
+# the SME decks, the review screenshots and the first draft. Left in, they would be uploaded on
+# every deploy for nothing.
+#
+# Rebuild dist/ with `python scripts/make_dist.py` BEFORE pushing, or Vercel serves the old game.
+
+/*
+!/dist
+!/vercel.json
