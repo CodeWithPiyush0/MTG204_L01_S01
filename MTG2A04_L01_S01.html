@@ -3985,6 +3985,55 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 /* dev navigator: room for the content labels */
 .dev-nav-sel{max-width:330px;}
 
+
+/* ======================= round 2c (user, 2026-09-29) ======================= */
+/* the correct tap card is green + glowing, WITHOUT the tick badge */
+.mn-card.mn-ok::after{display:none;}
+
+/* Pari's list: picture + name + price-tag rows that pop in as the VO names them */
+.mn-list{width:720px;gap:12px;padding:22px 28px;border-radius:30px;border:3px solid #CFE3FA;}
+.mn-li{height:70px;padding:0 18px 0 10px;gap:18px;justify-content:flex-start;border:3px solid #DCEBFB;border-radius:20px;
+  background:#F7FBFF;box-shadow:0 4px 0 rgba(11,61,140,.07);transition:background .25s,border-color .25s,box-shadow .25s;}
+.mn-li-ic{width:60px;height:60px;flex:0 0 60px;border-radius:16px;background:#fff;border:2px solid #E6EEF8;display:flex;align-items:center;justify-content:center;}
+.mn-li-ic img{width:50px;height:50px;object-fit:contain;}
+.mn-li-n{flex:1;font-size:34px;}
+.mn-li-p{flex:0 0 auto;}
+.mn-li-p span{display:inline-block;background:#FDE9A6;border:3px solid #F4B63F;color:var(--navy);font-weight:800;font-size:32px;line-height:1;
+  padding:8px 18px;border-radius:14px;min-width:92px;text-align:center;}
+@keyframes mnLiIn{0%{transform:translateX(-40px) scale(.9);opacity:0}70%{transform:translateX(4px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+
+/* build screens, the user's layout: name over the picture (no card), a yellow price tag, a dashed
+   drop zone with the total top-right, and a FULL-WIDTH coin tray with the money centred */
+.mn-build{gap:22px;}
+.mn-top{gap:36px;align-items:center;}
+.mn-item{width:210px;height:auto;background:none;border:none;box-shadow:none;gap:8px;justify-content:center;}
+.mn-item-name{font-weight:800;font-size:36px;line-height:1.1;color:var(--navy);text-align:center;}
+.mn-item-img{width:170px;height:170px;filter:drop-shadow(0 8px 12px rgba(11,61,140,.14));}
+.mn-tag{background:#FDE39A;border:3px solid #F4B63F;border-radius:18px;padding:8px 0;width:170px;text-align:center;font-size:44px;
+  box-shadow:0 4px 0 rgba(116,60,0,.12);}
+.mn-tag::before{display:none;}
+.mn-item.mn-bought{border:none;box-shadow:none;}
+.mn-item.mn-bought .mn-item-img{filter:drop-shadow(0 0 16px rgba(0,177,50,.75));}
+.mn-item.mn-bought .mn-tag{background:var(--correct-bg);border-color:var(--correct);}
+.mn-target{width:740px;height:290px;border:4px dashed #5AA8F2;border-radius:28px;background:#EEF6FE;}
+.mn-target.mn-done{border-style:solid;}
+.mn-total{top:14px;right:16px;background:#CFE4FA;border-radius:16px;padding:6px 22px;font-size:34px;}
+.mn-bottom{position:relative;width:986px;}
+.mn-bank{width:100%;min-width:0;height:140px;padding:0;gap:90px;background:#FFF8E7;border:4px solid #F4B63F;border-radius:28px;box-shadow:none;box-sizing:border-box;}
+.mn-bank .mn-piece.mn-note{width:196px;height:95px;}
+.mn-bank .mn-piece.mn-coin{width:104px;height:104px;}
+.mn-bottom .mn-check{position:absolute;right:26px;top:50%;transform:translateY(-50%);}
+.mn-build.mn-finished .mn-eq{width:986px;justify-content:center;height:140px;box-sizing:border-box;}
+/* money in the drop zone: larger, closer to the mockup */
+.mn-target .mn-piece.mn-placed.mn-note{width:150px;height:73px;}
+.mn-target .mn-piece.mn-placed.mn-coin{width:76px;height:76px;}
+/* list rows: NO keyframes. A row starts .mn-li-wait (hidden) and JS drops that class at its VO cue;
+   the entrance and the highlight are both TRANSITIONS, so nothing can restart the entrance. (A
+   delayed keyframe entrance restarted - and hid the row again - every time .mn-say changed.) */
+.mn-li{opacity:1;transform:none;transition:opacity .35s ease-out,transform .4s cubic-bezier(.3,1.35,.5,1),background .25s,border-color .25s,box-shadow .25s;}
+.mn-li.mn-li-wait{opacity:0;transform:translateX(-40px) scale(.92);}
+.mn-li.mn-say{background:#FFF6D8;border-color:#F4B63F;box-shadow:0 0 0 5px rgba(252,183,23,.28),0 6px 14px rgba(116,60,0,.12);transform:scale(1.035);}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
@@ -4279,26 +4328,31 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      {
       "name": "कॉपी",
       "price": 14,
+      "img": "obj_copy",
       "cue_ms": 550
      },
      {
       "name": "चिप्स",
       "price": 20,
+      "img": "obj_chips",
       "cue_ms": 1022
      },
      {
       "name": "चॉकलेट",
       "price": 25,
+      "img": "obj_chocolate",
       "cue_ms": 1573
      },
      {
       "name": "प्लेटों का पैकेट",
       "price": 35,
+      "img": "obj_plates",
       "cue_ms": 2202
      },
      {
       "name": "टॉफ़ी",
       "price": 5,
+      "img": "obj_toffee",
       "cue_ms": 3067
      }
     ]
@@ -4319,6 +4373,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "mode": "teach",
     "target": 14,
     "item_img": "obj_copy",
+    "item_name": "कॉपी",
     "sources": [
      "n10",
      "c1"
@@ -4337,11 +4392,17 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       "pulse_total": true
      },
      {
-      "say": "vo_g2_4",
-      "auto": "c1"
+      "say": "vo_g2_4"
      },
      {
       "say": "vo_g2_5",
+      "child": "c1",
+      "idle": [
+       "vo_g2_idle"
+      ]
+     },
+     {
+      "say": "vo_g2_6",
       "child": "c1",
       "idle": [
        "vo_g2_idle"
@@ -4379,6 +4440,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "mode": "teach",
     "target": 20,
     "item_img": "obj_chips",
+    "item_name": "चिप्स",
     "sources": [
      "c10",
      "c1"
@@ -4427,6 +4489,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "mode": "practice",
     "target": 25,
     "item_img": "obj_chocolate",
+    "item_name": "चॉकलेट",
     "sources": [
      "c10",
      "c1"
@@ -4485,6 +4548,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "mode": "practice",
     "target": 35,
     "item_img": "obj_plates",
+    "item_name": "प्लेटों का पैकेट",
     "sources": [
      "n10",
      "c1"
@@ -4546,6 +4610,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "mode": "practice",
     "target": 5,
     "item_img": "obj_toffee",
+    "item_name": "टॉफ़ी",
     "sources": [
      "n10",
      "c1"
@@ -4594,6 +4659,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "mode": "practice",
     "target": 17,
     "item_img": "obj_juice",
+    "item_name": "जूस",
     "sources": [
      "n10",
      "c1"
@@ -4639,7 +4705,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "eq_in_band": true,
     "no_engine_idle": true,
     "check_label": "हो गया",
-    "total_below": true,
     "under": {
      "1": "vo_p3_u1",
      "2": "vo_p3_u2",
@@ -16704,8 +16769,16 @@ if(document.fonts && document.fonts.load){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
       const root = el("div", "mn-list mn-zoom");
-      const rows = d.rows.map(r => {
-        const e = el("div", "mn-li", '<span class="mn-li-n">' + r.name + '</span><span class="mn-li-p">₹' + r.price + '</span>');
+      /* each row APPEARS as the VO names it (its cue), then lights up while it is being named; on a
+         replay (the audio chip or the engine's inactivity replay) the rows only light up in turn. */
+      const VO_AT = 700;
+      const rows = d.rows.map((r, i) => {
+        const e = el("div", "mn-li mn-li-wait",
+          '<span class="mn-li-ic">' + (r.img ? '<img src="' + img(r.img) + '" alt="" draggable="false">' : "") + '</span>' +
+          '<span class="mn-li-n">' + r.name + '</span>' +
+          '<span class="mn-li-p"><span>₹' + r.price + '</span></span>');
+        const at = VO_AT + (r.cue_ms || (600 + i * 700)) - 120;
+        setTimeout(()=>{ if(!e.isConnected) return; e.classList.remove("mn-li-wait"); sfxPop(); }, at);
         root.appendChild(e);
         return e;
       });
@@ -16723,7 +16796,7 @@ if(document.fonts && document.fonts.load){
       };
       const run = (after)=>{ pulses(); say(A(slide, "prompt"), after); };
       state.replayAudio = ()=> run();
-      setTimeout(()=> run(()=> setNavActive(true)), 700);   /* after the zoom lands */
+      setTimeout(()=> run(()=> setNavActive(true)), VO_AT);   /* after the card lands */
     }
   };
 
@@ -16736,7 +16809,8 @@ if(document.fonts && document.fonts.load){
       if(d.prompt_delayed) $("promptText").textContent = "";
 
       const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : ""));
-      const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="">' +
+      const item = el("div", "mn-item", (d.item_name ? '<div class="mn-item-name">' + d.item_name + '</div>' : "") +
+                                       '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="">' +
                                        '<div class="mn-tag"><span>₹' + T + '</span></div>');
       const tcol = el("div", "mn-tcol");
       const tgt = el("div", "mn-target");

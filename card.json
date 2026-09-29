@@ -179,26 +179,31 @@
      {
       "name": "कॉपी",
       "price": 14,
+      "img": "obj_copy",
       "cue_ms": 550
      },
      {
       "name": "चिप्स",
       "price": 20,
+      "img": "obj_chips",
       "cue_ms": 1022
      },
      {
       "name": "चॉकलेट",
       "price": 25,
+      "img": "obj_chocolate",
       "cue_ms": 1573
      },
      {
       "name": "प्लेटों का पैकेट",
       "price": 35,
+      "img": "obj_plates",
       "cue_ms": 2202
      },
      {
       "name": "टॉफ़ी",
       "price": 5,
+      "img": "obj_toffee",
       "cue_ms": 3067
      }
     ]
@@ -219,6 +224,7 @@
     "mode": "teach",
     "target": 14,
     "item_img": "obj_copy",
+    "item_name": "कॉपी",
     "sources": [
      "n10",
      "c1"
@@ -237,11 +243,17 @@
       "pulse_total": true
      },
      {
-      "say": "vo_g2_4",
-      "auto": "c1"
+      "say": "vo_g2_4"
      },
      {
       "say": "vo_g2_5",
+      "child": "c1",
+      "idle": [
+       "vo_g2_idle"
+      ]
+     },
+     {
+      "say": "vo_g2_6",
       "child": "c1",
       "idle": [
        "vo_g2_idle"
@@ -279,6 +291,7 @@
     "mode": "teach",
     "target": 20,
     "item_img": "obj_chips",
+    "item_name": "चिप्स",
     "sources": [
      "c10",
      "c1"
@@ -327,6 +340,7 @@
     "mode": "practice",
     "target": 25,
     "item_img": "obj_chocolate",
+    "item_name": "चॉकलेट",
     "sources": [
      "c10",
      "c1"
@@ -385,6 +399,7 @@
     "mode": "practice",
     "target": 35,
     "item_img": "obj_plates",
+    "item_name": "प्लेटों का पैकेट",
     "sources": [
      "n10",
      "c1"
@@ -446,6 +461,7 @@
     "mode": "practice",
     "target": 5,
     "item_img": "obj_toffee",
+    "item_name": "टॉफ़ी",
     "sources": [
      "n10",
      "c1"
@@ -494,6 +510,7 @@
     "mode": "practice",
     "target": 17,
     "item_img": "obj_juice",
+    "item_name": "जूस",
     "sources": [
      "n10",
      "c1"
@@ -539,7 +556,6 @@
     "eq_in_band": true,
     "no_engine_idle": true,
     "check_label": "हो गया",
-    "total_below": true,
     "under": {
      "1": "vo_p3_u1",
      "2": "vo_p3_u2",

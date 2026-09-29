@@ -100,14 +100,12 @@ def main():
     col = patch(R, yb)
     text_c(d, (yb[0] + yb[2]) / 2, (yb[1] + yb[3]) / 2, "000", font(FB, 17 * K),
            tuple(max(0, v - 70) for v in col))
-    R = R.convert("RGBA")
-    specimen(R, R.width * 0.5, R.height * 0.66, 19 * K, 0)
+    R = R.convert("RGBA")                      # no SPECIMEN on coins (user, 2026-09-29)
     finish_coin(R, "cur_coin10_back")
     # ---------------- ₹1 coin, BACK face ----------------
     K = 3
     c = up(Image.open(os.path.join(REF, "coin1_both.png")).convert("RGB"), K)
-    R = c.crop((168 * K, 4 * K, 310 * K, 141 * K)).convert("RGBA")
-    specimen(R, R.width * 0.5, R.height * 0.80, 13 * K, 0)
+    R = c.crop((168 * K, 4 * K, 310 * K, 141 * K)).convert("RGBA")   # no SPECIMEN on coins
     finish_coin(R, "cur_coin1_back")
 
 if __name__ == "__main__":

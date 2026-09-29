@@ -94,7 +94,8 @@ def s_market():
             "audio": {"prompt": vo("vo_t4_prompt", "परी अपनी खरीदारी की सूची लेकर बाज़ार पहुँच गई है। आइए देखें, उसे क्या-क्या खरीदना है।")},
             "data": {"img": "scn_market", "scene": True}}
 
-LIST = [("कॉपी", 14), ("चिप्स", 20), ("चॉकलेट", 25), ("प्लेटों का पैकेट", 35), ("टॉफ़ी", 5)]
+LIST = [("कॉपी", 14, "obj_copy"), ("चिप्स", 20, "obj_chips"), ("चॉकलेट", 25, "obj_chocolate"),
+        ("प्लेटों का पैकेट", 35, "obj_plates"), ("टॉफ़ी", 5, "obj_toffee")]
 LIST_VO_SHOWN = "परी को कॉपी, चिप्स, चॉकलेट, प्लेटें और टॉफ़ी खरीदनी हैं। चलो, ₹10 और ₹1 से हर चीज़ की राशि बनाते हैं।"
 LIST_CUE_WORDS = ["कॉपी", "चिप्स", "चॉकलेट", "प्लेटें", "टॉफ़ी"]
 
@@ -102,29 +103,31 @@ def s_list():
     return {"id": "G1", "phase": "guided", "eis": "symbolic", "type": "MONEY_LIST",
             "prompt_hi": "परी की सूची",
             "audio": {"prompt": vo("vo_g1_prompt", LIST_VO_SHOWN)},
-            "data": {"rows": [{"name": n, "price": p} for n, p in LIST]}}
+            "data": {"rows": [{"name": n, "price": p, "img": im} for n, p, im in LIST]}}
 
 def s_copy():
     return {"id": "G2", "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
             "prompt_hi": "₹14 बनाइए",
             "audio": {"prompt": "vo_g2_1", "done": vo("vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14। अब परी कॉपी खरीद सकती है।")},
-            "data": {"mode": "teach", "target": 14, "item_img": "obj_copy", "sources": ["n10", "c1"], "no_engine_idle": True,
+            "data": {"mode": "teach", "target": 14, "item_img": "obj_copy", "item_name": "कॉपी", "sources": ["n10", "c1"], "no_engine_idle": True,
                      "script": [
                          {"say": vo("vo_g2_1", "सबसे पहले परी को ₹14 की कॉपी लेनी है। आइए, ₹10 और ₹1 से ₹14 बनाते हैं।")},
                          {"say": vo("vo_g2_2", "पहले ₹10 का एक नोट रखते हैं।"), "auto": "n10"},
                          {"say": vo("vo_g2_3", "अभी कुल ₹10 हुए। ₹14 बनाने के लिए अभी ₹4 और चाहिए।"), "pulse_total": True},
-                         {"say": vo("vo_g2_4", "अब एक-एक रुपए के सिक्के रखेंगे।"), "auto": "c1"},
+                         # user 2026-09-29: only the NOTE is placed by Swiftie; the child places all four ₹1
+                         {"say": vo("vo_g2_4", "अब एक-एक रुपए के सिक्के रखेंगे।")},
                          {"say": vo("vo_g2_5", "चलो, अब तुम रखो।"), "child": "c1",
                           "idle": [vo("vo_g2_idle", "सिक्के को ऊपर ट्रे में रखो।")]},
                          {"say": vo("vo_g2_6", "अब एक रुपए का और सिक्का रखो।"), "child": "c1",
                           "idle": ["vo_g2_idle"]},
+                         {"say": "vo_g2_6", "child": "c1", "idle": ["vo_g2_idle"]},
                          {"say": vo("vo_g2_7", "आखिरी सिक्का।"), "child": "c1", "idle": ["vo_g2_idle"]}]}}
 
 def s_chips():
     return {"id": "G3", "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
             "prompt_hi": "₹20 बनाइए।",
             "audio": {"prompt": "vo_g3_1a", "done": vo("vo_g3_done", "बहुत अच्छे! दो ₹10 के सिक्के — कुल मिलाकर बने ₹20।")},
-            "data": {"mode": "teach", "target": 20, "item_img": "obj_chips", "sources": ["c10", "c1"],
+            "data": {"mode": "teach", "target": 20, "item_img": "obj_chips", "item_name": "चिप्स", "sources": ["c10", "c1"],
                      "prompt_delayed": True, "no_engine_idle": True,
                      "teach_wrong": {"c1": vo("vo_g3_wrong", "₹20 बनाने के लिए ₹10 के सिक्के लगेंगे।")},
                      "script": [
@@ -156,8 +159,10 @@ def ladder(tag, T, tens_note, tens_totals, ones_totals, ten_word, zero_line=None
         L["ones"][str(X)] = [a2, a3]
     return L
 
+NAMES = {"obj_chocolate": "चॉकलेट", "obj_plates": "प्लेटों का पैकेट", "obj_toffee": "टॉफ़ी", "obj_juice": "जूस"}
+
 def s_practice(id_, phase, T, img, sources, vo_prompt, done_line, lad, **extra):
-    d = {"mode": "practice", "target": T, "item_img": img, "sources": sources, "ladder": lad,
+    d = {"mode": "practice", "target": T, "item_img": img, "item_name": NAMES[img], "sources": sources, "ladder": lad,
          "eq_in_band": True, "no_engine_idle": True}
     d.update(extra)
     return {"id": id_, "phase": phase, "eis": "enactive", "type": "MONEY_BUILD",
@@ -194,7 +199,7 @@ def s_juice():
         vo("vo_p3_prompt", "परी को ₹17 का जूस पैकेट लेना है। ₹10 के नोट और ₹1 के सिक्कों से ₹17 बनाइए।"),
         vo("vo_p3_done", "शाबाश! एक ₹10 का नोट और सात ₹1 के सिक्के — कुल मिलाकर बने ₹17। अब परी जूस पैकेट खरीद सकती है।"),
         ladder("p3", T, False, range(10, 17), [7], ("note", "नोट")),
-        check_label="हो गया", total_below=True, under=under, tag_fx="glow")
+        check_label="हो गया", under=under, tag_fx="glow")
 
 def s_done():
     return {"id": "P4", "phase": "practice", "eis": "iconic", "type": "MONEY_DONE",

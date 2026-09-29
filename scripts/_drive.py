@@ -65,11 +65,11 @@ check("T2 correct text", js("return document.querySelector('.mn-pick-fb').textCo
 
 # ---------------- G2 copy teach
 mount(idx["G2"]); w(6)
-s = st(); check("G2 demo placed ₹10 + ₹1 (कुल ₹11)", s["total"] == "₹11", s)
-for n in range(3):
+s = st(); check("G2 demo placed ONLY the ₹10 note (कुल ₹10)", s["total"] == "₹10" and s["placed"] == 1, s)
+for n in range(4):
     js("drag(src('c1'), document.querySelector('.mn-target'))"); w(1.2)
 s = st(); shot("G2_done")
-check("G2 child places 3 coins -> ₹14 finished", s["total"] == "₹14" and s["finished"] and s["nav"], s)
+check("G2 child places 4 coins -> ₹14 finished", s["total"] == "₹14" and s["finished"] and s["nav"], s)
 check("G2 equation", js("return document.querySelector('.mn-eq').textContent") == "₹10 + ₹1 + ₹1 + ₹1 + ₹1 = ₹14")
 
 # ---------------- G3 chips teach: ₹1 is wrong

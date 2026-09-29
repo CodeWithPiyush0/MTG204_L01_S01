@@ -156,3 +156,13 @@ Deck page refs = the deck's slide number (S#) and the page label printed on it (
 - Not in the team set → still Gemini art: **obj_cucumbers, obj_mangoes** (flatter style than the new glossy items), Pari with basket / full basket (shop game).
 - Dist re-checked: 9.89 MB (item art capped at 400 px, scenes 1280 px — 2× their largest on-screen size); `_drive.py` 36/36 on build and dist. Receipt `17 pass · 3 FAIL · 7 warn` (same 3 deliberate FAILs as above).
 - `_review_shots/` + the round-2 review deck still show the round-2 art — re-capture if the SME needs the new pictures.
+
+## Round 2c — user review (2026-09-29)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| C1 | Remove SPECIMEN text from the coins | ✅ | `make_currency.py` no longer stamps the two generated coin BACKS (the team's coin fronts never had it). The note keeps its own printed SPECIMEN (team art). The ₹10 coin back still reads «000» where the year was. |
+| C2 | Tap screens (p2 ₹10, p3 ₹1): no tick on the correct card | ✅ | `.mn-card.mn-ok::after{display:none}` — green + glow + confetti stay; shot checked. Applies to both MONEY_PICK screens. |
+| C3 | Pari's list (p5): better cards, one by one, item picture + name + price on the right; highlight each card as the VO plays when it repeats on inactivity | ✅ | Rows = picture tile · name · yellow price tag; each row appears AT its VO cue and lights while named. The 🔊 replay and the engine's 7 s inactivity replay light them in turn with all rows staying visible (measured: opacities all 1.00 during replay). Entrance + highlight are transitions — a keyframe version re-hid rows on every highlight change. |
+| C4 | Copy ₹14 (p6): only the NOTE auto-placed; the child drags every coin | ✅ | Demo coin removed; the child places four ₹1 (the 3rd coin reuses «अब एक रुपए का और सिक्का रखो।» — no new VO). drive: `G2 demo placed ONLY the ₹10 note`, `G2 child places 4 coins -> ₹14 finished`. |
+| C5 | Build screens p6–p11: the uploaded layout; note + coin centred in the tray | ✅ | Item name above the picture (no card), yellow price tag, dashed drop zone with कुल top-right, full-width cream coin tray with the money centred; juice's «हो गया» sits at the tray's right end and its total moved to the same top-right place (layout identical on all six). Placed money enlarged. |
+- Checks: `_drive.py` 36/36 on build and dist · dist 9.89 MB · receipt `17 pass · 3 FAIL · 7 warn` (the same 3 deliberate FAILs).

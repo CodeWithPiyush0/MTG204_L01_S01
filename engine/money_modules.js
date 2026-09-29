@@ -376,8 +376,16 @@
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
       const root = el("div", "mn-list mn-zoom");
-      const rows = d.rows.map(r => {
-        const e = el("div", "mn-li", '<span class="mn-li-n">' + r.name + '</span><span class="mn-li-p">₹' + r.price + '</span>');
+      /* each row APPEARS as the VO names it (its cue), then lights up while it is being named; on a
+         replay (the audio chip or the engine's inactivity replay) the rows only light up in turn. */
+      const VO_AT = 700;
+      const rows = d.rows.map((r, i) => {
+        const e = el("div", "mn-li mn-li-wait",
+          '<span class="mn-li-ic">' + (r.img ? '<img src="' + img(r.img) + '" alt="" draggable="false">' : "") + '</span>' +
+          '<span class="mn-li-n">' + r.name + '</span>' +
+          '<span class="mn-li-p"><span>₹' + r.price + '</span></span>');
+        const at = VO_AT + (r.cue_ms || (600 + i * 700)) - 120;
+        setTimeout(()=>{ if(!e.isConnected) return; e.classList.remove("mn-li-wait"); sfxPop(); }, at);
         root.appendChild(e);
         return e;
       });
@@ -395,7 +403,7 @@
       };
       const run = (after)=>{ pulses(); say(A(slide, "prompt"), after); };
       state.replayAudio = ()=> run();
-      setTimeout(()=> run(()=> setNavActive(true)), 700);   /* after the zoom lands */
+      setTimeout(()=> run(()=> setNavActive(true)), VO_AT);   /* after the card lands */
     }
   };
 
@@ -408,7 +416,8 @@
       if(d.prompt_delayed) $("promptText").textContent = "";
 
       const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : ""));
-      const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="">' +
+      const item = el("div", "mn-item", (d.item_name ? '<div class="mn-item-name">' + d.item_name + '</div>' : "") +
+                                       '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="">' +
                                        '<div class="mn-tag"><span>₹' + T + '</span></div>');
       const tcol = el("div", "mn-tcol");
       const tgt = el("div", "mn-target");
