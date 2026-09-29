@@ -1,0 +1,216 @@
+/* «परी की पिकनिक की खरीदारी» — money module styles. Uses the engine's own tokens (--navy, --correct,
+   --wrong, --font-hi, the yellow pill of .nav-btn.active) so every screen reads as the same family as
+   HI02H11_L02_S02. Every element is authored in its FINAL position; motion is an added class, so the
+   review capture (which kills animations) still shows the settled screen. */
+
+/* ------------------------------------------------------------ currency pieces */
+.mn-piece{position:relative;flex:0 0 auto;touch-action:none;user-select:none;-webkit-user-select:none;}
+.mn-piece img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;
+  filter:drop-shadow(0 4px 6px rgba(11,61,140,.18));}
+.mn-piece.mn-note{width:170px;height:83px;}
+.mn-piece.mn-coin{width:92px;height:92px;}
+.mn-piece.mn-src{cursor:grab;transition:transform .15s,opacity .2s,filter .2s;}
+.mn-piece.mn-src:active{transform:scale(1.06);}
+.mn-piece.mn-off{opacity:.35;filter:grayscale(.7);cursor:not-allowed;pointer-events:none;}
+.mn-piece.mn-placed.mn-note{width:128px;height:62px;}
+.mn-piece.mn-placed.mn-coin{width:66px;height:66px;}
+.mn-float{position:absolute;z-index:60;pointer-events:none;}
+.mn-float.mn-drag img{filter:drop-shadow(0 12px 14px rgba(11,61,140,.28));}
+.mn-float.mn-ghost{opacity:.6;}
+.mn-float.mn-ghost img{filter:grayscale(.2) drop-shadow(0 0 10px rgba(80,170,242,.9));}
+
+@keyframes mnPulse{0%,100%{transform:scale(1)}30%{transform:scale(1.14)}60%{transform:scale(.98)}}
+@keyframes mnBump{0%,100%{transform:scale(1)}40%{transform:scale(1.12)}}
+@keyframes mnShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(5px)}}
+@keyframes mnIn{0%{transform:scale(.4);opacity:.3}70%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
+@keyframes mnPop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes mnGlowSrc{0%,100%{filter:drop-shadow(0 0 0 rgba(0,177,50,0))}50%{filter:drop-shadow(0 0 16px rgba(0,177,50,.95))}}
+@keyframes mnTick{0%{transform:scale(0) rotate(-30deg);opacity:0}70%{transform:scale(1.25) rotate(6deg);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes mnZoom{0%{transform:translate(-220px,90px) scale(.28);opacity:.2}100%{transform:none;opacity:1}}
+@keyframes mnSay{0%,100%{transform:scale(1)}35%{transform:scale(1.06)}}
+.mn-pulse{animation:mnPulse .9s ease-in-out 2;}
+.mn-bump{animation:mnBump .38s ease-out 1;}
+.mn-shake{animation:mnShake .5s ease-in-out 1;}
+.mn-in{animation:mnIn .32s cubic-bezier(.3,1.4,.5,1) 1;}
+.mn-pop{animation:mnPop .55s cubic-bezier(.3,1.35,.5,1) backwards;}
+.mn-piece.mn-glowsrc img{animation:mnGlowSrc 1s ease-in-out infinite;}
+.mn-piece.mn-glow img{filter:drop-shadow(0 0 10px rgba(0,177,50,.85));}
+.mn-piece.mn-seq{animation:mnBump .4s ease-out 1;}
+
+/* ------------------------------------------------------------ faces (note / two coin faces) */
+.mn-faces{display:flex;align-items:center;justify-content:center;gap:16px;}
+.mn-face{display:block;object-fit:contain;filter:drop-shadow(0 5px 8px rgba(11,61,140,.18));pointer-events:none;}
+.mn-face.is-note{width:240px;height:auto;}
+.mn-face.is-coin{width:104px;height:104px;}
+
+/* ------------------------------------------------------------ MONEY_SHOW (tutorial card) */
+.mn-show{display:flex;align-items:center;justify-content:center;gap:90px;padding-bottom:10px;}
+.mn-show .mn-face.is-note{width:330px;}
+.mn-show .mn-face.is-coin{width:132px;height:132px;}
+.mn-show-g{padding:18px 26px;background:#fff;border-radius:28px;border:2px solid #EEF3FA;box-shadow:0 12px 28px rgba(11,61,140,.10);}
+
+/* ------------------------------------------------------------ MONEY_PICK (tutorial card) */
+.mn-pick{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+.mn-pick-row{display:flex;gap:70px;justify-content:center;}
+.mn-card{width:330px;height:218px;background:#fff;border:4px solid #F7B43D;border-radius:28px;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px rgba(11,61,140,.10);
+  transition:transform .15s,background .2s,border-color .2s,opacity .2s;position:relative;}
+.mn-card:hover{transform:translateY(-3px);}
+.mn-card.mn-ok{border-color:var(--correct);background:var(--correct-bg);box-shadow:0 0 0 8px rgba(0,177,50,.18),0 12px 26px rgba(0,120,45,.22);}
+.mn-card.mn-ok::after{content:"\2713";position:absolute;top:-18px;right:-18px;width:60px;height:60px;border-radius:50%;
+  background:var(--correct);color:#fff;font-size:36px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  border:5px solid #fff;box-shadow:0 4px 10px rgba(0,120,45,.35);animation:mnTick .45s ease-out backwards;}
+.mn-card.mn-bad{border-color:var(--wrong);background:var(--wrong-bg);cursor:not-allowed;}
+.mn-card.mn-out{opacity:.45;}
+.mn-pick-fb{min-height:46px;font-weight:800;font-size:34px;color:var(--navy);opacity:0;transition:opacity .25s;}
+.mn-pick-fb.show{opacity:1;}
+.mn-pick-fb.ok{color:#0A8A2C;}
+.mn-reveal{position:absolute;inset:-18px -10px;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;background:rgba(242,247,250,.94);border-radius:26px;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mn-reveal.show{opacity:1;pointer-events:auto;}
+.mn-reveal.show .mn-faces{animation:mnPop .5s cubic-bezier(.3,1.35,.5,1) backwards;}
+.mn-reveal .mn-faces.big .is-note{width:380px;}
+.mn-reveal .mn-faces.big .is-coin{width:150px;height:150px;}
+.mn-reveal-t{font-weight:800;font-size:34px;color:var(--navy);text-align:center;max-width:900px;line-height:1.25;}
+
+/* ------------------------------------------------------------ MONEY_SCENE */
+.mn-scene{display:flex;align-items:center;justify-content:center;}
+.mn-scene-img{height:330px;width:auto;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(11,61,140,.15));}
+
+/* ------------------------------------------------------------ MONEY_LIST */
+.mn-list{align-self:center;margin:auto;width:640px;display:flex;flex-direction:column;gap:14px;padding:26px 34px;background:#fff;
+  border-radius:30px;border:2px solid #EEF3FA;box-shadow:0 14px 30px rgba(11,61,140,.12);animation:mnZoom .7s cubic-bezier(.3,1.1,.5,1) backwards;}
+.mn-li{display:flex;justify-content:space-between;align-items:center;height:64px;padding:0 34px;border:3px solid #4EA3F0;border-radius:18px;
+  font-weight:800;font-size:34px;color:var(--navy);background:#fff;transition:background .2s;}
+.mn-li-p{font-size:36px;}
+.mn-li.mn-say{animation:mnSay .7s ease-in-out 1;background:#FFF6D8;border-color:#F7B43D;}
+
+/* ------------------------------------------------------------ MONEY_BUILD */
+.mn-build{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;position:relative;}
+.mn-top{display:flex;align-items:center;justify-content:center;gap:44px;}
+.mn-item{width:220px;height:262px;background:#fff;border-radius:28px;border:2px solid #EEF3FA;box-shadow:0 12px 28px rgba(11,61,140,.10);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:box-shadow .3s,border-color .3s;}
+.mn-item-img{width:150px;height:150px;object-fit:contain;}
+.mn-tag{position:relative;background:#FCB717;color:var(--navy);font-weight:800;font-size:42px;line-height:1;padding:10px 26px 10px 38px;
+  border-radius:12px 22px 22px 12px;box-shadow:0 5px 0 rgba(116,60,0,.22);}
+.mn-tag::before{content:"";position:absolute;left:12px;top:50%;width:13px;height:13px;margin-top:-6.5px;border-radius:50%;background:#fff;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.25);}
+@keyframes mnTagGlow{0%,100%{box-shadow:0 5px 0 rgba(116,60,0,.22)}50%{box-shadow:0 0 0 10px rgba(252,183,23,.35),0 5px 0 rgba(116,60,0,.22)}}
+.mn-tag.mn-tagglow{animation:mnTagGlow 1s ease-in-out 3;}
+.mn-item.mn-bought{border-color:var(--correct);box-shadow:0 0 0 8px rgba(0,177,50,.18),0 12px 28px rgba(0,120,45,.18);animation:mnBump .5s ease-out 1;}
+.mn-tcol{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.mn-target{position:relative;width:600px;height:278px;background:#F4F8FE;border:4px solid #7DA8DA;border-radius:28px;transition:border-color .2s,background .2s;}
+.mn-target.mn-hover{border-color:#386AF6;background:#E6F0FF;}
+.mn-target.mn-done{border-color:var(--correct);background:#EFFCF2;}
+.mn-total-below .mn-target{height:240px;}
+.mn-tray{position:absolute;inset:66px 18px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.mn-total-below .mn-tray{inset:18px;}
+.mn-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;min-height:10px;}
+.mn-total{position:absolute;top:12px;right:14px;background:#DDEEFF;border-radius:14px;padding:4px 20px;font-weight:800;font-size:32px;color:var(--navy);}
+.mn-total-below .mn-total{position:static;}
+.mn-total.mn-green{background:var(--correct-bg);color:#0A8A2C;box-shadow:0 0 0 3px var(--correct) inset;}
+.mn-bottom{display:flex;align-items:center;justify-content:center;gap:30px;}
+.mn-bank{display:flex;align-items:center;justify-content:center;gap:70px;min-width:520px;height:124px;padding:0 46px;background:#fff;
+  border:4px solid #F7B43D;border-radius:26px;box-shadow:0 10px 22px rgba(11,61,140,.08);}
+.mn-check{font-family:var(--font-hi);font-weight:800;font-size:28px;color:var(--navy);background:#FCB717;border:3px solid #fff;border-radius:9999px;
+  height:64px;padding:0 38px;cursor:pointer;box-shadow:0 6px 6px rgba(0,0,0,.25),inset 4.54px 9.09px 12.12px rgba(255,255,255,.25),inset -4.54px -4.54px 13.63px rgba(116,60,0,.19);}
+.mn-check:disabled{background:#EDEDED;color:#C2C2C2;cursor:not-allowed;box-shadow:none;}
+.mn-eq{display:none;font-weight:800;font-size:40px;color:#0A8A2C;background:var(--correct-bg);border:3px solid var(--correct);border-radius:22px;
+  padding:14px 36px;animation:mnPop .5s cubic-bezier(.3,1.35,.5,1) backwards;}
+.mn-build.mn-finished .mn-bottom{display:none;}
+.mn-build.mn-finished .mn-eq{display:block;height:124px;display:flex;align-items:center;}
+.mn-band-eq{color:#0A8A2C;}
+
+/* ------------------------------------------------------------ MONEY_DONE */
+.mn-done-card{align-self:center;margin:auto;width:640px;padding:34px 40px 26px;background:var(--cream,#FFF6D8);border:4px solid #F7B43D;border-radius:30px;
+  box-shadow:0 14px 30px rgba(11,61,140,.12);display:flex;flex-direction:column;align-items:center;gap:22px;}
+.mn-done-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 50px;}
+.mn-done-i{display:flex;align-items:center;gap:14px;font-weight:800;font-size:38px;color:#0A8A2C;}
+.mn-tick{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--correct);color:#fff;
+  font-size:26px;font-weight:900;flex:0 0 auto;animation:mnTick .45s ease-out backwards;}
+.mn-done-count{font-weight:800;font-size:40px;color:var(--navy);}
+
+/* ------------------------------------------------------------ SHOP_GAME */
+.sg-root{flex:1;position:relative;display:flex;}
+.sg-counter{position:absolute;top:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;background:#fff;border:3px solid #7DA8DA;border-radius:18px;
+  padding:6px 18px;font-weight:800;font-size:30px;color:var(--navy);box-shadow:0 6px 14px rgba(11,61,140,.12);}
+.sg-basket-ic{width:36px;height:30px;display:inline-block;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 40'%3E%3Cpath d='M14 16 22 4M34 16 26 4' stroke='%230B3D8C' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M3 16h42l-5 21H8z' fill='%23E4453C' stroke='%230B3D8C' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M15 22v10M24 22v10M33 22v10' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");}
+.sg-choose,.sg-make,.sg-complete{flex:1;display:flex;align-items:center;gap:22px;position:relative;}
+.sg-pari{height:410px;width:auto;flex:0 0 auto;margin-left:-26px;filter:drop-shadow(0 8px 12px rgba(11,61,140,.14));}
+.sg-stall{flex:1;align-self:stretch;margin-top:40px;display:flex;flex-direction:column;border-radius:24px 24px 18px 18px;overflow:hidden;
+  box-shadow:0 14px 26px rgba(84,46,12,.18);}
+.sg-awning{height:58px;flex:0 0 auto;background:repeating-linear-gradient(90deg,#34A853 0 52px,#FFFFFF 52px 104px);position:relative;}
+.sg-awning::after{content:"";position:absolute;left:0;right:0;bottom:-14px;height:28px;
+  background:radial-gradient(circle at 26px 0,#34A853 25px,transparent 26px) 0 0/104px 28px repeat-x,
+             radial-gradient(circle at 78px 0,#FFFFFF 25px,transparent 26px) 0 0/104px 28px repeat-x;}
+.sg-shelves{flex:1;background:#C98B4E;padding:26px 20px 16px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:14px;
+  border:6px solid #9C6632;border-top:none;border-radius:0 0 18px 18px;}
+.sg-cell{background:#F6D9B0;border-radius:16px;border:3px solid #E9B77B;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;cursor:pointer;position:relative;transition:transform .15s,opacity .25s,filter .25s,box-shadow .25s;animation:sgIdle 3.2s ease-in-out infinite;}
+@keyframes sgIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.sg-cell img{width:96px;height:96px;object-fit:contain;pointer-events:none;}
+.sg-price{background:#fff;color:var(--navy);font-weight:800;font-size:26px;line-height:1;padding:5px 14px;border-radius:10px;border:2px solid #E0A864;}
+.sg-cell.sg-dull{opacity:.35;filter:grayscale(.6);}
+.sg-cell.sg-shine{box-shadow:0 0 0 6px #FFD34E,0 0 26px 8px rgba(255,211,78,.9);transform:scale(1.07);z-index:2;animation:none;}
+@keyframes sgGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,211,78,0)}50%{box-shadow:0 0 0 6px #FFD34E,0 0 22px 6px rgba(255,211,78,.8)}}
+.sg-cell.sg-glow{animation:sgGlow 1s ease-in-out 3;}
+.sg-cell.sg-sold{opacity:.45;filter:grayscale(.5);cursor:default;animation:none;}
+.sg-cell.sg-sold::after{content:"\2713";position:absolute;top:6px;right:8px;width:38px;height:38px;border-radius:50%;background:var(--correct);color:#fff;
+  font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;border:3px solid #fff;}
+
+.sg-make{align-items:stretch;flex-wrap:wrap;align-content:center;gap:16px 22px;}
+.sg-pari-sm{height:300px;width:auto;flex:0 0 auto;margin-left:-26px;align-self:flex-start;filter:drop-shadow(0 8px 12px rgba(11,61,140,.14));}
+.sg-item-big{width:210px;height:280px;flex:0 0 auto;background:#fff;border-radius:28px;border:2px solid #EEF3FA;box-shadow:0 12px 28px rgba(11,61,140,.10);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.sg-item-big img{width:150px;height:150px;object-fit:contain;}
+.sg-price-big{font-weight:800;font-size:58px;line-height:1;color:var(--navy);}
+@keyframes sgJump{0%,100%{transform:translateY(0)}40%{transform:translateY(-34px)}70%{transform:translateY(4px)}}
+.sg-item-big.sg-jump{animation:sgJump .5s ease-out 1;}
+.sg-amount{flex:1;height:280px;width:auto;border-style:dashed;}
+.sg-amount .mn-tray{inset:18px;}
+.sg-low{flex:0 0 100%;display:flex;align-items:center;justify-content:center;gap:34px;padding-left:180px;}
+.sg-bank{display:flex;align-items:flex-end;gap:46px;background:#fff;border:4px solid #F7B43D;border-radius:26px;padding:12px 36px 10px;box-shadow:0 10px 22px rgba(11,61,140,.08);}
+.sg-src-w{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.sg-src-l{background:#F7931E;color:#fff;font-weight:800;font-size:24px;line-height:1;padding:5px 18px;border-radius:12px;}
+.sg-bank .mn-piece.mn-note{width:150px;height:73px;}
+.sg-bank .mn-piece.mn-coin{width:80px;height:80px;}
+.sg-btns{display:flex;align-items:center;gap:18px;}
+.sg-undo{width:66px;height:66px;border-radius:50%;background:#fff;border:3px solid #7DA8DA;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 5px 0 rgba(11,61,140,.14);}
+.sg-undo:disabled{opacity:.4;cursor:not-allowed;}
+.sg-check{font-family:var(--font-hi);font-weight:800;font-size:30px;color:var(--navy);background:#FCB717;border:3px solid #fff;border-radius:9999px;height:66px;padding:0 40px;
+  cursor:pointer;box-shadow:0 6px 6px rgba(0,0,0,.25),inset 4.54px 9.09px 12.12px rgba(255,255,255,.25),inset -4.54px -4.54px 13.63px rgba(116,60,0,.19);}
+.sg-check:disabled{background:#EDEDED;color:#C2C2C2;cursor:not-allowed;box-shadow:none;}
+.sg-flyitem{object-fit:contain;}
+
+.sg-complete{justify-content:center;gap:26px;}
+.sg-pari-full{height:400px;width:auto;flex:0 0 auto;filter:drop-shadow(0 8px 12px rgba(11,61,140,.14));}
+.sg-list{width:360px;background:#fff;border-radius:22px;border:3px solid #E0E7F2;box-shadow:0 12px 26px rgba(11,61,140,.12);padding:14px 20px 12px;display:flex;flex-direction:column;gap:2px;}
+.sg-list-h{font-weight:800;font-size:28px;color:var(--navy);text-align:center;margin-bottom:4px;}
+.sg-list-r{display:flex;align-items:center;gap:10px;height:40px;font-weight:700;font-size:24px;color:var(--navy);}
+.sg-list-r img{width:34px;height:34px;object-fit:contain;}
+.sg-ln{flex:1;}
+.sg-lp{width:62px;text-align:right;font-weight:800;}
+.sg-list-r .mn-tick{width:30px;height:30px;font-size:18px;}
+.sg-side{display:flex;flex-direction:column;gap:20px;align-items:center;}
+.sg-till{background:#1F3A5F;border:6px solid #3E5C85;border-radius:22px;padding:12px 34px;text-align:center;box-shadow:0 10px 22px rgba(11,61,140,.2);}
+.sg-till-l{color:#CFE3FF;font-weight:700;font-size:26px;}
+.sg-till-v{color:#fff;font-weight:800;font-size:56px;line-height:1.1;}
+.sg-great{display:flex;flex-direction:column;align-items:center;gap:8px;background:#fff;border:3px solid #E0E7F2;border-radius:20px;padding:16px 22px;
+  font-weight:800;font-size:28px;color:var(--navy);text-align:center;max-width:250px;}
+.sg-great .mn-tick{width:52px;height:52px;font-size:30px;}
+
+/* the basket counter sits top-right of the content; keep the money area and the list clear of it */
+.sg-make .sg-amount{margin-top:60px;height:230px;}
+.sg-make .sg-pari-sm{margin-top:20px;}
+.sg-make .sg-item-big{margin-top:40px;height:250px;}
+.sg-complete{padding-top:34px;}
+
+/* the team's currency set: Lock art is already dark + padlocked -> no extra dimming on top of it;
+   Glow art is drawn on a LARGER canvas (the halo), so it is scaled up about the centre to keep the
+   coin itself the same size as its Default. Ratios measured off the files. */
+.mn-piece.mn-off.st-lock{opacity:1;filter:none;}
+.mn-piece.st-glow img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);filter:none;animation:none;}
+.mn-piece.mn-c1.st-glow img{width:146.7%;height:146.7%;}
+.mn-piece.mn-c10.st-glow img{width:141%;height:141%;}
+.mn-piece.mn-note.st-glow img{width:110.2%;height:122.7%;}

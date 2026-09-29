@@ -1,0 +1,1491 @@
+{
+  "version": "0.2",
+  "skill_code": "MTG2A04_L01_S01",
+  "lo_code": "MTG2A04_L01",
+  "grade": "G2",
+  "attribute": "A04",
+  "skill_type": "CORE",
+  "part_label": "",
+  "theme": "toybox",
+  "landing_hero": {
+    "kind": "count",
+    "n": 4,
+    "title_first": true
+  },
+  "title": {
+    "hi": "परी की पिकनिक की खरीदारी",
+    "en": "Representing amount with Rs.10 and Rs.1 -- Pari's picnic shopping"
+  },
+  "subtitle_hi": "₹10 और ₹1 से रकम बनाओ",
+  "skill_description_hi": "परी की पिकनिक की खरीदारी में ₹10 और ₹1 से सही रकम बनाना और पहचानना सीखो।",
+  "number_set": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "dt_fallback": null,
+  "phase_distribution": {
+    "tutorial": 6,
+    "guided": 7,
+    "practice": 19
+  },
+  "scaffold_rules": {
+    "nudge_timeout_ms": {
+      "guided": 5000,
+      "independent": 8000
+    },
+    "max_attempts": 3
+  },
+  "signals_expected": [
+    "slide_entered",
+    "slide_completed",
+    "make_set_correct",
+    "pick_set_first_try",
+    "answer_wrong",
+    "lesson_completed",
+    "mastery_score"
+  ],
+  "_emoji_fallback": {
+    "obj_note10": "💵",
+    "obj_coin10": "🪙",
+    "obj_coin1": "🪙",
+    "obj_item_copy": "📓",
+    "obj_item_chips": "🍟",
+    "obj_item_chocolate": "🍫",
+    "obj_item_plates": "🍽",
+    "obj_item_toffee": "🍬",
+    "obj_item_juice": "🧃",
+    "obj_item_biscuit": "🍪",
+    "obj_item_cake": "🍰",
+    "obj_item_napkin": "🧻",
+    "obj_item_water": "🧴"
+  },
+  "slides": [
+    {
+      "id": "T1",
+      "phase": "tutorial",
+      "eis": "enactive",
+      "type": "DEMO_COUNT",
+      "prompt_hi": "बाजार जाने से पहले, आइए पहचानते हैं कि ₹10 और ₹1 कैसे दिखते हैं।",
+      "audio": {
+        "prompt": "vo_t1_prompt",
+        "conclude": "vo_t1_conclude"
+      },
+      "data": {
+        "count": 1,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        }
+      },
+      "signals": {
+        "on_complete": []
+      }
+    },
+    {
+      "id": "T2",
+      "phase": "tutorial",
+      "eis": "enactive",
+      "type": "DEMO_COUNT",
+      "prompt_hi": "यह वाला सिक्का भी ₹10 का है।",
+      "audio": {
+        "prompt": "vo_t2_prompt",
+        "conclude": "vo_t2_conclude"
+      },
+      "data": {
+        "count": 1,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "दस रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin10"
+        }
+      },
+      "signals": {
+        "on_complete": []
+      }
+    },
+    {
+      "id": "T3",
+      "phase": "tutorial",
+      "eis": "enactive",
+      "type": "DEMO_COUNT",
+      "prompt_hi": "और यह छोटा सिक्का ₹1 का है।",
+      "audio": {
+        "prompt": "vo_t3_prompt",
+        "conclude": "vo_t3_conclude"
+      },
+      "data": {
+        "count": 1,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        }
+      },
+      "signals": {
+        "on_complete": []
+      }
+    },
+    {
+      "id": "T4",
+      "phase": "tutorial",
+      "eis": "iconic",
+      "type": "INTRO",
+      "prompt_hi": "परी अपनी खरीदारी की सूची लेकर बाजार पहुँच गई है। हर कीमत सुनिए।",
+      "audio": {
+        "prompt": "vo_t4_prompt"
+      },
+      "data": {
+        "auto": true,
+        "letters": [
+          "₹14",
+          "₹20",
+          "₹25",
+          "₹22",
+          "₹5"
+        ],
+        "phonemes": {
+          "₹14": "vo_t4_obj_item_copy",
+          "₹20": "vo_t4_obj_item_chips",
+          "₹25": "vo_t4_obj_item_chocolate",
+          "₹22": "vo_t4_obj_item_plates",
+          "₹5": "vo_t4_obj_item_toffee"
+        }
+      },
+      "signals": {
+        "on_complete": []
+      }
+    },
+    {
+      "id": "T5",
+      "phase": "tutorial",
+      "eis": "enactive",
+      "type": "DEMO_COUNT",
+      "prompt_hi": "सबसे पहले परी को ₹14 की कॉपी लेनी है। पहले ₹10 का एक नोट रखते हैं।",
+      "audio": {
+        "prompt": "vo_t5_prompt",
+        "conclude": "vo_t5_conclude"
+      },
+      "data": {
+        "count": 1,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        }
+      },
+      "signals": {
+        "on_complete": []
+      }
+    },
+    {
+      "id": "T6",
+      "phase": "tutorial",
+      "eis": "enactive",
+      "type": "DEMO_COUNT",
+      "prompt_hi": "अब ₹1 के चार सिक्के रखते हैं।",
+      "audio": {
+        "prompt": "vo_t6_prompt",
+        "conclude": "vo_t6_conclude"
+      },
+      "data": {
+        "count": 4,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        }
+      },
+      "signals": {
+        "on_complete": []
+      }
+    },
+    {
+      "id": "G1",
+      "phase": "guided",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "इनमें से ₹10 का नोट कौन-सा है? ₹10 पर टैप कीजिए।",
+      "audio": {
+        "prompt": "vo_g1_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 10,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "emoji": "💵",
+              "word_hi": "दस रुपये का नोट",
+              "word_pl": "",
+              "g": "m",
+              "img": "obj_note10"
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "emoji": "🪙",
+              "word_hi": "एक रुपये का सिक्का",
+              "word_pl": "",
+              "g": "m",
+              "img": "obj_coin1"
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "G2",
+      "phase": "guided",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "इनमें से ₹1 का सिक्का कौन-सा है? ₹1 पर टैप कीजिए।",
+      "audio": {
+        "prompt": "vo_g2_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 1,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "emoji": "🪙",
+              "word_hi": "एक रुपये का सिक्का",
+              "word_pl": "",
+              "g": "m",
+              "img": "obj_coin1"
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "emoji": "🪙",
+              "word_hi": "दस रुपये का सिक्का",
+              "word_pl": "",
+              "g": "m",
+              "img": "obj_coin10"
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "PC_CHIPSQ",
+      "phase": "guided",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "अब परी को कौन-सी वस्तु ₹20 की मिलेगी?",
+      "audio": {
+        "prompt": "vo_pc_chipsq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 20,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_chips",
+              "emoji": "🍟",
+              "word_hi": "चिप्स",
+              "word_pl": "",
+              "g": "f",
+              "price": 20
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_chocolate",
+              "emoji": "🍫",
+              "word_hi": "चॉकलेट",
+              "word_pl": "",
+              "g": "f",
+              "price": 25
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_toffee",
+              "emoji": "🍬",
+              "word_hi": "टॉफ़ी",
+              "word_pl": "",
+              "g": "f",
+              "price": 5
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "GCHIPST",
+      "phase": "guided",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "अब परी को ₹20 के चिप्स लेने हैं। ₹10 के नोटों से ₹20 बनाइए।",
+      "audio": {
+        "prompt": "vo_gchipst_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 2,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "PC_CHOCQ",
+      "phase": "guided",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "अब कौन-सी वस्तु ₹25 की है?",
+      "audio": {
+        "prompt": "vo_pc_chocq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 25,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_chocolate",
+              "emoji": "🍫",
+              "word_hi": "चॉकलेट",
+              "word_pl": "",
+              "g": "f",
+              "price": 25
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_toffee",
+              "emoji": "🍬",
+              "word_hi": "टॉफ़ी",
+              "word_pl": "",
+              "g": "f",
+              "price": 5
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_copy",
+              "emoji": "📓",
+              "word_hi": "कॉपी",
+              "word_pl": "",
+              "g": "f",
+              "price": 14
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "GCHOCT",
+      "phase": "guided",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "चॉकलेट की कीमत ₹25 है। ₹10 के सिक्कों से शुरू करो।",
+      "audio": {
+        "prompt": "vo_gchoct_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 2,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "दस रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "GCHOCO",
+      "phase": "guided",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "अभी कुल ₹20 हुए। ₹25 बनाने के लिए ₹1 के सिक्के जोड़ो।",
+      "audio": {
+        "prompt": "vo_gchoco_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 5,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "PC_PLATESQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "अब कौन-सी वस्तु ₹22 की है?",
+      "audio": {
+        "prompt": "vo_pc_platesq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 22,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_plates",
+              "emoji": "🍽",
+              "word_hi": "प्लेटों का पैकेट",
+              "word_pl": "",
+              "g": "f",
+              "price": 22
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_chips",
+              "emoji": "🍟",
+              "word_hi": "चिप्स",
+              "word_pl": "",
+              "g": "f",
+              "price": 20
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_copy",
+              "emoji": "📓",
+              "word_hi": "कॉपी",
+              "word_pl": "",
+              "g": "f",
+              "price": 14
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "PPLATEST",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "₹22 बनाइए।",
+      "audio": {
+        "prompt": "vo_pplatest_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 2,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "PPLATESO",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "₹22 बनाइए।",
+      "audio": {
+        "prompt": "vo_pplateso_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 2,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "PC_TOFFEEQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "अब कौन-सी वस्तु ₹5 की है?",
+      "audio": {
+        "prompt": "vo_pc_toffeeq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 5,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_toffee",
+              "emoji": "🍬",
+              "word_hi": "टॉफ़ी",
+              "word_pl": "",
+              "g": "f",
+              "price": 5
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_chocolate",
+              "emoji": "🍫",
+              "word_hi": "चॉकलेट",
+              "word_pl": "",
+              "g": "f",
+              "price": 25
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_plates",
+              "emoji": "🍽",
+              "word_hi": "प्लेटों का पैकेट",
+              "word_pl": "",
+              "g": "f",
+              "price": 22
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "PTOFFEEO",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "₹5 बनाइए।",
+      "audio": {
+        "prompt": "vo_ptoffeeo_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 5,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M1PCQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹17 है?",
+      "audio": {
+        "prompt": "vo_m1pcq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 17,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_juice",
+              "emoji": "🧃",
+              "word_hi": "जूस",
+              "word_pl": "",
+              "g": "f",
+              "price": 17
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_water",
+              "emoji": "🧴",
+              "word_hi": "पानी की बोतलें",
+              "word_pl": "",
+              "g": "f",
+              "price": 50
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_cake",
+              "emoji": "🍰",
+              "word_hi": "केक",
+              "word_pl": "",
+              "g": "f",
+              "price": 34
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "M1T",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "जूस के लिए ₹17 बनाइए।",
+      "audio": {
+        "prompt": "vo_m1t_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 1,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M1O",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "जूस के लिए ₹17 बनाइए।",
+      "audio": {
+        "prompt": "vo_m1o_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 7,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M2PCQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹30 है?",
+      "audio": {
+        "prompt": "vo_m2pcq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 30,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_biscuit",
+              "emoji": "🍪",
+              "word_hi": "बिस्कुट",
+              "word_pl": "",
+              "g": "f",
+              "price": 30
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_napkin",
+              "emoji": "🧻",
+              "word_hi": "नैपकिन",
+              "word_pl": "",
+              "g": "f",
+              "price": 41
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_water",
+              "emoji": "🧴",
+              "word_hi": "पानी की बोतलें",
+              "word_pl": "",
+              "g": "f",
+              "price": 50
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "M2T",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "बिस्कुट के लिए ₹30 बनाइए।",
+      "audio": {
+        "prompt": "vo_m2t_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 3,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "दस रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M3PCQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹34 है?",
+      "audio": {
+        "prompt": "vo_m3pcq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 34,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_cake",
+              "emoji": "🍰",
+              "word_hi": "केक",
+              "word_pl": "",
+              "g": "f",
+              "price": 34
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_napkin",
+              "emoji": "🧻",
+              "word_hi": "नैपकिन",
+              "word_pl": "",
+              "g": "f",
+              "price": 41
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_water",
+              "emoji": "🧴",
+              "word_hi": "पानी की बोतलें",
+              "word_pl": "",
+              "g": "f",
+              "price": 50
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "M3T",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "केक के लिए ₹34 बनाइए।",
+      "audio": {
+        "prompt": "vo_m3t_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 3,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M3O",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "केक के लिए ₹34 बनाइए।",
+      "audio": {
+        "prompt": "vo_m3o_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 4,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M4PCQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹41 है?",
+      "audio": {
+        "prompt": "vo_m4pcq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 41,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_napkin",
+              "emoji": "🧻",
+              "word_hi": "नैपकिन",
+              "word_pl": "",
+              "g": "f",
+              "price": 41
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_water",
+              "emoji": "🧴",
+              "word_hi": "पानी की बोतलें",
+              "word_pl": "",
+              "g": "f",
+              "price": 50
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_biscuit",
+              "emoji": "🍪",
+              "word_hi": "बिस्कुट",
+              "word_pl": "",
+              "g": "f",
+              "price": 30
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "M4T",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "नैपकिन के लिए ₹41 बनाइए।",
+      "audio": {
+        "prompt": "vo_m4t_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 4,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "दस रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M4O",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "नैपकिन के लिए ₹41 बनाइए।",
+      "audio": {
+        "prompt": "vo_m4o_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 1,
+        "object": {
+          "emoji": "🪙",
+          "word_hi": "एक रुपये का सिक्का",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_coin1"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "M5PCQ",
+      "phase": "practice",
+      "eis": "symbolic",
+      "type": "PICK_SET_BY_NUMBER",
+      "prompt_hi": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹50 है?",
+      "audio": {
+        "prompt": "vo_m5pcq_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 50,
+        "options": [
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_water",
+              "emoji": "🧴",
+              "word_hi": "पानी की बोतलें",
+              "word_pl": "",
+              "g": "f",
+              "price": 50
+            },
+            "correct": true
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_napkin",
+              "emoji": "🧻",
+              "word_hi": "नैपकिन",
+              "word_pl": "",
+              "g": "f",
+              "price": 41
+            },
+            "correct": false
+          },
+          {
+            "count": 1,
+            "object": {
+              "img": "obj_item_biscuit",
+              "emoji": "🍪",
+              "word_hi": "बिस्कुट",
+              "word_pl": "",
+              "g": "f",
+              "price": 30
+            },
+            "correct": false
+          }
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "pick_set_first_try"
+        ]
+      }
+    },
+    {
+      "id": "M5T",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "MAKE_SET",
+      "prompt_hi": "पानी की बोतलें के लिए ₹50 बनाइए।",
+      "audio": {
+        "prompt": "vo_m5t_prompt",
+        "try_again": "vo_try_again"
+      },
+      "data": {
+        "target": 5,
+        "object": {
+          "emoji": "💵",
+          "word_hi": "दस रुपये का नोट",
+          "word_pl": "",
+          "g": "m",
+          "img": "obj_note10"
+        },
+        "numerals": [
+          "एक",
+          "दो",
+          "तीन",
+          "चार",
+          "पाँच",
+          "छह",
+          "सात",
+          "आठ",
+          "नौ"
+        ]
+      },
+      "signals": {
+        "on_complete": [
+          "make_set_correct"
+        ]
+      }
+    },
+    {
+      "id": "CEL",
+      "phase": "practice",
+      "eis": "enactive",
+      "type": "CELEBRATION",
+      "prompt_hi": "परी की पिकनिक की खरीदारी पूरी हुई!",
+      "audio": {
+        "prompt": "vo_well_done"
+      },
+      "data": {}
+    }
+  ],
+  "assets": {
+    "audio": {
+      "vo_g1_prompt": "assets/Audio/vo_g1_prompt.mp3",
+      "vo_g2_prompt": "assets/Audio/vo_g2_prompt.mp3",
+      "vo_gchipst_prompt": "assets/Audio/vo_gchipst_prompt.mp3",
+      "vo_gchoco_prompt": "assets/Audio/vo_gchoco_prompt.mp3",
+      "vo_gchoct_prompt": "assets/Audio/vo_gchoct_prompt.mp3",
+      "vo_landing": "assets/Audio/vo_landing.mp3",
+      "vo_m1o_prompt": "assets/Audio/vo_m1o_prompt.mp3",
+      "vo_m1pcq_prompt": "assets/Audio/vo_m1pcq_prompt.mp3",
+      "vo_m1t_prompt": "assets/Audio/vo_m1t_prompt.mp3",
+      "vo_m2pcq_prompt": "assets/Audio/vo_m2pcq_prompt.mp3",
+      "vo_m2t_prompt": "assets/Audio/vo_m2t_prompt.mp3",
+      "vo_m3o_prompt": "assets/Audio/vo_m3o_prompt.mp3",
+      "vo_m3pcq_prompt": "assets/Audio/vo_m3pcq_prompt.mp3",
+      "vo_m3t_prompt": "assets/Audio/vo_m3t_prompt.mp3",
+      "vo_m4o_prompt": "assets/Audio/vo_m4o_prompt.mp3",
+      "vo_m4pcq_prompt": "assets/Audio/vo_m4pcq_prompt.mp3",
+      "vo_m4t_prompt": "assets/Audio/vo_m4t_prompt.mp3",
+      "vo_m5pcq_prompt": "assets/Audio/vo_m5pcq_prompt.mp3",
+      "vo_m5t_prompt": "assets/Audio/vo_m5t_prompt.mp3",
+      "vo_num_1": "assets/Audio/vo_num_1.mp3",
+      "vo_num_2": "assets/Audio/vo_num_2.mp3",
+      "vo_num_3": "assets/Audio/vo_num_3.mp3",
+      "vo_num_4": "assets/Audio/vo_num_4.mp3",
+      "vo_num_5": "assets/Audio/vo_num_5.mp3",
+      "vo_num_6": "assets/Audio/vo_num_6.mp3",
+      "vo_num_7": "assets/Audio/vo_num_7.mp3",
+      "vo_num_8": "assets/Audio/vo_num_8.mp3",
+      "vo_num_9": "assets/Audio/vo_num_9.mp3",
+      "vo_pc_chipsq_prompt": "assets/Audio/vo_pc_chipsq_prompt.mp3",
+      "vo_pc_chocq_prompt": "assets/Audio/vo_pc_chocq_prompt.mp3",
+      "vo_pc_platesq_prompt": "assets/Audio/vo_pc_platesq_prompt.mp3",
+      "vo_pc_toffeeq_prompt": "assets/Audio/vo_pc_toffeeq_prompt.mp3",
+      "vo_pplateso_prompt": "assets/Audio/vo_pplateso_prompt.mp3",
+      "vo_pplatest_prompt": "assets/Audio/vo_pplatest_prompt.mp3",
+      "vo_pt_guided": "assets/Audio/vo_pt_guided.mp3",
+      "vo_pt_practice": "assets/Audio/vo_pt_practice.mp3",
+      "vo_pt_tutorial": "assets/Audio/vo_pt_tutorial.mp3",
+      "vo_ptoffeeo_prompt": "assets/Audio/vo_ptoffeeo_prompt.mp3",
+      "vo_t1_conclude": "assets/Audio/vo_t1_conclude.mp3",
+      "vo_t1_prompt": "assets/Audio/vo_t1_prompt.mp3",
+      "vo_t2_conclude": "assets/Audio/vo_t2_conclude.mp3",
+      "vo_t2_prompt": "assets/Audio/vo_t2_prompt.mp3",
+      "vo_t3_conclude": "assets/Audio/vo_t3_conclude.mp3",
+      "vo_t3_prompt": "assets/Audio/vo_t3_prompt.mp3",
+      "vo_t4_prompt": "assets/Audio/vo_t4_prompt.mp3",
+      "vo_t5_conclude": "assets/Audio/vo_t5_conclude.mp3",
+      "vo_t5_prompt": "assets/Audio/vo_t5_prompt.mp3",
+      "vo_t6_conclude": "assets/Audio/vo_t6_conclude.mp3",
+      "vo_t6_prompt": "assets/Audio/vo_t6_prompt.mp3",
+      "vo_total_1": "assets/Audio/vo_total_1.mp3",
+      "vo_total_2": "assets/Audio/vo_total_2.mp3",
+      "vo_total_3": "assets/Audio/vo_total_3.mp3",
+      "vo_total_4": "assets/Audio/vo_total_4.mp3",
+      "vo_total_5": "assets/Audio/vo_total_5.mp3",
+      "vo_total_6": "assets/Audio/vo_total_6.mp3",
+      "vo_total_7": "assets/Audio/vo_total_7.mp3",
+      "vo_total_8": "assets/Audio/vo_total_8.mp3",
+      "vo_total_9": "assets/Audio/vo_total_9.mp3",
+      "vo_try_again": "assets/Audio/vo_try_again.mp3",
+      "vo_well_done": "assets/Audio/vo_well_done.mp3"
+    },
+    "audio_text": {
+      "vo_g1_prompt": "इनमें से ₹10 का नोट कौन-सा है? ₹10 पर टैप कीजिए।",
+      "vo_g2_prompt": "इनमें से ₹1 का सिक्का कौन-सा है? ₹1 पर टैप कीजिए।",
+      "vo_gchipst_prompt": "अब परी को ₹20 के चिप्स लेने हैं। ₹10 के नोटों से ₹20 बनाइए।",
+      "vo_gchoco_prompt": "अभी कुल ₹20 हुए। ₹25 बनाने के लिए ₹1 के सिक्के जोड़ो।",
+      "vo_gchoct_prompt": "चॉकलेट की कीमत ₹25 है। ₹10 के सिक्कों से शुरू करो।",
+      "vo_landing": "परी के स्कूल में पिकनिक होने वाली है। उसे पिकनिक के लिए कुछ सामान खरीदना है। चलिए, उसकी मदद करते हैं!",
+      "vo_m1o_prompt": "जूस के लिए ₹17 बनाइए।",
+      "vo_m1pcq_prompt": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹17 है?",
+      "vo_m1t_prompt": "जूस के लिए ₹17 बनाइए।",
+      "vo_m2pcq_prompt": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹30 है?",
+      "vo_m2t_prompt": "बिस्कुट के लिए ₹30 बनाइए।",
+      "vo_m3o_prompt": "केक के लिए ₹34 बनाइए।",
+      "vo_m3pcq_prompt": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹34 है?",
+      "vo_m3t_prompt": "केक के लिए ₹34 बनाइए।",
+      "vo_m4o_prompt": "नैपकिन के लिए ₹41 बनाइए।",
+      "vo_m4pcq_prompt": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹41 है?",
+      "vo_m4t_prompt": "नैपकिन के लिए ₹41 बनाइए।",
+      "vo_m5pcq_prompt": "सूची की अगली वस्तु कौन-सी है, जिसकी कीमत ₹50 है?",
+      "vo_m5t_prompt": "पानी की बोतलें के लिए ₹50 बनाइए।",
+      "vo_num_1": "एक",
+      "vo_num_2": "दो",
+      "vo_num_3": "तीन",
+      "vo_num_4": "चार",
+      "vo_num_5": "पाँच",
+      "vo_num_6": "छह",
+      "vo_num_7": "सात",
+      "vo_num_8": "आठ",
+      "vo_num_9": "नौ",
+      "vo_pc_chipsq_prompt": "अब परी को कौन-सी वस्तु ₹20 की मिलेगी?",
+      "vo_pc_chocq_prompt": "अब कौन-सी वस्तु ₹25 की है?",
+      "vo_pc_platesq_prompt": "अब कौन-सी वस्तु ₹22 की है?",
+      "vo_pc_toffeeq_prompt": "अब कौन-सी वस्तु ₹5 की है?",
+      "vo_pplateso_prompt": "₹22 बनाइए।",
+      "vo_pplatest_prompt": "₹22 बनाइए।",
+      "vo_pt_guided": "बहुत बढ़िया! अब हम साथ मिलकर शुरू करते हैं। चलिए, साथ में करें!",
+      "vo_pt_practice": "वाह! अब आपकी बारी।",
+      "vo_pt_tutorial": "ध्यान से देखिए और मेरे साथ जानिए। चलिए, शुरू करें!",
+      "vo_ptoffeeo_prompt": "₹5 बनाइए।",
+      "vo_t1_conclude": "यह है ₹10 का नोट!",
+      "vo_t1_prompt": "बाजार जाने से पहले, आइए पहचानते हैं कि ₹10 और ₹1 कैसे दिखते हैं।",
+      "vo_t2_conclude": "यह है ₹10 का सिक्का!",
+      "vo_t2_prompt": "यह वाला सिक्का भी ₹10 का है।",
+      "vo_t3_conclude": "यह है ₹1 का सिक्का! अब परी के साथ बाजार चलते हैं।",
+      "vo_t3_prompt": "और यह छोटा सिक्का ₹1 का है।",
+      "vo_t4_prompt": "परी अपनी खरीदारी की सूची लेकर बाजार पहुँच गई है। हर कीमत सुनिए।",
+      "vo_t5_conclude": "अभी कुल ₹10 हुए।",
+      "vo_t5_prompt": "सबसे पहले परी को ₹14 की कॉपी लेनी है। पहले ₹10 का एक नोट रखते हैं।",
+      "vo_t6_conclude": "अब कुल ₹14 हुए! ₹10 जमा ₹1 जमा ₹1 जमा ₹1 जमा ₹1 बराबर ₹14।",
+      "vo_t6_prompt": "अब ₹1 के चार सिक्के रखते हैं।",
+      "vo_total_1": "एक",
+      "vo_total_2": "दो",
+      "vo_total_3": "तीन",
+      "vo_total_4": "चार",
+      "vo_total_5": "पाँच",
+      "vo_total_6": "छह",
+      "vo_total_7": "सात",
+      "vo_total_8": "आठ",
+      "vo_total_9": "नौ",
+      "vo_try_again": "फिर से कोशिश करो।",
+      "vo_well_done": "शाबाश! आपने ₹10 और ₹1 का उपयोग करके सभी धनराशियाँ बनाईं। परी की पिकनिक की खरीदारी पूरी हुई!"
+    },
+    "image": {
+      "obj_note10": "assets/Images/obj_note10.png",
+      "obj_coin10": "assets/Images/obj_coin10.png",
+      "obj_coin1": "assets/Images/obj_coin1.png",
+      "obj_item_copy": "assets/Images/obj_item_copy.png",
+      "obj_item_chips": "assets/Images/obj_item_chips.png",
+      "obj_item_chocolate": "assets/Images/obj_item_chocolate.png",
+      "obj_item_plates": "assets/Images/obj_item_plates.png",
+      "obj_item_toffee": "assets/Images/obj_item_toffee.png",
+      "obj_item_juice": "assets/Images/obj_item_juice.png",
+      "obj_item_biscuit": "assets/Images/obj_item_biscuit.png",
+      "obj_item_cake": "assets/Images/obj_item_cake.png",
+      "obj_item_napkin": "assets/Images/obj_item_napkin.png",
+      "obj_item_water": "assets/Images/obj_item_water.png"
+    }
+  }
+}
