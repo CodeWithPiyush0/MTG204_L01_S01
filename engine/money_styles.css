@@ -214,3 +214,15 @@
 .mn-piece.mn-c1.st-glow img{width:146.7%;height:146.7%;}
 .mn-piece.mn-c10.st-glow img{width:141%;height:141%;}
 .mn-piece.mn-note.st-glow img{width:110.2%;height:122.7%;}
+
+/* team landing scene: the card takes the painting's own 16:9-ish shape so nothing is cropped; the
+   start button straddles the bottom edge (the SME's landing mockup); the painted title replaces the
+   engine's text title, which is kept for screen readers only. */
+.sg-card.sg-scene{width:1040px;height:574px;background-size:cover;background-position:center;background-repeat:no-repeat;
+  border:8px solid #fff;border-radius:40px;box-shadow:0 18px 40px rgba(0,47,118,.25);}
+.sg-card.sg-scene .sg-content{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0;padding:0;}
+.start-gate .sg-card.sg-scene .sg-btn{bottom:-40px;}
+/* market scene (p7): an opaque painting, framed like a card rather than floated like a cut-out */
+.mn-scene-img.is-scene{height:340px;border-radius:26px;border:6px solid #fff;box-shadow:0 12px 26px rgba(11,61,140,.16);filter:none;}
+/* dev navigator: room for the content labels */
+.dev-nav-sel{max-width:330px;}

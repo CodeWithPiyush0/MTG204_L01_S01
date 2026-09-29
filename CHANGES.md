@@ -145,3 +145,14 @@ Deck page refs = the deck's slide number (S#) and the page label printed on it (
 - **The deck's S22 dev note** (red-in-tray over rule, idle VO) is superseded by D1 — noted so nobody implements both.
 - **S1's mockup** shows an arrow start button; the reference lesson's play button is used (baseline instruction).
 - **Production Tracker** not updated — no tracker file was provided.
+
+## Round 2b — team art + dev navigator (user, 2026-09-29)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| B1 | Use the new team images; crop the multi-object sheets, rename, use | ✅ | `scripts/import_team_art.py` splits the sheets on their transparent columns → obj_copy / chips / chocolate / plates / toffee / juice / apple / bananas / carrots / tomatoes / grapes / oranges (12, replacing the Gemini versions). Sources moved to `assets/Team_art_source/`. |
+| B2 | Landing scene (title painted in) | ✅ | `CARD.landing_scene` → the landing card IS the painting (1040×574, not cropped), start button on its bottom edge like the SME's p1 mockup; the engine title kept for screen readers only. |
+| B3 | Market scene (Pari with list at the market) | ✅ | p7 MONEY_SCENE now shows `scn_market` (framed card). `pari_list` is no longer used. |
+| B4 | `?dev=1` slide navigator as in HI02H11 | ✅ | Already present (the engine is HI02H11's): ⌂ landing · ⏮ · ◀ · dropdown · ▶ · ⏭ + live "n/14 · id". Added: each dropdown entry names its deck page + content (`dev_label`), e.g. «6. G2 · p9 · कॉपी ₹14 (teach)». Verified on the working build and on dist. `?slide=N` (0-based) also opens screen N directly. |
+- Not in the team set → still Gemini art: **obj_cucumbers, obj_mangoes** (flatter style than the new glossy items), Pari with basket / full basket (shop game).
+- Dist re-checked: 9.89 MB (item art capped at 400 px, scenes 1280 px — 2× their largest on-screen size); `_drive.py` 36/36 on build and dist. Receipt `17 pass · 3 FAIL · 7 warn` (same 3 deliberate FAILs as above).
+- `_review_shots/` + the round-2 review deck still show the round-2 art — re-capture if the SME needs the new pictures.

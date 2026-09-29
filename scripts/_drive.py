@@ -24,6 +24,7 @@ d.get("http://127.0.0.1:%d/%s" % (port, PAGE)); time.sleep(3)
 
 HELP = r"""
 window.__said = [];
+try{ stopAudio(); }catch(e){}   /* the real start button silences the landing greeting; do the same */
 window.play = function(src, cb){ window.__said.push(String(src||'').split('/').pop().split('.')[0]); setTimeout(()=>{ if(cb) cb(); }, 60); };
 document.getElementById('startGate').classList.add('hidden'); document.body.classList.remove('is-start');
 window.C = (el)=>{ const r = el.getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height/2]; };
@@ -54,7 +55,7 @@ idx = {s: i for i, s in enumerate(js("return CARD.slides.map(s=>s.id)"))}
 # ---------------- T2 identify ₹10: wrong then right
 mount(idx["T2"])
 cards = "document.querySelectorAll('.mn-card')"
-js(cards + "[1].click()"); w(0.5); shot("T2_wrong")
+js(cards + "[1].click()"); w(0.6); shot("T2_wrong")   # reveal is up from 0.38 s until 0.5 s after the (stubbed, 60 ms) VO
 check("T2 wrong -> reveal shown + card red", js("return document.querySelector('.mn-reveal').classList.contains('show') && " + cards + "[1].classList.contains('mn-bad')"))
 check("T2 wrong VO", "vo_t2_wrong" in st()["said"], st())
 w(1.2)

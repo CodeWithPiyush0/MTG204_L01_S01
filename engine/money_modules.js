@@ -55,6 +55,34 @@
     if(!ok && tries < 400) setTimeout(()=> regGate(tries + 1), 25);
   })(0), 0);
 
+  /* LANDING SCENE: the team's painted landing (title painted into the art) becomes the landing
+     card itself — CARD.landing_scene = {img}. The engine's title stays in the DOM for screen readers
+     but is hidden visually (it is already in the picture). Deferred for the same TDZ reason as above. */
+  setTimeout(()=> (function applyScene(tries){
+    try {
+      const sc = CARD && CARD.landing_scene;
+      const c = document.querySelector("#startGate .sg-card");
+      if(!sc || !c){ if(tries < 200 && !c) setTimeout(()=> applyScene(tries + 1), 25); return; }
+      const ext = (CARD.assets && CARD.assets.img_ext) || "png";
+      c.classList.add("sg-scene");
+      c.style.backgroundImage = 'url("assets/Images/' + sc.img + "." + ext + '")';
+    } catch(e){ if(tries < 200) setTimeout(()=> applyScene(tries + 1), 25); }
+  })(0), 0);
+
+  /* DEV NAV LABELS (?dev=1 / ?nav=1 only). The engine's navigator lists "6. G2 · MONEY_BUILD"; a card
+     slide may carry `dev_label` (deck page + content) and the dropdown shows that instead, so a reviewer
+     can jump straight to "p9 · कॉपी ₹14" without knowing the ids. Waits for the bar to exist. */
+  (function relabelDev(tries){
+    const sel = document.querySelector("#devNav .dev-nav-sel");
+    if(!sel){ if(tries < 400) setTimeout(()=> relabelDev(tries + 1), 50); return; }
+    try {
+      [...sel.options].forEach((o, i)=>{
+        const s = CARD.slides[i];
+        if(s && s.dev_label) o.textContent = (i + 1) + ". " + s.id + " · " + s.dev_label;
+      });
+    } catch(e){}
+  })(0);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -335,7 +363,7 @@
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
-      const root = el("div", "mn-scene", '<img class="mn-scene-img mn-pop" src="' + img(d.img) + '" alt="">');
+      const root = el("div", "mn-scene", '<img class="mn-scene-img mn-pop' + (d.scene ? " is-scene" : "") + '" src="' + img(d.img) + '" alt="">');
       host.appendChild(root);
       state.replayAudio = ()=> say(A(slide, "prompt"));
       say(A(slide, "prompt"), ()=> setNavActive(true));

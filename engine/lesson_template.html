@@ -3973,6 +3973,18 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .mn-piece.mn-c10.st-glow img{width:141%;height:141%;}
 .mn-piece.mn-note.st-glow img{width:110.2%;height:122.7%;}
 
+/* team landing scene: the card takes the painting's own 16:9-ish shape so nothing is cropped; the
+   start button straddles the bottom edge (the SME's landing mockup); the painted title replaces the
+   engine's text title, which is kept for screen readers only. */
+.sg-card.sg-scene{width:1040px;height:574px;background-size:cover;background-position:center;background-repeat:no-repeat;
+  border:8px solid #fff;border-radius:40px;box-shadow:0 18px 40px rgba(0,47,118,.25);}
+.sg-card.sg-scene .sg-content{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0;padding:0;}
+.start-gate .sg-card.sg-scene .sg-btn{bottom:-40px;}
+/* market scene (p7): an opaque painting, framed like a card rather than floated like a cut-out */
+.mn-scene-img.is-scene{height:340px;border-radius:26px;border:6px solid #fff;box-shadow:0 12px 26px rgba(11,61,140,.16);filter:none;}
+/* dev navigator: room for the content labels */
+.dev-nav-sel{max-width:330px;}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/pic_kaam.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/pic_naak.png"></head>
@@ -15127,6 +15139,34 @@ if(document.fonts && document.fonts.load){
     if(!ok && tries < 400) setTimeout(()=> regGate(tries + 1), 25);
   })(0), 0);
 
+  /* LANDING SCENE: the team's painted landing (title painted into the art) becomes the landing
+     card itself — CARD.landing_scene = {img}. The engine's title stays in the DOM for screen readers
+     but is hidden visually (it is already in the picture). Deferred for the same TDZ reason as above. */
+  setTimeout(()=> (function applyScene(tries){
+    try {
+      const sc = CARD && CARD.landing_scene;
+      const c = document.querySelector("#startGate .sg-card");
+      if(!sc || !c){ if(tries < 200 && !c) setTimeout(()=> applyScene(tries + 1), 25); return; }
+      const ext = (CARD.assets && CARD.assets.img_ext) || "png";
+      c.classList.add("sg-scene");
+      c.style.backgroundImage = 'url("assets/Images/' + sc.img + "." + ext + '")';
+    } catch(e){ if(tries < 200) setTimeout(()=> applyScene(tries + 1), 25); }
+  })(0), 0);
+
+  /* DEV NAV LABELS (?dev=1 / ?nav=1 only). The engine's navigator lists "6. G2 · MONEY_BUILD"; a card
+     slide may carry `dev_label` (deck page + content) and the dropdown shows that instead, so a reviewer
+     can jump straight to "p9 · कॉपी ₹14" without knowing the ids. Waits for the bar to exist. */
+  (function relabelDev(tries){
+    const sel = document.querySelector("#devNav .dev-nav-sel");
+    if(!sel){ if(tries < 400) setTimeout(()=> relabelDev(tries + 1), 50); return; }
+    try {
+      [...sel.options].forEach((o, i)=>{
+        const s = CARD.slides[i];
+        if(s && s.dev_label) o.textContent = (i + 1) + ". " + s.id + " · " + s.dev_label;
+      });
+    } catch(e){}
+  })(0);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -15407,7 +15447,7 @@ if(document.fonts && document.fonts.load){
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
-      const root = el("div", "mn-scene", '<img class="mn-scene-img mn-pop" src="' + img(d.img) + '" alt="">');
+      const root = el("div", "mn-scene", '<img class="mn-scene-img mn-pop' + (d.scene ? " is-scene" : "") + '" src="' + img(d.img) + '" alt="">');
       host.appendChild(root);
       state.replayAudio = ()=> say(A(slide, "prompt"));
       say(A(slide, "prompt"), ()=> setNavActive(true));

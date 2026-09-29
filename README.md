@@ -21,11 +21,18 @@ juice ₹17 (हो गया) → list complete 5/5 → *gate* → mastery shop
 | `engine/lesson_template.html` | this game's engine copy (the HI02H11 engine + injected money modules) |
 | `engine/money_modules.js`, `money_styles.css`, `inject_money.py` | the money module set and its injector |
 | `assets/Currency/` | the team's currency set (source; copied into `assets/Images/` unchanged) |
+| `assets/Team_art_source/` | the team's item sheets + scenes (source; `scripts/import_team_art.py` crops them into `assets/Images/`) |
 | `scripts/make_currency.py`, `gen_money_art.py` | currency copy + coin backs; Pari / item art (Gemini) |
 | `scripts/make_dist.py` | builds `dist/` |
 | `scripts/_drive.py`, `_shots.py`, `_gates.py` | dev checks: mechanics driver, screenshots, gate test |
 | `_review_shots/`, `MTG2A04_L01_S01_round2_build_review.pptx` | page-by-page review deck for the SME |
 | `_draft_original/` | the SME's first draft, untouched |
+
+## Testing a screen quickly
+- **`?dev=1`** (or `?nav=1`) — a navigator bottom-right: ⌂ landing · ⏮ first · ◀ prev · dropdown of every
+  screen (deck page + content) · ▶ next · ⏭ last. Works locally and on the deployed URL; children never see it.
+- **`?slide=N`** — skips the landing and opens screen N directly. **0-based**: `?slide=0` is the first
+  screen, `?slide=12` the shop game (combine: `?slide=12&dev=1`).
 
 ## Rebuild
 ```bash

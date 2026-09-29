@@ -46,7 +46,12 @@ def main():
         if not os.path.isfile(p): continue
         stem, ext = os.path.splitext(f)
         if ext == ".png" and re.search(r'\b%s\b' % re.escape(stem), html):
-            Image.open(p).save(os.path.join(DIST, "assets", "Images", stem + ".webp"), "WEBP", quality=85, method=6)
+            im = Image.open(p)
+            # ship at 2x the largest size the game ever draws it: items <= 150 px, Pari <= 410 px,
+            # scenes <= 620 px wide on the 1333-px stage
+            cap = 1280 if stem.startswith("scn_") else (900 if stem.startswith("pari_") else 400)
+            if max(im.size) > cap: im.thumbnail((cap, cap), Image.LANCZOS)
+            im.save(os.path.join(DIST, "assets", "Images", stem + ".webp"), "WEBP", quality=85, method=6)
             n_img += 1
         elif ext == ".svg" and f in html:
             shutil.copy2(p, os.path.join(DIST, "assets", "Images", f))

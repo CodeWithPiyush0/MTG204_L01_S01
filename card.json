@@ -15,10 +15,8 @@
  "theme": "toybox",
  "skill_description_hi": "₹10 और ₹1 से 99 तक की राशि बनाता है।",
  "landing_audio": "vo_landing",
- "landing_hero": {
-  "kind": "image",
-  "src": "assets/Images/pari_list.png",
-  "title_first": true
+ "landing_scene": {
+  "img": "scn_landing"
  },
  "phase_distribution": {
   "tutorial": 4,
@@ -74,7 +72,8 @@
       ]
      }
     ]
-   }
+   },
+   "dev_label": "p2 · ₹10 और ₹1 पहचानें"
   },
   {
    "id": "T2",
@@ -110,7 +109,8 @@
     "correct_text": "शाबाश! यह दस रुपये का नोट है।",
     "wrong_text": "यह दस रुपये का नोट है।",
     "idle_pulse_ms": 5000
-   }
+   },
+   "dev_label": "p3–4 · ₹10 पर टैप"
   },
   {
    "id": "T3",
@@ -147,7 +147,8 @@
     ],
     "correct_text": "शाबाश! यह एक रुपये का सिक्का है।",
     "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"
-   }
+   },
+   "dev_label": "p5–6 · ₹1 पर टैप"
   },
   {
    "id": "T4",
@@ -159,8 +160,10 @@
     "prompt": "vo_t4_prompt"
    },
    "data": {
-    "img": "pari_list"
-   }
+    "img": "scn_market",
+    "scene": true
+   },
+   "dev_label": "p7 · बाज़ार"
   },
   {
    "id": "G1",
@@ -199,7 +202,8 @@
       "cue_ms": 3067
      }
     ]
-   }
+   },
+   "dev_label": "p8 · परी की सूची"
   },
   {
    "id": "G2",
@@ -258,7 +262,8 @@
       ]
      }
     ]
-   }
+   },
+   "dev_label": "p9 · कॉपी ₹14 (teach)"
   },
   {
    "id": "G3",
@@ -305,7 +310,8 @@
       ]
      }
     ]
-   }
+   },
+   "dev_label": "p11 · चिप्स ₹20 (teach)"
   },
   {
    "id": "G4",
@@ -362,7 +368,8 @@
     "eq_in_band": true,
     "no_engine_idle": true,
     "tag_fx": "pulse"
-   }
+   },
+   "dev_label": "p12 · चॉकलेट ₹25"
   },
   {
    "id": "P1",
@@ -422,7 +429,8 @@
     },
     "eq_in_band": true,
     "no_engine_idle": true
-   }
+   },
+   "dev_label": "p13 · प्लेटें ₹35"
   },
   {
    "id": "P2",
@@ -469,7 +477,8 @@
     },
     "eq_in_band": true,
     "no_engine_idle": true
-   }
+   },
+   "dev_label": "added · टॉफ़ी ₹5"
   },
   {
    "id": "P3",
@@ -548,7 +557,8 @@
      "16": "vo_p3_u16"
     },
     "tag_fx": "glow"
-   }
+   },
+   "dev_label": "p16 · जूस ₹17 (हो गया)"
   },
   {
    "id": "P4",
@@ -567,7 +577,8 @@
      "प्लेटें",
      "टॉफ़ी"
     ]
-   }
+   },
+   "dev_label": "p18 · खरीदारी पूरी"
   },
   {
    "id": "M1",
@@ -725,7 +736,8 @@
      "total": "कुल",
      "great": "बहुत बढ़िया खरीदारी!"
     }
-   }
+   },
+   "dev_label": "p17–21 · दुकान का खेल"
   },
   {
    "id": "CEL",
@@ -736,7 +748,8 @@
    "audio": {
     "prompt": "vo_cel_prompt"
    },
-   "data": {}
+   "data": {},
+   "dev_label": "celebration"
   }
  ],
  "assets": {
@@ -1225,7 +1238,8 @@
    "obj_tomatoes": "assets/Images/obj_tomatoes.png",
    "pari_basket": "assets/Images/pari_basket.png",
    "pari_basket_full": "assets/Images/pari_basket_full.png",
-   "pari_list": "assets/Images/pari_list.png"
+   "scn_landing": "assets/Images/scn_landing.png",
+   "scn_market": "assets/Images/scn_market.png"
   },
   "audio_ext": "ogg",
   "img_ext": "png"

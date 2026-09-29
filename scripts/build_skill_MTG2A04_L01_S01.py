@@ -92,7 +92,7 @@ def s_market():
     return {"id": "T4", "phase": "tutorial", "eis": "iconic", "type": "MONEY_SCENE",
             "prompt_hi": "अब परी के साथ बाज़ार चलिए।",
             "audio": {"prompt": vo("vo_t4_prompt", "परी अपनी खरीदारी की सूची लेकर बाज़ार पहुँच गई है। आइए देखें, उसे क्या-क्या खरीदना है।")},
-            "data": {"img": "pari_list"}}
+            "data": {"img": "scn_market", "scene": True}}
 
 LIST = [("कॉपी", 14), ("चिप्स", 20), ("चॉकलेट", 25), ("प्लेटों का पैकेट", 35), ("टॉफ़ी", 5)]
 LIST_VO_SHOWN = "परी को कॉपी, चिप्स, चॉकलेट, प्लेटें और टॉफ़ी खरीदनी हैं। चलो, ₹10 और ₹1 से हर चीज़ की राशि बनाते हैं।"
@@ -309,6 +309,7 @@ def guards(slides, src):
         elif isinstance(o, list):
             for v in o: walk(v)
     walk(slides)
+    need.add("scn_landing")
     need.update(k + s for k in ("cur_note10", "cur_coin10", "cur_coin1") for s in ("", "_glow", "_lock"))
     miss = [k for k in sorted(need) if not os.path.isfile(os.path.join(IMG, k + ".png"))]
     if miss: sys.exit("X  missing art: %s" % miss)
@@ -328,6 +329,11 @@ def main():
     src = open(ENGINE, encoding="utf-8").read()
     slides = [s_show(), s_pick10(), s_pick1(), s_market(), s_list(), s_copy(), s_chips(), s_choc(),
               s_plates(), s_toffee(), s_juice(), s_done(), s_shop(), s_cel()]
+    DEV = {"T1": "p2 · ₹10 और ₹1 पहचानें", "T2": "p3–4 · ₹10 पर टैप", "T3": "p5–6 · ₹1 पर टैप", "T4": "p7 · बाज़ार",
+           "G1": "p8 · परी की सूची", "G2": "p9 · कॉपी ₹14 (teach)", "G3": "p11 · चिप्स ₹20 (teach)",
+           "G4": "p12 · चॉकलेट ₹25", "P1": "p13 · प्लेटें ₹35", "P2": "added · टॉफ़ी ₹5", "P3": "p16 · जूस ₹17 (हो गया)",
+           "P4": "p18 · खरीदारी पूरी", "M1": "p17–21 · दुकान का खेल", "CEL": "celebration"}
+    for s in slides: s["dev_label"] = DEV[s["id"]]
     ver, imgs = guards(slides, src)
     gone = prune_stale()
 
@@ -349,7 +355,7 @@ def main():
         "subtitle_hi": "", "theme": "toybox",
         "skill_description_hi": "₹10 और ₹1 से 99 तक की राशि बनाता है।",
         "landing_audio": LANDING,
-        "landing_hero": {"kind": "image", "src": "assets/Images/pari_list.png", "title_first": True},
+        "landing_scene": {"img": "scn_landing"},
         "phase_distribution": dist,
         "mastery_gate": MASTERY_GATE,
         "gate": {"img": "assets/UI/swifty_gate.webp", "talk_at_ms": 3820},
@@ -364,7 +370,7 @@ def main():
     payload = json.dumps(card, ensure_ascii=False, indent=1)
     if not CARD_TAG.search(src): sys.exit("X  cardData tag not found")
     html = CARD_TAG.sub(lambda m: m.group(1) + payload + m.group(3), src, count=1)
-    first = ["pari_list", "cur_note10", "cur_coin1"]
+    first = ["scn_landing", "cur_note10", "cur_coin1"]
     links = "".join('<link rel="preload" as="image" fetchpriority="high" href="assets/Images/%s.png">' % k for k in first)
     html, n_pre = re.subn(r'(?:<link rel="preload" as="image"[^>]*>)+', links, html, count=1)
     html = re.sub(r"<title>.*?</title>", "<title>SwiftPAL · %s · परी की पिकनिक की खरीदारी</title>" % CODE, html, count=1)

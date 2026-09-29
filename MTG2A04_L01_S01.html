@@ -3973,9 +3973,21 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .mn-piece.mn-c10.st-glow img{width:141%;height:141%;}
 .mn-piece.mn-note.st-glow img{width:110.2%;height:122.7%;}
 
+/* team landing scene: the card takes the painting's own 16:9-ish shape so nothing is cropped; the
+   start button straddles the bottom edge (the SME's landing mockup); the painted title replaces the
+   engine's text title, which is kept for screen readers only. */
+.sg-card.sg-scene{width:1040px;height:574px;background-size:cover;background-position:center;background-repeat:no-repeat;
+  border:8px solid #fff;border-radius:40px;box-shadow:0 18px 40px rgba(0,47,118,.25);}
+.sg-card.sg-scene .sg-content{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);margin:0;padding:0;}
+.start-gate .sg-card.sg-scene .sg-btn{bottom:-40px;}
+/* market scene (p7): an opaque painting, framed like a card rather than floated like a cut-out */
+.mn-scene-img.is-scene{height:340px;border-radius:26px;border:6px solid #fff;box-shadow:0 12px 26px rgba(11,61,140,.16);filter:none;}
+/* dev navigator: room for the content labels */
+.dev-nav-sel{max-width:330px;}
+
 /* == MONEY STYLES :: END == */
 </style>
-<link rel="preload" as="image" fetchpriority="high" href="assets/Images/pari_list.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
+<link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
 <body class="is-start">
 <div class="start-bg" aria-hidden="true"></div>
 <div class="sg-glow" aria-hidden="true"></div>
@@ -4103,10 +4115,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
  "theme": "toybox",
  "skill_description_hi": "₹10 और ₹1 से 99 तक की राशि बनाता है।",
  "landing_audio": "vo_landing",
- "landing_hero": {
-  "kind": "image",
-  "src": "assets/Images/pari_list.png",
-  "title_first": true
+ "landing_scene": {
+  "img": "scn_landing"
  },
  "phase_distribution": {
   "tutorial": 4,
@@ -4162,7 +4172,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       ]
      }
     ]
-   }
+   },
+   "dev_label": "p2 · ₹10 और ₹1 पहचानें"
   },
   {
    "id": "T2",
@@ -4198,7 +4209,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "correct_text": "शाबाश! यह दस रुपये का नोट है।",
     "wrong_text": "यह दस रुपये का नोट है।",
     "idle_pulse_ms": 5000
-   }
+   },
+   "dev_label": "p3–4 · ₹10 पर टैप"
   },
   {
    "id": "T3",
@@ -4235,7 +4247,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     ],
     "correct_text": "शाबाश! यह एक रुपये का सिक्का है।",
     "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"
-   }
+   },
+   "dev_label": "p5–6 · ₹1 पर टैप"
   },
   {
    "id": "T4",
@@ -4247,8 +4260,10 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "prompt": "vo_t4_prompt"
    },
    "data": {
-    "img": "pari_list"
-   }
+    "img": "scn_market",
+    "scene": true
+   },
+   "dev_label": "p7 · बाज़ार"
   },
   {
    "id": "G1",
@@ -4287,7 +4302,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       "cue_ms": 3067
      }
     ]
-   }
+   },
+   "dev_label": "p8 · परी की सूची"
   },
   {
    "id": "G2",
@@ -4346,7 +4362,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       ]
      }
     ]
-   }
+   },
+   "dev_label": "p9 · कॉपी ₹14 (teach)"
   },
   {
    "id": "G3",
@@ -4393,7 +4410,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       ]
      }
     ]
-   }
+   },
+   "dev_label": "p11 · चिप्स ₹20 (teach)"
   },
   {
    "id": "G4",
@@ -4450,7 +4468,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "eq_in_band": true,
     "no_engine_idle": true,
     "tag_fx": "pulse"
-   }
+   },
+   "dev_label": "p12 · चॉकलेट ₹25"
   },
   {
    "id": "P1",
@@ -4510,7 +4529,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     },
     "eq_in_band": true,
     "no_engine_idle": true
-   }
+   },
+   "dev_label": "p13 · प्लेटें ₹35"
   },
   {
    "id": "P2",
@@ -4557,7 +4577,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     },
     "eq_in_band": true,
     "no_engine_idle": true
-   }
+   },
+   "dev_label": "added · टॉफ़ी ₹5"
   },
   {
    "id": "P3",
@@ -4636,7 +4657,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      "16": "vo_p3_u16"
     },
     "tag_fx": "glow"
-   }
+   },
+   "dev_label": "p16 · जूस ₹17 (हो गया)"
   },
   {
    "id": "P4",
@@ -4655,7 +4677,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      "प्लेटें",
      "टॉफ़ी"
     ]
-   }
+   },
+   "dev_label": "p18 · खरीदारी पूरी"
   },
   {
    "id": "M1",
@@ -4813,7 +4836,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      "total": "कुल",
      "great": "बहुत बढ़िया खरीदारी!"
     }
-   }
+   },
+   "dev_label": "p17–21 · दुकान का खेल"
   },
   {
    "id": "CEL",
@@ -4824,7 +4848,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "audio": {
     "prompt": "vo_cel_prompt"
    },
-   "data": {}
+   "data": {},
+   "dev_label": "celebration"
   }
  ],
  "assets": {
@@ -5313,7 +5338,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "obj_tomatoes": "assets/Images/obj_tomatoes.png",
    "pari_basket": "assets/Images/pari_basket.png",
    "pari_basket_full": "assets/Images/pari_basket_full.png",
-   "pari_list": "assets/Images/pari_list.png"
+   "scn_landing": "assets/Images/scn_landing.png",
+   "scn_market": "assets/Images/scn_market.png"
   },
   "audio_ext": "ogg",
   "img_ext": "png"
@@ -16357,6 +16383,34 @@ if(document.fonts && document.fonts.load){
     if(!ok && tries < 400) setTimeout(()=> regGate(tries + 1), 25);
   })(0), 0);
 
+  /* LANDING SCENE: the team's painted landing (title painted into the art) becomes the landing
+     card itself — CARD.landing_scene = {img}. The engine's title stays in the DOM for screen readers
+     but is hidden visually (it is already in the picture). Deferred for the same TDZ reason as above. */
+  setTimeout(()=> (function applyScene(tries){
+    try {
+      const sc = CARD && CARD.landing_scene;
+      const c = document.querySelector("#startGate .sg-card");
+      if(!sc || !c){ if(tries < 200 && !c) setTimeout(()=> applyScene(tries + 1), 25); return; }
+      const ext = (CARD.assets && CARD.assets.img_ext) || "png";
+      c.classList.add("sg-scene");
+      c.style.backgroundImage = 'url("assets/Images/' + sc.img + "." + ext + '")';
+    } catch(e){ if(tries < 200) setTimeout(()=> applyScene(tries + 1), 25); }
+  })(0), 0);
+
+  /* DEV NAV LABELS (?dev=1 / ?nav=1 only). The engine's navigator lists "6. G2 · MONEY_BUILD"; a card
+     slide may carry `dev_label` (deck page + content) and the dropdown shows that instead, so a reviewer
+     can jump straight to "p9 · कॉपी ₹14" without knowing the ids. Waits for the bar to exist. */
+  (function relabelDev(tries){
+    const sel = document.querySelector("#devNav .dev-nav-sel");
+    if(!sel){ if(tries < 400) setTimeout(()=> relabelDev(tries + 1), 50); return; }
+    try {
+      [...sel.options].forEach((o, i)=>{
+        const s = CARD.slides[i];
+        if(s && s.dev_label) o.textContent = (i + 1) + ". " + s.id + " · " + s.dev_label;
+      });
+    } catch(e){}
+  })(0);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -16637,7 +16691,7 @@ if(document.fonts && document.fonts.load){
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data;
-      const root = el("div", "mn-scene", '<img class="mn-scene-img mn-pop" src="' + img(d.img) + '" alt="">');
+      const root = el("div", "mn-scene", '<img class="mn-scene-img mn-pop' + (d.scene ? " is-scene" : "") + '" src="' + img(d.img) + '" alt="">');
       host.appendChild(root);
       state.replayAudio = ()=> say(A(slide, "prompt"));
       say(A(slide, "prompt"), ()=> setNavActive(true));
