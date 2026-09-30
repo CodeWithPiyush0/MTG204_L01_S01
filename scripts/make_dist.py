@@ -36,11 +36,13 @@ def main():
     SKIP.add("swifty_gate.webp")
     # round 2j: the celebration shows the team GIF (end_swiftee.gif, shipped unchanged); the stock
     # celebrating mascot is never shown, so its <img> starts on the GIF and the old file stays out
-    html = html.replace('class="end-mascot" src="assets/UI/sw_lg_celebrating_anim.webp"', 'class="end-mascot" src="assets/UI/end_swiftee.gif"')
-    SKIP.add("sw_lg_celebrating_anim.webp")
-    SKIP.add("Swiftee-end page gif.gif")          # the same GIF under its original name (source copy)
+    # round 2l: the celebration is the lip-synced sprite (cel_swiftee_sheet.webp); the hidden <img>
+    # starts on that sheet, so neither the stock mascot nor the round-2j GIF ships
+    html = html.replace('class="end-mascot" src="assets/UI/sw_lg_celebrating_anim.webp"', 'class="end-mascot" src="assets/UI/cel_talk.webp"')
+    SKIP.update({"sw_lg_celebrating_anim.webp", "Swiftee-end page gif.gif", "end_swiftee.gif", "cel_swiftee_sheet.webp"})
     ui = os.path.join(ROOT, "assets", "UI"); kept_ui = []
     for f in sorted(os.listdir(ui)):
+        if os.path.isdir(os.path.join(ui, f)): continue      # e.g. assets/UI/gif (source sheets)
         # Swiftie's head poses are chosen at runtime ("sw_head_" + expr + "_anim.webp"), so their
         # names never appear literally in the HTML - a literal-name prune dropped all of them.
         if (f in html or f.startswith("sw_head_")) and f not in SKIP:

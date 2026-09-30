@@ -343,6 +343,42 @@ def gate_spec():
             "talk": "assets/UI/gate_talk.webp", "rest": "assets/UI/gate_rest.webp",
             "peek_ms": ms, "hold_ms": 450}
 
+def cel_anim():
+    """round 2l: lip-sync track for the celebration VO + the sprite facts (scripts/make_cel_sprite.py).
+    talk = one char per 25 ms of vo_cel_prompt, '1' on a syllable beat (open mouth), '0' between them.
+    Measured off the recorded clip, so a re-record re-syncs on the next build."""
+    meta_p = os.path.join(ROOT, "scripts", "_cel_sprite.json")
+    clip = os.path.join(AUD, "vo_cel_prompt.ogg")
+    if not (os.path.isfile(meta_p) and os.path.isfile(clip)):
+        return None
+    meta = json.load(open(meta_p))
+    import array, math
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", clip, "-ac", "1", "-ar", "16000", "-f", "s16le", "-"],
+                         capture_output=True).stdout
+    a = array.array("h"); a.frombytes(raw[: len(raw) // 2 * 2])
+    step = 400                                                     # 25 ms at 16 kHz
+    rms = [math.sqrt(sum(x * x for x in a[i:i + step]) / step) for i in range(0, len(a) - step, step)]
+    mx = max(rms) or 1
+    # SYLLABLE beats, not just "voice on": the mouth is open where the clip is loud AND near its local
+    # peak (+-100 ms), so it opens on each syllable nucleus and closes in the dips between syllables.
+    W = 4
+    bits = ["1" if (r > 0.10 * mx and r >= 0.62 * max(rms[max(0, i - W):i + W + 1])) else "0"
+            for i, r in enumerate(rms)]
+    t = "".join(bits)
+    t = t.replace("101", "111").replace("101", "111")             # a 25 ms close inside a syllable = flicker
+    t = t.replace("010", "000")                                   # a lone 25 ms open = flicker
+    talk = t
+    sh = meta["sheets"]
+    return {"cols": meta["cols"], "fw": meta["fw"], "fh": meta["fh"], "step_ms": 25, "bits": talk,
+            "vo": "vo_cel_prompt",
+            # round 2m: the team's three sheets (scripts/make_cel_sprite.py), same frame size + alignment
+            "shabaash": {"src": sh["shabaash"]["src"], "pre": list(range(0, 6)),       # standing, mouth shut
+                         "word": list(range(6, 30)),                                    # the jump — «शाबाश!»
+                         "post": list(range(30, 36))},                                  # lands, mouth shut
+            "talk": {"src": sh["talk"]["src"], "open": sh["talk"]["open"]},            # per-syllable pick
+            "idle": {"src": sh["idle"]["src"],                                          # after the VO:
+                     "loop": [0, 1, 2, 3, 4] + list(range(24, 36))}}                    # mouth-shut frames only
+
 # ============================================================== main
 def main():
     src = open(ENGINE, encoding="utf-8").read()
@@ -379,7 +415,9 @@ def main():
         "phase_distribution": dist,
         "mastery_gate": MASTERY_GATE,
         "gate": gate_spec(),
-        "end_mascot": "assets/UI/end_swiftee.gif",   # round 2j: team GIF, used as supplied (background kept)
+        # round 2l: the jumping + speaking Swiftie, driven frame-by-frame from the VO (end_swiftee.gif,
+        # round 2j, is kept on disk but no longer shown)
+        "end_anim": cel_anim(),
         "scaffold_rules": {"max_attempts": 3, "hint_levels": 3},
         "signals_expected": ["slide_entered", "slide_completed", "money_pick_first_try", "money_build_done",
                              "answer_wrong", "phase_transition", "shop_item_bought", "mastery_score", "lesson_completed"],

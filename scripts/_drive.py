@@ -210,7 +210,7 @@ check("P1 three notes do not overlap the कुल chip", not ov); shot("P1_note
 
 # ---------------- celebration button = reference arrow-only pill, 22 px under a 358 px mascot
 mount(idx["CEL"]); w(1.2)
-eb = js("""const s=document.getElementById('stage').getBoundingClientRect().width/1333, b=document.getElementById('endBtn').getBoundingClientRect(), m=document.querySelector('#endScreen .end-mascot').getBoundingClientRect();
+eb = js("""const s=document.getElementById('stage').getBoundingClientRect().width/1333, b=document.getElementById('endBtn').getBoundingClientRect(), m=(document.getElementById('celSprite')||document.querySelector('#endScreen .end-mascot')).getBoundingClientRect();
   return [document.getElementById('endBtn').textContent, Math.round(b.width/s), Math.round(b.height/s), Math.round(m.height/s), Math.round((b.top-m.bottom)/s)]""")
 check("CEL button arrow-only 134x88, 22 px below a 358 px mascot", eb == ["", 134, 88, 358, 22], eb); shot("CEL")
 

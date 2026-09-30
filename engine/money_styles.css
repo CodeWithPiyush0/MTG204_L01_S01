@@ -368,3 +368,15 @@
 /* celebration: the team GIF at the reference mascot's height (358 px), so the arrow button below it
    lands exactly where it does in HI02H11_L02_S02 (134 x 88 arrow-only pill, 22 px below the mascot) */
 .end-screen .end-mascot.end-mascot-team{height:358px;width:auto;}
+
+/* round 2l: the celebration Swiftie sprite — same 358 px height as the reference mascot, so the arrow
+   below keeps the reference position (22 px under it) */
+.end-screen .cel-sprite{height:358px;background-repeat:no-repeat;background-size:600% 600%;z-index:2;
+  filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
+
+/* round 2m: the three-sheet celebration Swiftie. The LAYOUT box stays 358 px tall, so the arrow keeps
+   the reference position (22 px under it); the art inside is 420 px tall, anchored at the bottom, with
+   the jump's head-room rising above the box. */
+.end-screen .cel-sprite{position:relative;height:358px;width:300px;background:none;aspect-ratio:auto;animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
+.end-screen .cel-sprite .cel-art{position:absolute;left:50%;bottom:0;height:420px;transform:translateX(-50%);
+  background-repeat:no-repeat;background-size:600% 600%;filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));}

@@ -173,6 +173,115 @@
     sfxFile(b.id === "sgBtn" ? "sfx_play_button" : "sfx_next_button", null);
   }, true);
 
+  /* ============ CELEBRATION SWIFTIE, round 2l — lip-synced to the VO ============
+     The team's jumping + speaking Swiftie (36 frames) is a sprite sheet the page drives itself, because
+     a GIF runs on its own 4 s clock and cannot follow a 5.7 s line. The timeline comes from the VO:
+       before the voice      frame 21 (arms out, ready)
+       «शाबाश!» (1st word)    the jump, frames 22-32 (arms up, mouth open), stretched over that word
+       the pause after it     fist pump 33-35 (mouth closed)
+       the rest of the line   standing; every step the VO's loudness at THAT moment picks a mouth-open
+                              frame (loud) or a mouth-closed one (quiet) — so the mouth moves with the
+                              syllables and shuts on every pause
+       after the voice        two fist pumps, then a standing idle with a blink, mouth shut
+     The VO clock is the moment the engine's clip actually starts (isPlaying), not the mount. */
+  setTimeout(()=> (function wrapCel(tries){
+    const C = (typeof SlideModules !== "undefined") && SlideModules.CELEBRATION;
+    if(!C || !C.mount){ if(tries < 200) setTimeout(()=> wrapCel(tries + 1), 25); return; }
+    if(C.__celWrapped) return; C.__celWrapped = true;
+    const _mount = C.mount;
+    C.mount = function(host, slide){
+      const r = _mount.apply(this, arguments);
+      try { runCelSprite(); } catch(e){}
+      return r;
+    };
+  })(0), 0);
+  let _celGen = 0;
+  /* round 2m — THREE SHEETS, ONE CLOCK. The clock is the celebration VO itself (from the moment the
+     engine's clip is actually sounding):
+       [0, first sound)            «शाबाश» sheet 0-5   standing, mouth shut
+       first word «शाबाश!»        «शाबाश» sheet 6-29  the jump, mouth open — stretched to that word
+       the pause after it          «शाबाश» sheet 30-35 lands, mouth shut
+       rest of the line            talk sheet: the cursor walks the sheet forward (so the body keeps
+                                   moving naturally) but only ever lands on a frame whose mouth matches
+                                   the VO at that instant — open on each syllable, shut in every dip
+       after the VO                idle sheet, mouth-shut frames only, looping
+     All three sheets share frame size and alignment (make_cel_sprite.py), so switching never jumps. */
+  function runCelSprite(){
+    const A = CARD && CARD.end_anim;
+    const im = document.querySelector("#endScreen .end-mascot");
+    if(!A || !im || !A.bits || !A.shabaash) return;
+    const gen = ++_celGen;
+    let sp = document.getElementById("celSprite");
+    if(!sp){
+      sp = document.createElement("div"); sp.id = "celSprite"; sp.className = "cel-sprite";
+      sp.innerHTML = '<div class="cel-art"></div>';
+      im.parentNode.insertBefore(sp, im);
+    }
+    im.style.display = "none";
+    const art = sp.querySelector(".cel-art");
+    art.style.aspectRatio = A.fw + " / " + A.fh;
+    let curSrc = "";
+    const show = (sheet, i)=>{
+      if(sheet.src !== curSrc){ art.style.backgroundImage = 'url("' + sheet.src + '")'; curSrc = sheet.src; }
+      const c = i % A.cols, r = Math.floor(i / A.cols);
+      art.style.backgroundPosition = (c * 100 / (A.cols - 1)) + "% " + (r * 100 / (A.cols - 1)) + "%";
+      sp.dataset.sheet = sheet === A.shabaash ? "shabaash" : (sheet === A.idle ? "idle" : "talk");
+      sp.dataset.f = i;
+    };
+    const S = A.shabaash, T = A.talk, I = A.idle;
+    const OPEN = new Set(T.open);
+    show(S, S.pre[0]);
+    const bits = A.bits || "";
+    const step = A.step_ms || 25;
+    const loud = (t)=> bits.charAt(Math.floor(t / step)) === "1";
+    /* first word = first loud run, a 200 ms silence ends it */
+    const GAP = Math.round(200 / step);
+    let s0 = bits.indexOf("1"), e0 = s0, gap = 0;
+    for(let k = s0; k >= 0 && k < bits.length; k++){ if(bits[k] === "1"){ e0 = k; gap = 0; } else if(++gap >= GAP) break; }
+    const speechStart = Math.max(0, s0) * step, wordEnd = (e0 + 1) * step;
+    let ns = bits.indexOf("1", e0 + GAP); const nextStart = ns < 0 ? wordEnd : ns * step;
+    const lenMs = bits.length * step;
+    const seg = (list, t, a, b)=> list[Math.min(list.length - 1, Math.max(0, Math.floor((t - a) / Math.max(1, b - a) * list.length)))];
+    let t0 = 0, started = false, done = false, cursor = 0, curOpen = null, lastStep = 0;
+    const waitStart = performance.now();
+    const idle = ()=>{
+      let j = 0;
+      (function tick(){
+        if(gen !== _celGen || !sp.isConnected) return;
+        show(I, I.loop[j % I.loop.length]); j++;
+        setTimeout(tick, 110);
+      })();
+    };
+    (function frame(){
+      if(gen !== _celGen || !sp.isConnected || done) return;
+      const now = performance.now();
+      if(!started){
+        if(isPlaying){ started = true; t0 = now; }
+        else if(now - waitStart > 1800){ done = true; idle(); return; }     /* the VO never started */
+        else { requestAnimationFrame(frame); return; }
+      }
+      const t = now - t0;
+      if(!isPlaying || t > lenMs + 400){ done = true; idle(); return; }
+      if(t < speechStart) show(S, seg(S.pre, t, 0, speechStart));
+      else if(t < wordEnd) show(S, seg(S.word, t, speechStart, wordEnd));
+      else if(t < nextStart) show(S, seg(S.post, t, wordEnd, nextStart));
+      else {
+        const want = loud(t + 16);                     /* one paint ahead: the frame shows on the NEXT paint */
+        /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
+        if(want !== curOpen || now - lastStep > 80){
+          let k = 1;
+          while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
+          cursor = (cursor + k) % 36;
+          show(T, cursor); curOpen = want; lastStep = now;
+        }
+      }
+      requestAnimationFrame(frame);
+    })();
+  }
+  /* warm the sheet during the lesson, so the end screen never opens on an empty box */
+  setTimeout(()=>{ try { const A = CARD && CARD.end_anim; if(A && A.shabaash){
+    window.__celWarm = [A.shabaash.src, A.talk.src, A.idle.src].map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; }); } } catch(e){} }, 1500);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
