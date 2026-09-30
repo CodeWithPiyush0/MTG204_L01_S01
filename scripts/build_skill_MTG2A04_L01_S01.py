@@ -30,7 +30,8 @@ CARD_TAG = re.compile(r'(<script type="application/json" id="cardData">)(.*?)(</
 VER_RE = re.compile(r'ENGINE_VERSION\s*=\s*["\']([^"\']+)["\']')
 MODULES = ["MONEY_SHOW", "MONEY_PICK", "MONEY_SCENE", "MONEY_LIST", "MONEY_BUILD", "MONEY_DONE", "SHOP_GAME", "CELEBRATION"]
 COPY_AUDIO = ["vo_pt_tutorial", "vo_pt_guided", "vo_pt_practice", "sfx_celebrate", "sfx_correct", "sfx_wrong",
-              "sfx_tap", "sfx_pop", "sfx_fb_correct", "sfx_fb_incorrect"]
+              "sfx_tap", "sfx_pop", "sfx_fb_correct", "sfx_fb_incorrect",
+              "sfx_play_button", "sfx_next_button"]      # round 2k: the team's button sounds
 
 NUM = ("शून्य एक दो तीन चार पाँच छह सात आठ नौ दस ग्यारह बारह तेरह चौदह पंद्रह सोलह सत्रह अठारह उन्नीस "
        "बीस इक्कीस बाईस तेईस चौबीस पच्चीस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस तैंतीस चौंतीस "
@@ -181,7 +182,7 @@ def s_plates():
     return s_practice("P1", "practice", T, "obj_plates", ["n10", "c1"],
         vo("vo_p1_prompt", "परी को ₹35 का प्लेटों का पैकेट लेना है। ₹10 के नोट और ₹1 के सिक्कों से ₹35 बनाइए।"),
         vo("vo_p1_done", "शाबाश! तीन ₹10 के नोट और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹35। अब परी प्लेटों का पैकेट खरीद सकती है।"),
-        ladder("p1", T, False, range(30, 35), [5, 15, 25], ("note", "नोट")))
+        ladder("p1", T, False, range(30, 35), [5, 15, 25], ("note", "नोट")), tray_down=True)
 
 def s_toffee():   # D5 — added; the deck lists toffee but gives it no screen
     T = 5
@@ -213,8 +214,8 @@ SHOP = [   # round 2f (user): 6 items, one per stall panel, prices 14 / 25 / 35 
         ("oranges", "संतरे", "obj_oranges", 25, "कमाल! संतरे अब आपके हैं।"),
         ("tomatoes", "टमाटर", "obj_tomatoes", 35, "बहुत बढ़िया! टमाटर आपने खरीद लिए।"),
         ("grapes", "अंगूर", "obj_grapes", 42, "कमाल! अंगूर अब आपके हैं।"),
-        ("cucumbers", "खीरे", "obj_cucumbers", 60, "वाह! खीरे आपकी टोकरी में आ गए।"),
-        ("mangoes", "आम", "obj_mangoes", 65, "वाह! आम आपकी टोकरी में आ गए।")]
+        ("bananas", "केले", "obj_bananas", 60, "बहुत बढ़िया! केले आपने खरीद लिए।"),     # round 2k: replaces खीरे
+        ("carrots", "गाजर", "obj_carrots", 65, "वाह! गाजर आपकी टोकरी में आ गईं।")]      # round 2k: replaces आम
 
 def detail_spoken(n, c, o, T):
     parts = []
@@ -378,6 +379,7 @@ def main():
         "phase_distribution": dist,
         "mastery_gate": MASTERY_GATE,
         "gate": gate_spec(),
+        "end_mascot": "assets/UI/end_swiftee.gif",   # round 2j: team GIF, used as supplied (background kept)
         "scaffold_rules": {"max_attempts": 3, "hint_levels": 3},
         "signals_expected": ["slide_entered", "slide_completed", "money_pick_first_try", "money_build_done",
                              "answer_wrong", "phase_transition", "shop_item_bought", "mastery_score", "lesson_completed"],
@@ -398,6 +400,11 @@ def main():
         if f.endswith(".ogg"):
             h.update(f.encode()); h.update(open(os.path.join(AUD, f), "rb").read())
     html = html.replace("__AUDIO_V_STAMP__", h.hexdigest()[:12])
+    # round 2k: the celebration button exactly as HI02H11_L02_S02 ships it — arrow only (drawn by
+    # .end-btn::after), the Hindi label moved to aria-label
+    html, n_eb = re.subn(r'<button class="end-btn" id="endBtn">[^<]*</button>',
+                         '<button class="end-btn" id="endBtn" aria-label="आगे बढ़ें"></button>', html)
+    if n_eb != 1: sys.exit("X  end button markup not found")
     open(os.path.join(ROOT, CODE + ".html"), "w", encoding="utf-8").write(html)
     open(os.path.join(ROOT, "card.json"), "w", encoding="utf-8").write(payload + "\n")
 

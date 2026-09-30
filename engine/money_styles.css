@@ -350,6 +350,21 @@
 
 /* round 2i: transition title is WRITTEN in (left-to-right wipe — Devanagari-safe, no split clusters)
    when Swiftie starts to talk; hidden during her peek */
-@keyframes pgWrite{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% 0 -20% 0)}}
+/* round 2k: the wipe's box is widened on BOTH sides (-12%) so the first letter's stroke/outline, which
+   sits just outside the text box, is never clipped (it was cutting the «च» of «चलिए») */
+@keyframes pgWrite{from{clip-path:inset(-30% 112% -30% -12%)}to{clip-path:inset(-30% -12% -30% -12%)}}
 .pg-title.pg-wait{visibility:hidden;}
 .pg-title.pg-write{animation:pgWrite .9s ease-out both;}
+
+/* round 2j: the team's celebration GIF (640x360, its own background kept as-is) */
+.end-screen .end-mascot.end-mascot-team{width:560px;height:auto;filter:none;border-radius:24px;}
+
+
+/* ======================= round 2k (user, 2026-09-30) ======================= */
+/* page 9 (₹35 — three notes): content nudged 24 px down so the notes clear the कुल chip */
+.mn-build.mn-tray-down .mn-target .mn-tray{top:64px;}
+/* while the drag-back tip speaks, the money cannot be picked up */
+.sg-make2.sg-tipping .mn-piece{cursor:default;}
+/* celebration: the team GIF at the reference mascot's height (358 px), so the arrow button below it
+   lands exactly where it does in HI02H11_L02_S02 (134 x 88 arrow-only pill, 22 px below the mascot) */
+.end-screen .end-mascot.end-mascot-team{height:358px;width:auto;}

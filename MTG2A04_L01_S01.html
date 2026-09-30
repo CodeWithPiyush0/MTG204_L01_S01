@@ -4108,9 +4108,24 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 
 /* round 2i: transition title is WRITTEN in (left-to-right wipe — Devanagari-safe, no split clusters)
    when Swiftie starts to talk; hidden during her peek */
-@keyframes pgWrite{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% 0 -20% 0)}}
+/* round 2k: the wipe's box is widened on BOTH sides (-12%) so the first letter's stroke/outline, which
+   sits just outside the text box, is never clipped (it was cutting the «च» of «चलिए») */
+@keyframes pgWrite{from{clip-path:inset(-30% 112% -30% -12%)}to{clip-path:inset(-30% -12% -30% -12%)}}
 .pg-title.pg-wait{visibility:hidden;}
 .pg-title.pg-write{animation:pgWrite .9s ease-out both;}
+
+/* round 2j: the team's celebration GIF (640x360, its own background kept as-is) */
+.end-screen .end-mascot.end-mascot-team{width:560px;height:auto;filter:none;border-radius:24px;}
+
+
+/* ======================= round 2k (user, 2026-09-30) ======================= */
+/* page 9 (₹35 — three notes): content nudged 24 px down so the notes clear the कुल chip */
+.mn-build.mn-tray-down .mn-target .mn-tray{top:64px;}
+/* while the drag-back tip speaks, the money cannot be picked up */
+.sg-make2.sg-tipping .mn-piece{cursor:default;}
+/* celebration: the team GIF at the reference mascot's height (358 px), so the arrow button below it
+   lands exactly where it does in HI02H11_L02_S02 (134 x 88 arrow-only pill, 22 px below the mascot) */
+.end-screen .end-mascot.end-mascot-team{height:358px;width:auto;}
 
 /* == MONEY STYLES :: END == */
 </style>
@@ -4207,7 +4222,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
          It used to be TYPED INTO THE LABEL, so adding the pseudo-element gave this button
          two arrows. The word stays: "आगे बढ़ें" is a different action from आगे and
          dropping it to an icon would be a content change nobody asked for. -->
-    <button class="end-btn" id="endBtn">आगे बढ़ें</button>
+    <button class="end-btn" id="endBtn" aria-label="आगे बढ़ें"></button>
   </div>
 
   <!-- DEV VALIDATOR BANNER -->
@@ -4263,6 +4278,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   "peek_ms": 1520,
   "hold_ms": 450
  },
+ "end_mascot": "assets/UI/end_swiftee.gif",
  "scaffold_rules": {
   "max_attempts": 3,
   "hint_levels": 3
@@ -4674,7 +4690,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      }
     },
     "eq_in_band": false,
-    "no_engine_idle": true
+    "no_engine_idle": true,
+    "tray_down": true
    },
    "dev_label": "p13 · प्लेटें ₹35"
   },
@@ -4884,22 +4901,22 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       "vo_praise": "vo_m_ok_grapes"
      },
      {
-      "id": "cucumbers",
-      "name": "खीरे",
-      "img": "obj_cucumbers",
+      "id": "bananas",
+      "name": "केले",
+      "img": "obj_bananas",
       "price": 60,
-      "praise": "वाह! खीरे आपकी टोकरी में आ गए।",
-      "vo_select": "vo_m_sel_cucumbers",
-      "vo_praise": "vo_m_ok_cucumbers"
+      "praise": "बहुत बढ़िया! केले आपने खरीद लिए।",
+      "vo_select": "vo_m_sel_bananas",
+      "vo_praise": "vo_m_ok_bananas"
      },
      {
-      "id": "mangoes",
-      "name": "आम",
-      "img": "obj_mangoes",
+      "id": "carrots",
+      "name": "गाजर",
+      "img": "obj_carrots",
       "price": 65,
-      "praise": "वाह! आम आपकी टोकरी में आ गए।",
-      "vo_select": "vo_m_sel_mangoes",
-      "vo_praise": "vo_m_ok_mangoes"
+      "praise": "वाह! गाजर आपकी टोकरी में आ गईं।",
+      "vo_select": "vo_m_sel_carrots",
+      "vo_praise": "vo_m_ok_carrots"
      }
     ],
     "detail": {
@@ -5078,8 +5095,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_det_42_2_2": "assets/Audio/vo_m_det_42_2_2.ogg",
    "vo_m_det_42_3_1": "assets/Audio/vo_m_det_42_3_1.ogg",
    "vo_m_det_42_4_0": "assets/Audio/vo_m_det_42_4_0.ogg",
-   "vo_m_sel_cucumbers": "assets/Audio/vo_m_sel_cucumbers.ogg",
-   "vo_m_ok_cucumbers": "assets/Audio/vo_m_ok_cucumbers.ogg",
+   "vo_m_sel_bananas": "assets/Audio/vo_m_sel_bananas.ogg",
+   "vo_m_ok_bananas": "assets/Audio/vo_m_ok_bananas.ogg",
    "vo_m_det_60_0_6": "assets/Audio/vo_m_det_60_0_6.ogg",
    "vo_m_det_60_1_5": "assets/Audio/vo_m_det_60_1_5.ogg",
    "vo_m_det_60_2_4": "assets/Audio/vo_m_det_60_2_4.ogg",
@@ -5087,8 +5104,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_det_60_4_2": "assets/Audio/vo_m_det_60_4_2.ogg",
    "vo_m_det_60_5_1": "assets/Audio/vo_m_det_60_5_1.ogg",
    "vo_m_det_60_6_0": "assets/Audio/vo_m_det_60_6_0.ogg",
-   "vo_m_sel_mangoes": "assets/Audio/vo_m_sel_mangoes.ogg",
-   "vo_m_ok_mangoes": "assets/Audio/vo_m_ok_mangoes.ogg",
+   "vo_m_sel_carrots": "assets/Audio/vo_m_sel_carrots.ogg",
+   "vo_m_ok_carrots": "assets/Audio/vo_m_ok_carrots.ogg",
    "vo_m_det_65_0_6": "assets/Audio/vo_m_det_65_0_6.ogg",
    "vo_m_det_65_1_5": "assets/Audio/vo_m_det_65_1_5.ogg",
    "vo_m_det_65_2_4": "assets/Audio/vo_m_det_65_2_4.ogg",
@@ -5112,7 +5129,9 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "sfx_tap": "assets/Audio/sfx_tap.ogg",
    "sfx_pop": "assets/Audio/sfx_pop.ogg",
    "sfx_fb_correct": "assets/Audio/sfx_fb_correct.ogg",
-   "sfx_fb_incorrect": "assets/Audio/sfx_fb_incorrect.ogg"
+   "sfx_fb_incorrect": "assets/Audio/sfx_fb_incorrect.ogg",
+   "sfx_play_button": "assets/Audio/sfx_play_button.ogg",
+   "sfx_next_button": "assets/Audio/sfx_next_button.ogg"
   },
   "audio_text": {
    "vo_landing": "नमस्ते दोस्त! मैं हूँ स्विफ्टी। परी के स्कूल में पिकनिक होने वाली है। उसे पिकनिक के लिए कुछ सामान खरीदना है। चलिए, उसकी मदद करते हैं!",
@@ -5214,8 +5233,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_det_42_2_2": "बहुत बढ़िया! दस रुपये के दो नोट, दस रुपये के दो सिक्के और एक रुपये के दो सिक्के मिलाकर बयालीस रुपये बने।",
    "vo_m_det_42_3_1": "बहुत बढ़िया! दस रुपये के तीन नोट, दस रुपये का एक सिक्का और एक रुपये के दो सिक्के मिलाकर बयालीस रुपये बने।",
    "vo_m_det_42_4_0": "बहुत बढ़िया! दस रुपये के चार नोट और एक रुपये के दो सिक्के मिलाकर बयालीस रुपये बने।",
-   "vo_m_sel_cucumbers": "खीरे की कीमत साठ रुपये है। साठ रुपये बनाइए।",
-   "vo_m_ok_cucumbers": "वाह! खीरे आपकी टोकरी में आ गए।",
+   "vo_m_sel_bananas": "केले की कीमत साठ रुपये है। साठ रुपये बनाइए।",
+   "vo_m_ok_bananas": "बहुत बढ़िया! केले आपने खरीद लिए।",
    "vo_m_det_60_0_6": "बहुत बढ़िया! दस रुपये के छह सिक्के मिलाकर साठ रुपये बने।",
    "vo_m_det_60_1_5": "बहुत बढ़िया! दस रुपये का एक नोट और दस रुपये के पाँच सिक्के मिलाकर साठ रुपये बने।",
    "vo_m_det_60_2_4": "बहुत बढ़िया! दस रुपये के दो नोट और दस रुपये के चार सिक्के मिलाकर साठ रुपये बने।",
@@ -5223,8 +5242,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_det_60_4_2": "बहुत बढ़िया! दस रुपये के चार नोट और दस रुपये के दो सिक्के मिलाकर साठ रुपये बने।",
    "vo_m_det_60_5_1": "बहुत बढ़िया! दस रुपये के पाँच नोट और दस रुपये का एक सिक्का मिलाकर साठ रुपये बने।",
    "vo_m_det_60_6_0": "बहुत बढ़िया! दस रुपये के छह नोट मिलाकर साठ रुपये बने।",
-   "vo_m_sel_mangoes": "आम की कीमत पैंसठ रुपये है। पैंसठ रुपये बनाइए।",
-   "vo_m_ok_mangoes": "वाह! आम आपकी टोकरी में आ गए।",
+   "vo_m_sel_carrots": "गाजर की कीमत पैंसठ रुपये है। पैंसठ रुपये बनाइए।",
+   "vo_m_ok_carrots": "वाह! गाजर आपकी टोकरी में आ गईं।",
    "vo_m_det_65_0_6": "बहुत बढ़िया! दस रुपये के छह सिक्के और एक रुपये के पाँच सिक्के मिलाकर पैंसठ रुपये बने।",
    "vo_m_det_65_1_5": "बहुत बढ़िया! दस रुपये का एक नोट, दस रुपये के पाँच सिक्के और एक रुपये के पाँच सिक्के मिलाकर पैंसठ रुपये बने।",
    "vo_m_det_65_2_4": "बहुत बढ़िया! दस रुपये के दो नोट, दस रुपये के चार सिक्के और एक रुपये के पाँच सिक्के मिलाकर पैंसठ रुपये बने।",
@@ -5340,8 +5359,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_det_42_2_2": 8370,
    "vo_m_det_42_3_1": 7610,
    "vo_m_det_42_4_0": 6730,
-   "vo_m_sel_cucumbers": 3770,
-   "vo_m_ok_cucumbers": 2930,
+   "vo_m_sel_bananas": 3690,
+   "vo_m_ok_bananas": 2970,
    "vo_m_det_60_0_6": 4130,
    "vo_m_det_60_1_5": 5810,
    "vo_m_det_60_2_4": 6330,
@@ -5349,8 +5368,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_det_60_4_2": 6290,
    "vo_m_det_60_5_1": 6290,
    "vo_m_det_60_6_0": 4690,
-   "vo_m_sel_mangoes": 3810,
-   "vo_m_ok_mangoes": 2370,
+   "vo_m_sel_carrots": 4450,
+   "vo_m_ok_carrots": 2970,
    "vo_m_det_65_0_6": 6450,
    "vo_m_det_65_1_5": 7850,
    "vo_m_det_65_2_4": 8610,
@@ -5379,13 +5398,13 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "cur_note10_glow": "assets/Images/cur_note10_glow.png",
    "cur_note10_lock": "assets/Images/cur_note10_lock.png",
    "obj_apple": "assets/Images/obj_apple.png",
+   "obj_bananas": "assets/Images/obj_bananas.png",
+   "obj_carrots": "assets/Images/obj_carrots.png",
    "obj_chips": "assets/Images/obj_chips.png",
    "obj_chocolate": "assets/Images/obj_chocolate.png",
    "obj_copy": "assets/Images/obj_copy.png",
-   "obj_cucumbers": "assets/Images/obj_cucumbers.png",
    "obj_grapes": "assets/Images/obj_grapes.png",
    "obj_juice": "assets/Images/obj_juice.png",
-   "obj_mangoes": "assets/Images/obj_mangoes.png",
    "obj_oranges": "assets/Images/obj_oranges.png",
    "obj_plates": "assets/Images/obj_plates.png",
    "obj_toffee": "assets/Images/obj_toffee.png",
@@ -5813,7 +5832,7 @@ function _chainMs(srcs, gapMs){
    no reason to fetch it again and the reviewer keeps hearing the previous take. __AUDIO_V is
    stamped by the builder from the CONTENT of the audio folder, so it changes exactly when a clip
    changes and not otherwise - a fresh URL on every build would defeat caching for no reason. */
-var __AUDIO_V = "ed6affacc0aa";
+var __AUDIO_V = "6c2aac5aa1b8";
 function _av(src){
   if(typeof src !== "string" || src.indexOf("assets/Audio/") < 0) return src;
   return src.indexOf("?") >= 0 ? src : src + "?v=" + __AUDIO_V;
@@ -16536,6 +16555,27 @@ if(document.fonts && document.fonts.load){
     if(!ok && tries < 400) setTimeout(()=> patchGate(tries + 1), 25);
   })(0), 0);
 
+  /* round 2j: the celebration screen shows the team's own Swiftie GIF (CARD.end_mascot), used exactly as
+     supplied — background included (user instruction: do not remove or alter its background). */
+  setTimeout(()=> (function endMascot(tries){
+    try {
+      const src = CARD && CARD.end_mascot;
+      const im = document.querySelector("#endScreen .end-mascot");
+      if(!src) return;
+      if(!im){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); return; }
+      im.src = src; im.classList.add("end-mascot-team");
+    } catch(e){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); }
+  })(0), 0);
+
+  /* round 2k: the team's button sounds — ▶ on the landing plays sfx_play_button; the arrow (आगे) and
+     the celebration's arrow play sfx_next_button. Own Audio element, so no VO is cut by it. Only a
+     real, enabled press counts (a disabled button fires no click). */
+  document.addEventListener("click", (e)=>{
+    const b = e.target && e.target.closest && e.target.closest("#sgBtn, #navBtn, #endBtn");
+    if(!b || b.disabled) return;
+    sfxFile(b.id === "sgBtn" ? "sfx_play_button" : "sfx_next_button", null);
+  }, true);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -16868,7 +16908,7 @@ if(document.fonts && document.fonts.load){
       const teach = d.mode === "teach";
       if(d.prompt_delayed) $("promptText").textContent = "";
 
-      const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : ""));
+      const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : "") + (d.tray_down ? " mn-tray-down" : ""));
       /* round 2d: picture + price tag in a card, no name text (the name is the image's alt) */
       const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="' + (d.item_name || "") + '">' +
                                        '<div class="mn-tag"><span>₹' + T + '</span></div>');
@@ -17165,7 +17205,10 @@ if(document.fonts && document.fonts.load){
           const p = PANELS[i];
           c.style.left = p[0] + "%"; c.style.top = p[1] + "%"; c.style.width = PW + "%"; c.style.height = PH + "%";
           c.style.animationDelay = (i % 3) * 0.4 + "s";
-          c.onclick = ()=>{ if(busy || bought.has(i) || isPlaying) return; pick(i, c, cells); };
+          /* round 2k: never ignore a tap on an unbought item. It used to return while ANY clip was
+             playing (the idle reminder, the praise line tail), which read as "some sections are not
+             clickable". The tap now stops that clip and goes straight to the item. */
+          c.onclick = ()=>{ if(busy || bought.has(i)) return; if(isPlaying) stopAudio(); pick(i, c, cells); };
           stall.appendChild(c);
           return c;
         });
@@ -17225,7 +17268,7 @@ if(document.fonts && document.fonts.load){
         const reap = setInterval(()=>{ if(!view || !view.isConnected || !root.isConnected){ chk.remove(); clearInterval(reap); } }, 300);
         restart(card.querySelector(".mn-tag"), "mn-pulse");
 
-        let attempts = 0, caps = false, working = false, solved = false;
+        let attempts = 0, caps = false, working = false, solved = false, tipping = false;
         const placed = [];   /* {kind, el} in placement order */
         const tens = ()=> placed.filter(p => KIND[p.kind].v === 10).length;
         const ones = ()=> placed.filter(p => KIND[p.kind].v === 1).length;
@@ -17256,7 +17299,7 @@ if(document.fonts && document.fonts.load){
           const p = rec.el;
           p.style.touchAction = "none"; p.style.cursor = "grab";
           p.addEventListener("pointerdown", (e)=>{
-            if(working || solved || e.button > 0) return;
+            if(working || solved || tipping || e.button > 0) return;
             e.preventDefault(); e.stopPropagation();
             const p0 = { x:e.clientX, y:e.clientY }, b0 = box(p), s0 = toStage(e.clientX, e.clientY);
             let f = null, moved = false;
@@ -17304,14 +17347,16 @@ if(document.fonts && document.fonts.load){
           const go = (tries)=>{
             if(!p.isConnected || solved) return;
             if((isPlaying || working) && tries < 40){ setTimeout(()=> go(tries + 1), 250); return; }
-            say(A(slide, "tip"));
+            /* round 2k: money cannot be dragged while this line is speaking */
+            tipping = true; v.classList.add("sg-tipping");
+            say(A(slide, "tip"), ()=>{ tipping = false; v.classList.remove("sg-tipping"); });
             setTimeout(()=> ghostBack(2), 300);
           };
           setTimeout(()=> go(0), 350);
         };
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
-          canStart: (kind)=> !working && !solved && !srcs[kind].classList.contains("mn-off"),
+          canStart: (kind)=> !working && !solved && !tipping && !srcs[kind].classList.contains("mn-off"),
           onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); restart(amt, "mn-shake"); return; } put(kind, f); }
           /* no onTap (round 2g): money reaches the drop zone ONLY by drag and drop */
         }));

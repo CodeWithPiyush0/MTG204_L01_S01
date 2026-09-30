@@ -146,8 +146,12 @@ TT = "document.querySelector('.sg-make2 .mn-target')"
 def dragk(k): js("drag(src('%s'), %s)" % (k, TT)); w(0.35)
 js("tap(src('c1'))"); w(0.5)
 check("M1 a TAP on currency does not add it", js("return document.querySelectorAll('.sg-make2 .mn-target .mn-placed').length") == 0)
+js("""window.__slow={vo_m_tip:2500}; const _p=window.play; window.play=function(src,cb){ const id=String(src||'').split('/').pop().split('.')[0]; window.__said.push(id); setTimeout(()=>{ if(cb) cb(); }, (window.__slow&&window.__slow[id])||60); };""")
 js("""window.__said=[]; window.__ghosts=0; new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{ if(n.classList && n.classList.contains('mn-ghost')) window.__ghosts++; }))).observe(document.getElementById('stage'),{childList:true});""")
-dragk("c1"); w(0.9); shot("M1_tip_ghost"); w(3.2)
+dragk("c1"); w(0.9); shot("M1_tip_ghost")
+dragk("c1"); w(0.3)
+check("M1 no drag while the tip is speaking", js("return document.querySelectorAll('.sg-make2 .mn-target .mn-placed').length") == 1)
+w(3.0)
 check("M1 first placed piece: drag-back tip spoken", "vo_m_tip" in js("return window.__said"), js("return window.__said"))
 check("M1 tip ghost travels back to the tray exactly 2 times", js("return window.__ghosts") == 2, js("return window.__ghosts"))
 js("(function(el){const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;PE('pointerdown',x,y,el);PE('pointerup',x,y);})(document.querySelector('.sg-make2 .mn-target .mn-placed'))"); w(0.6)
@@ -177,18 +181,38 @@ check("M1 detailed VO chosen by actual currency", "vo_m_det_14_0_1" in js("retur
 w(1.6)
 check("M1 back to stall, apple green + ticked + disabled", js("return !!document.querySelector('.sg-choose') && document.querySelectorAll('.sg-cell2')[0].classList.contains('sg-sold')"))
 check("M1 जाँचें removed on the stall", js("return !document.querySelector('.sg-checkpill')"))
-for i in range(1, 6):
+js("window.__slow={vo_m_idle:4000}; setPlaying(true)")   # something is sounding on the stall
+js("document.querySelectorAll('.sg-cell2')[1].click()"); w(1.2)
+check("M1 an unbought item is tappable even while a line plays", js("return !!document.querySelector('.sg-make2')"), js("return document.getElementById('promptText').textContent"))
+js("window.__slow={}; setPlaying(false); window.__said=[]")
+for _ in range(2): dragk("n10")
+for _ in range(5): dragk("c1")
+js(chk + ".click()"); w(2.6)
+check("M1 2nd purchase = playful line", "vo_m_ok_oranges" in js("return window.__said"))
+for i in range(2, 6):
     price = js("return CARD.slides[arguments[0]].data.items[arguments[1]].price", idx["M1"], i)
     js("document.querySelectorAll('.sg-cell2')[arguments[0]].click()", i); w(1.2)
     for _ in range(price // 10): dragk("n10")
     for _ in range(price % 10): dragk("c1")
     js(chk + ".click()"); w(2.6)
-    if i == 1: check("M1 2nd purchase = playful line", "vo_m_ok_oranges" in js("return window.__said"))
+    if i == 4: check("M1 5th item is केले ₹60", "vo_m_sel_bananas" in js("return window.__said"))
     if i == 5: check("M1 tip never spoken again on later items", js("return window.__said.filter(x=>x==='vo_m_tip').length") == 0)
     if i == 4: shot("M1_stall_5sold")
 shot("M1_complete")
 check("M1 complete view + nav", js("return !!document.querySelector('.sg-complete')") and st()["nav"], st())
-check("M1 total ₹241", js("return document.querySelector('.sg-till-v').textContent") == "₹241")
+check("M1 shop items: सेब संतरे टमाटर अंगूर केले गाजर", js("return CARD.slides[arguments[0]].data.items.map(x=>x.name).join(' ')", idx["M1"]) == "सेब संतरे टमाटर अंगूर केले गाजर")
+
+# ---------------- P1 plates: three notes clear the कुल chip
+mount(idx["P1"]); w(0.6)
+for n in range(3): js("drag(src('n10'), %s)" % T); w(0.3)
+ov = js("""const c=document.querySelector('.mn-total').getBoundingClientRect(); return [...document.querySelectorAll('.mn-row-t .mn-placed')].some(n=>{const r=n.getBoundingClientRect(); return r.right>c.left && r.left<c.right && r.bottom>c.top && r.top<c.bottom;});""")
+check("P1 three notes do not overlap the कुल chip", not ov); shot("P1_notes")
+
+# ---------------- celebration button = reference arrow-only pill, 22 px under a 358 px mascot
+mount(idx["CEL"]); w(1.2)
+eb = js("""const s=document.getElementById('stage').getBoundingClientRect().width/1333, b=document.getElementById('endBtn').getBoundingClientRect(), m=document.querySelector('#endScreen .end-mascot').getBoundingClientRect();
+  return [document.getElementById('endBtn').textContent, Math.round(b.width/s), Math.round(b.height/s), Math.round(m.height/s), Math.round((b.top-m.bottom)/s)]""")
+check("CEL button arrow-only 134x88, 22 px below a 358 px mascot", eb == ["", 134, 88, 358, 22], eb); shot("CEL")
 
 errs = [l["message"] for l in d.get_log("browser") if l["level"] == "SEVERE" and "favicon" not in l["message"]]
 check("no console errors", not errs, errs[:5])

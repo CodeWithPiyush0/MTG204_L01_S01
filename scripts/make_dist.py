@@ -34,12 +34,28 @@ def main():
     # round 2i: the gate plays gate_peek/talk/rest; the old 8.5 s swifty_gate.webp is never fetched
     html = html.replace('id="phaseGateImg" src="assets/UI/peeking.webp"', 'id="phaseGateImg" src="assets/UI/gate_peek.webp"')
     SKIP.add("swifty_gate.webp")
+    # round 2j: the celebration shows the team GIF (end_swiftee.gif, shipped unchanged); the stock
+    # celebrating mascot is never shown, so its <img> starts on the GIF and the old file stays out
+    html = html.replace('class="end-mascot" src="assets/UI/sw_lg_celebrating_anim.webp"', 'class="end-mascot" src="assets/UI/end_swiftee.gif"')
+    SKIP.add("sw_lg_celebrating_anim.webp")
+    SKIP.add("Swiftee-end page gif.gif")          # the same GIF under its original name (source copy)
     ui = os.path.join(ROOT, "assets", "UI"); kept_ui = []
     for f in sorted(os.listdir(ui)):
         # Swiftie's head poses are chosen at runtime ("sw_head_" + expr + "_anim.webp"), so their
         # names never appear literally in the HTML - a literal-name prune dropped all of them.
         if (f in html or f.startswith("sw_head_")) and f not in SKIP:
-            shutil.copy2(os.path.join(ui, f), os.path.join(DIST, "assets", "UI", f)); kept_ui.append(f)
+            if f == "new_landing_swiftee_anim.webp":
+                # round 2j: the 1.7 MB landing Swiftie re-encoded at q72 (no visible difference, -0.66 MB)
+                # to make room for the team's celebration GIF, which ships byte-for-byte unchanged
+                from PIL import ImageSequence
+                an = Image.open(os.path.join(ui, f)); fr, ds = [], []
+                for fx in ImageSequence.Iterator(an):
+                    fr.append(fx.convert("RGBA").copy()); ds.append(fx.info.get("duration") or 40)
+                fr[0].save(os.path.join(DIST, "assets", "UI", f), "WEBP", save_all=True, append_images=fr[1:],
+                           duration=ds, loop=0, quality=72, method=4)
+            else:
+                shutil.copy2(os.path.join(ui, f), os.path.join(DIST, "assets", "UI", f))
+            kept_ui.append(f)
 
     # images -> webp
     im_dir = os.path.join(ROOT, "assets", "Images"); n_img = 0
@@ -66,8 +82,9 @@ def main():
         stem, ext = os.path.splitext(f)
         if ext != ".ogg" or stem not in html: continue
         out = os.path.join(DIST, "assets", "Audio", f)
+        br = "64k" if stem.startswith("sfx_") else "16k"      # sfx are music-like; 16k is for speech
         r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(au, f), "-c:a", "libopus",
-                            "-b:a", "16k", "-ac", "1", out], capture_output=True, text=True)
+                            "-b:a", br, "-ac", "1", out], capture_output=True, text=True)
         if r.returncode: sys.exit("X  ffmpeg failed on %s: %s" % (f, r.stderr[:200]))
         n_au += 1
 

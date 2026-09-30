@@ -152,6 +152,27 @@
     if(!ok && tries < 400) setTimeout(()=> patchGate(tries + 1), 25);
   })(0), 0);
 
+  /* round 2j: the celebration screen shows the team's own Swiftie GIF (CARD.end_mascot), used exactly as
+     supplied — background included (user instruction: do not remove or alter its background). */
+  setTimeout(()=> (function endMascot(tries){
+    try {
+      const src = CARD && CARD.end_mascot;
+      const im = document.querySelector("#endScreen .end-mascot");
+      if(!src) return;
+      if(!im){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); return; }
+      im.src = src; im.classList.add("end-mascot-team");
+    } catch(e){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); }
+  })(0), 0);
+
+  /* round 2k: the team's button sounds — ▶ on the landing plays sfx_play_button; the arrow (आगे) and
+     the celebration's arrow play sfx_next_button. Own Audio element, so no VO is cut by it. Only a
+     real, enabled press counts (a disabled button fires no click). */
+  document.addEventListener("click", (e)=>{
+    const b = e.target && e.target.closest && e.target.closest("#sgBtn, #navBtn, #endBtn");
+    if(!b || b.disabled) return;
+    sfxFile(b.id === "sgBtn" ? "sfx_play_button" : "sfx_next_button", null);
+  }, true);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -484,7 +505,7 @@
       const teach = d.mode === "teach";
       if(d.prompt_delayed) $("promptText").textContent = "";
 
-      const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : ""));
+      const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : "") + (d.tray_down ? " mn-tray-down" : ""));
       /* round 2d: picture + price tag in a card, no name text (the name is the image's alt) */
       const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="' + (d.item_name || "") + '">' +
                                        '<div class="mn-tag"><span>₹' + T + '</span></div>');
@@ -781,7 +802,10 @@
           const p = PANELS[i];
           c.style.left = p[0] + "%"; c.style.top = p[1] + "%"; c.style.width = PW + "%"; c.style.height = PH + "%";
           c.style.animationDelay = (i % 3) * 0.4 + "s";
-          c.onclick = ()=>{ if(busy || bought.has(i) || isPlaying) return; pick(i, c, cells); };
+          /* round 2k: never ignore a tap on an unbought item. It used to return while ANY clip was
+             playing (the idle reminder, the praise line tail), which read as "some sections are not
+             clickable". The tap now stops that clip and goes straight to the item. */
+          c.onclick = ()=>{ if(busy || bought.has(i)) return; if(isPlaying) stopAudio(); pick(i, c, cells); };
           stall.appendChild(c);
           return c;
         });
@@ -841,7 +865,7 @@
         const reap = setInterval(()=>{ if(!view || !view.isConnected || !root.isConnected){ chk.remove(); clearInterval(reap); } }, 300);
         restart(card.querySelector(".mn-tag"), "mn-pulse");
 
-        let attempts = 0, caps = false, working = false, solved = false;
+        let attempts = 0, caps = false, working = false, solved = false, tipping = false;
         const placed = [];   /* {kind, el} in placement order */
         const tens = ()=> placed.filter(p => KIND[p.kind].v === 10).length;
         const ones = ()=> placed.filter(p => KIND[p.kind].v === 1).length;
@@ -872,7 +896,7 @@
           const p = rec.el;
           p.style.touchAction = "none"; p.style.cursor = "grab";
           p.addEventListener("pointerdown", (e)=>{
-            if(working || solved || e.button > 0) return;
+            if(working || solved || tipping || e.button > 0) return;
             e.preventDefault(); e.stopPropagation();
             const p0 = { x:e.clientX, y:e.clientY }, b0 = box(p), s0 = toStage(e.clientX, e.clientY);
             let f = null, moved = false;
@@ -920,14 +944,16 @@
           const go = (tries)=>{
             if(!p.isConnected || solved) return;
             if((isPlaying || working) && tries < 40){ setTimeout(()=> go(tries + 1), 250); return; }
-            say(A(slide, "tip"));
+            /* round 2k: money cannot be dragged while this line is speaking */
+            tipping = true; v.classList.add("sg-tipping");
+            say(A(slide, "tip"), ()=>{ tipping = false; v.classList.remove("sg-tipping"); });
             setTimeout(()=> ghostBack(2), 300);
           };
           setTimeout(()=> go(0), 350);
         };
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
-          canStart: (kind)=> !working && !solved && !srcs[kind].classList.contains("mn-off"),
+          canStart: (kind)=> !working && !solved && !tipping && !srcs[kind].classList.contains("mn-off"),
           onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); restart(amt, "mn-shake"); return; } put(kind, f); }
           /* no onTap (round 2g): money reaches the drop zone ONLY by drag and drop */
         }));

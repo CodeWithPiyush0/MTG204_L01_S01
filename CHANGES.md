@@ -212,3 +212,21 @@ Deck page refs = the deck's slide number (S#) and the page label printed on it (
 | I-3 | VO syncs with her mouth | ✅ | The talk loop is shown only while the gate VO is actually sounding and swaps to the closed mouth on the clip's end; the next screen opens 0.45 s later. Traced live (real audio): peek 0 → 1.55 s silent · talk + VO 1.55 s → VO end · rest · next screen. All four gates (start, guided, round 3, shop) use it. The old fixed 3.8 s "talk_at" start is gone. |
 - Gate length now = 1.5 s + the VO: guided gate 7.7 s (its VO is 5.6 s), shop gate 4.7 s. The tutorial/guided/practice VO clips are the reference lesson's recordings (5.6 / 5.6 / 2.5 s) — re-recording shorter lines would shorten those gates further.
 - Dist 9.01 MB (the 1.5 MB old bird no longer ships). `_drive.py` 0 FAIL on build and dist.
+
+## Round 2j — celebration GIF (user, 2026-09-30)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| J-1 | Use the team's Swiftie GIF on the last celebration screen, exactly as it is — background included | ✅ | `assets/UI/Swiftee-end page gif.gif` copied to `end_swiftee.gif` (URL-safe name, same bytes) and shown in place of the stock celebrating mascot, 560 px wide. Its background (a checkerboard baked into the frames) is kept; **not edited in any way — standing user instruction**. `dist/` ships it byte-identical (`cmp` checked). |
+- To keep dist under 10 MB with the 2.2 MB GIF: the stock celebrating mascot (no longer shown) is not shipped; `gate_peek/talk` re-encoded at q72; the landing Swiftie animation re-encoded at q72 in dist only (checked side by side, no visible difference). Dist 9.67 MB. `_drive.py` 0 FAIL on build and dist.
+
+## Round 2k — user review (2026-09-30)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| K-1 | Transition title: first letter cut | ✅ | The write-in wipe clipped at the text box edge, and the title's outline stroke sits just outside it (the «च» of «चलिए»). Wipe box widened 12 % on both sides. Screenshot checked on the start gate. |
+| K-2 | New sfx for the play button and the next button | ✅ | `swiftpal_sfx_3_play_button.wav` → `sfx_play_button.ogg` (landing ▶); `swiftpal_sfx_4_next_button.wav` → `sfx_next_button.ogg` (the आगे arrow + the celebration arrow). Only on a real, enabled press. Dist keeps sfx at 64 kbit/s (voice stays 16k). Verified: ▶ → play sfx, arrow → next sfx, disabled arrow → nothing. |
+| K-3 | Page 9 (₹35): the कुल chip overlaps the notes | ✅ | Tray content nudged 24 px down on this screen only. drive: `P1 three notes do not overlap the कुल chip`. |
+| K-4a | Shop: other items instead of खीरे and आम | ✅ | केले ₹60 and गाजर ₹65 (team art; prices still ascending). 4 new clips (select + praise), Leda. |
+| K-4b | Shop: after a purchase, some sections sometimes not clickable | ✅ | Cause: a tap on the stall was ignored whenever ANY clip was playing (the idle reminder, the tail of a praise line). A tap on an unbought item now stops that clip and opens the item. drive: `an unbought item is tappable even while a line plays`. |
+| K-5 | No dragging while the drag-back tip plays | ✅ | Tray pieces and placed pieces are locked for the length of «कोई पैसा हटाना हो…». drive: `no drag while the tip is speaking`. |
+| K-6 | Celebration button = HI02H11's (size + placement) | ✅ | Arrow-only pill (label moved to aria-label, as the reference ships it), 134 × 88, 22 px below the mascot; the team GIF sized to the reference mascot's 358 px height so the button lands on the same spot. Measured in both builds. GIF itself unchanged (dist `cmp` identical). |
+- Checks: `_drive.py` 59 checks, 0 FAIL on build and dist.

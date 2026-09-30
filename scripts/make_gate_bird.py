@@ -26,7 +26,7 @@ def save(name, idx, dur=None, loop=0):
     fs = [frames[i] for i in idx]
     ds = [dur or max(20, durs[i]) for i in idx]
     fs[0].save(os.path.join(UI, name), "WEBP", save_all=len(fs) > 1, append_images=fs[1:], duration=ds,
-               loop=loop, quality=85, method=4)
+               loop=loop, quality=72, method=4)
     return sum(ds)
 
 PEEK = list(range(0, 20)) + list(range(36, 54))
