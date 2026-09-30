@@ -176,3 +176,15 @@ Deck page refs = the deck's slide number (S#) and the page label printed on it (
 | D-4 | Build screens: picture + price tag in a card, no name text | ✅ | Light card (`#F7FBFF`, blue border) around the item picture + yellow tag; the name is kept only as the image's alt text. |
 - Bug found + fixed in the same round: the completion screen's new root class `.mn-done` collided with the build screens' solved-target class and collapsed every solved drop zone to 8 px — renamed `.mn-fin`.
 - Checks: `_drive.py` 37 checks, 0 FAIL on build and dist · dist 9.75 MB · receipt `17 pass · 3 FAIL · 7 warn` (the same 3 deliberate FAILs).
+
+## Round 2e — user review (2026-09-30)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| E1 | Build screens: glow instead of pulse on the note/coin (can't drag while it pulses) | ✅ | Currency hints are a filter-only glow (`mn-hintglow`); on the teach screens the coin the child must place glows from the moment it becomes draggable until it is dragged. (Drags were refused during the pulse because the pulse ran while Swiftie spoke — the engine blocks drags during VO.) drive: `G2 waiting ₹1 coin GLOWS (no pulse) and is draggable`. |
+| E2 | Only the drop zone + its money go green; not the coin tray / item card | ✅ | Item card no longer turns green; the equation strip keeps the tray's cream/orange. drive: `G2 item card NOT turned green`, `…tray colours (not green)`. |
+| E3 | "Page 17": heading empty for 2–3 s on entry | ✅ (read as page 7, chips ₹20 — there are 14 screens) | The heading was held back until the 2nd VO line (deck S10 wording); it now shows at once. drive: `G3 heading shows at once`. |
+| E4 | Pages 6–7: price tag pulse when the VO says the amount | ✅ | Tag pulses with VO1 on copy + chips. drive: `G2 price tag pulses with VO1`. |
+| E5 | Pages 8–11: no equation in the heading; keep «₹X बनाइए।» | ✅ | `eq_in_band` off; the equation shows in the tray strip only. drive: `G4 … heading stays «₹25 बनाइए।»`. |
+| E6 | Page 10 (toffee, ₹1 only): coins centred in the drop zone on both axes | ✅ | Empty tens row no longer reserves space; symmetric inset. Applies to every build screen. drive: `P2 coins centred (x, y offset ≤ 3 px)`. |
+| E7 | Wrong currency: drop zone shakes, currency bounces back | ✅ | `mn-shake` on the target + spring-back to the tray. drive: `G3 wrong drop shakes the drop zone`. |
+- Checks: `_drive.py` 0 FAIL on build and dist · dist rebuilt.

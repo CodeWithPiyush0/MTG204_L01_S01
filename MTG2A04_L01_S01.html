@@ -4058,6 +4058,20 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 /* (round 2d moved Swiftie bottom-right for a cover with Pari on the left; the 11:37 PM cover puts
    Pari on the right, so Swiftie is back in her standard bottom-left place - no override) */
 
+
+/* ======================= round 2e (user, 2026-09-30) ======================= */
+/* (1) currency hints glow (filter only) instead of pulsing (transform) */
+@keyframes mnHintGlow{0%,100%{filter:drop-shadow(0 4px 6px rgba(11,61,140,.18))}
+  50%{filter:drop-shadow(0 0 14px rgba(255,196,0,1)) drop-shadow(0 0 6px rgba(255,170,0,.9))}}
+.mn-piece.mn-src.mn-hintglow img{animation:mnHintGlow 1s ease-in-out 3;}
+.mn-piece.mn-src.mn-hintglow-on img{animation:mnHintGlow 1.1s ease-in-out infinite;}
+/* (2) the equation keeps the coin tray's own look (cream + orange), not green; the item card is untouched */
+.mn-build.mn-finished .mn-eq{background:#FFF8E7;border:4px solid #F4B63F;color:var(--navy);border-radius:28px;}
+/* (6) money is centred in the drop zone on BOTH axes: no empty row reserving space, symmetric inset
+   (the कुल chip overlays the top-right corner) */
+.mn-target .mn-tray{inset:16px;}
+.mn-target .mn-row:empty{display:none;}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
@@ -4405,7 +4419,8 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     "no_engine_idle": true,
     "script": [
      {
-      "say": "vo_g2_1"
+      "say": "vo_g2_1",
+      "tag": true
      },
      {
       "say": "vo_g2_2",
@@ -4469,18 +4484,17 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      "c10",
      "c1"
     ],
-    "prompt_delayed": true,
     "no_engine_idle": true,
     "teach_wrong": {
      "c1": "vo_g3_wrong"
     },
     "script": [
      {
-      "say": "vo_g3_1a"
+      "say": "vo_g3_1a",
+      "tag": true
      },
      {
-      "say": "vo_g3_1b",
-      "show_prompt": true
+      "say": "vo_g3_1b"
      },
      {
       "say": "vo_g3_2",
@@ -4552,7 +4566,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       ]
      }
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true,
     "tag_fx": "pulse"
    },
@@ -4615,7 +4629,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       ]
      }
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true
    },
    "dev_label": "p13 · प्लेटें ₹35"
@@ -4664,7 +4678,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      },
      "ones": {}
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true
    },
    "dev_label": "added · टॉफ़ी ₹5"
@@ -4726,7 +4740,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       ]
      }
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true,
     "tag_fx": "glow"
    },
@@ -16828,7 +16842,12 @@ if(document.fonts && document.fonts.load){
         if(chk) chk.disabled = !(tc + oc) || done;
       };
       const setOff = (kd, on)=>{ if(!srcs[kd]) return; srcs[kd].classList.toggle("mn-off", on); if(on) off.add(kd); else off.delete(kd); syncArt(srcs[kd]); };
-      const pulse = (kd)=>{ if(srcs[kd]) restart(srcs[kd], "mn-pulse"); };
+      /* round 2e: a currency hint is a GLOW, never a pulse — a scaling piece is hard to grab.
+         hint(kd) glows three times; hintOn(kd) glows until that piece is dragged (a teach step that is
+         waiting for the child). Both are filter-only, so the piece never moves under the finger. */
+      const clearHints = ()=> Object.keys(srcs).forEach(kd => srcs[kd].classList.remove("mn-hintglow", "mn-hintglow-on", "mn-pulse"));
+      const pulse  = (kd)=>{ if(srcs[kd]) restart(srcs[kd], "mn-hintglow"); };
+      const hintOn = (kd)=>{ if(srcs[kd]){ srcs[kd].classList.remove("mn-hintglow"); srcs[kd].classList.add("mn-hintglow-on"); } };
 
       /* ---- idle ladder: pulse the currency that is needed, then send its ghost to the tray ---- */
       let lastAct = Date.now(), idleN = 0, idleTimer = 0;
@@ -16871,7 +16890,6 @@ if(document.fonts && document.fonts.load){
         tray.querySelectorAll(".mn-placed").forEach((p, i)=> setTimeout(()=> p.classList.add("mn-glow"), i * 90));
         eq.textContent = equation(); root.classList.add("mn-finished");
         if(d.eq_in_band) $("promptText").innerHTML = '<span class="mn-band-eq">' + equation() + '</span>';
-        item.classList.add("mn-bought");
         fbCorrect(); mood("celebrate");
         if(typeof confettiCannon === "function") confettiCannon();
         const clean = wrongN.tens + wrongN.ones === 0;
@@ -16894,6 +16912,7 @@ if(document.fonts && document.fonts.load){
       /* ---- the ladder (practice) ---- */
       const wrong = (type, kind, f, src)=>{
         bounceBack(f, src);
+        restart(tgt, "mn-shake");
         state.attempts++;
         SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, attempts:state.attempts, kind:type, total:total() });
         mood("tryagain");
@@ -16924,7 +16943,7 @@ if(document.fonts && document.fonts.load){
         sfxDrop(n); mood("happy");
         addPlaced(tray, kind, f);
         setTotal(); touch(); idleN = 0;
-        Object.keys(srcs).forEach(kd => srcs[kd].classList.remove("mn-pulse"));
+        clearHints();
         if(total() === T){ onReached(); return true; }
         return false;
       };
@@ -16943,7 +16962,7 @@ if(document.fonts && document.fonts.load){
           const hit = accept(kind, f);
           if(teach){
             const w = teachWait; teachWait = null;
-            srcs[w.kind] && srcs[w.kind].classList.remove("mn-pulse");
+            clearHints();
             if(!hit) setTimeout(runStep, 250);
           }
         }
@@ -16984,11 +17003,12 @@ if(document.fonts && document.fonts.load){
           if(s.child){
             teachWait = { kind:s.child, idle:s.idle || [] };
             armed = true; touch(); idleN = 0;
-            pulse(s.child);
+            hintOn(s.child);                      /* glows from the moment it can be dragged */
           } else runStep();
         };
         if(s.auto) setTimeout(()=> autoPlace(s.auto).then(()=>{ moveDone = true; next(); }), s.auto_delay || 900);
-        if(s.child) pulse(s.child);
+        /* (4) the price tag pulses while the VO says the amount — as on the practice screens */
+        if(s.tag) restart(item.querySelector(".mn-tag"), "mn-pulse");
         say(s.say, ()=>{ voDone = true; next(); });
       }
 

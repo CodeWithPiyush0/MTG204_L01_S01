@@ -299,3 +299,17 @@
 .mn-fin-list .mn-li-p span{font-size:28px;padding:7px 14px;min-width:80px;}
 /* (round 2d moved Swiftie bottom-right for a cover with Pari on the left; the 11:37 PM cover puts
    Pari on the right, so Swiftie is back in her standard bottom-left place - no override) */
+
+
+/* ======================= round 2e (user, 2026-09-30) ======================= */
+/* (1) currency hints glow (filter only) instead of pulsing (transform) */
+@keyframes mnHintGlow{0%,100%{filter:drop-shadow(0 4px 6px rgba(11,61,140,.18))}
+  50%{filter:drop-shadow(0 0 14px rgba(255,196,0,1)) drop-shadow(0 0 6px rgba(255,170,0,.9))}}
+.mn-piece.mn-src.mn-hintglow img{animation:mnHintGlow 1s ease-in-out 3;}
+.mn-piece.mn-src.mn-hintglow-on img{animation:mnHintGlow 1.1s ease-in-out infinite;}
+/* (2) the equation keeps the coin tray's own look (cream + orange), not green; the item card is untouched */
+.mn-build.mn-finished .mn-eq{background:#FFF8E7;border:4px solid #F4B63F;color:var(--navy);border-radius:28px;}
+/* (6) money is centred in the drop zone on BOTH axes: no empty row reserving space, symmetric inset
+   (the कुल chip overlays the top-right corner) */
+.mn-target .mn-tray{inset:16px;}
+.mn-target .mn-row:empty{display:none;}

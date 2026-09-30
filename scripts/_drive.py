@@ -66,18 +66,25 @@ check("T2 right -> green + nav on", js("return " + cards + "[0].classList.contai
 check("T2 correct text", js("return document.querySelector('.mn-pick-fb').textContent") == "शाबाश! यह दस रुपये का नोट है।")
 
 # ---------------- G2 copy teach
-mount(idx["G2"]); w(6)
+mount(idx["G2"])
+w(0.2); check("G2 price tag pulses with VO1", js("return document.querySelector('.mn-tag').classList.contains('mn-pulse')"))
+w(5.8)
 s = st(); check("G2 demo placed ONLY the ₹10 note (कुल ₹10)", s["total"] == "₹10" and s["placed"] == 1, s)
+check("G2 waiting ₹1 coin GLOWS (no pulse) and is draggable", js("return src('c1').classList.contains('mn-hintglow-on') && !src('c1').classList.contains('mn-pulse')"))
 for n in range(4):
     js("drag(src('c1'), document.querySelector('.mn-target'))"); w(1.2)
 s = st(); shot("G2_done")
 check("G2 child places 4 coins -> ₹14 finished", s["total"] == "₹14" and s["finished"] and s["nav"], s)
 check("G2 equation", js("return document.querySelector('.mn-eq').textContent") == "₹10 + ₹1 + ₹1 + ₹1 + ₹1 = ₹14")
+check("G2 item card NOT turned green", js("return !document.querySelector('.mn-item').classList.contains('mn-bought')"))
+check("G2 equation strip in tray colours (not green)", js("return getComputedStyle(document.querySelector('.mn-eq')).backgroundColor") == "rgb(255, 248, 231)")
 
 # ---------------- G3 chips teach: ₹1 is wrong
-mount(idx["G3"]); w(4.5)
-check("G3 prompt appears with 2nd line", st()["prompt"] == "₹20 बनाइए।", st())
-js("drag(src('c1'), document.querySelector('.mn-target'))"); w(0.8)
+mount(idx["G3"]); w(0.15)
+check("G3 heading shows at once", st()["prompt"] == "₹20 बनाइए।", st())
+w(4.3)
+js("drag(src('c1'), document.querySelector('.mn-target'))"); w(0.1)
+check("G3 wrong drop shakes the drop zone", js("return document.querySelector('.mn-target').classList.contains('mn-shake')")); w(0.7)
 s = st(); check("G3 ₹1 rejected + VO6", s["total"] == "₹10" and "vo_g3_wrong" in s["said"], s)
 js("drag(src('c10'), document.querySelector('.mn-target'))"); w(1)
 s = st(); check("G3 ₹10 coin -> ₹20 finished", s["total"] == "₹20" and s["finished"], s)
@@ -95,7 +102,7 @@ check("G4 A2 VO 'कुल ₹5 हैं…'", "vo_g4_o5" in s2["said"], s2)
 check("G4 A3 VO + ₹1 disabled + ₹10 glows", "vo_tens_use_coin_20" in s3["said"] and "c1" in s3["off"] and "c10" in s3["glow"], s3)
 js("drag(src('c10'), %s)" % T); w(0.4); js("drag(src('c10'), %s)" % T); w(0.8)
 s = st(); shot("G4_done")
-check("G4 -> ₹25 finished, equation in band", s["finished"] and s["prompt"] == "₹10 + ₹10 + ₹1 + ₹1 + ₹1 + ₹1 + ₹1 = ₹25", s)
+check("G4 -> ₹25 finished, heading stays «₹25 बनाइए।»", s["finished"] and s["prompt"] == "₹25 बनाइए।", s)
 # tens ladder on a fresh mount
 mount(idx["G4"]); w(0.6)
 js("drag(src('c10'), %s)" % T); w(0.3); js("drag(src('c10'), %s)" % T); w(0.3)
@@ -103,6 +110,14 @@ for n in range(3): js("drag(src('c10'), %s)" % T); w(0.6)
 s = st()
 check("G4 tens ladder A3: ₹10 off, ₹1 glows, VO", "c10" in s["off"] and "c1" in s["glow"] and "vo_ones_use_5" in s["said"], s)
 check("G4 tens A2 VO said", "vo_g4_t20" in js("return window.__said"), js("return window.__said"))
+
+# ---------------- P2 toffee: five ₹1 coins centred in the drop zone
+mount(idx["P2"]); w(0.6)
+for n in range(5): js("drag(src('c1'), %s)" % T); w(0.3)
+w(0.5)
+off = js("""const z=document.querySelector('.mn-target').getBoundingClientRect(), r=document.querySelector('.mn-row-o').getBoundingClientRect();
+  return [Math.round((r.left+r.width/2)-(z.left+z.width/2)), Math.round((r.top+r.height/2)-(z.top+z.height/2))];""")
+check("P2 coins centred in the drop zone (x, y offset ≤ 3 px)", abs(off[0]) <= 3 and abs(off[1]) <= 3, off); shot("P2_done")
 
 # ---------------- P3 juice: completes on its own at ₹17 (no «हो गया», round 2d)
 mount(idx["P3"]); w(0.6)

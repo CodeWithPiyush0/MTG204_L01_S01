@@ -448,7 +448,12 @@
         if(chk) chk.disabled = !(tc + oc) || done;
       };
       const setOff = (kd, on)=>{ if(!srcs[kd]) return; srcs[kd].classList.toggle("mn-off", on); if(on) off.add(kd); else off.delete(kd); syncArt(srcs[kd]); };
-      const pulse = (kd)=>{ if(srcs[kd]) restart(srcs[kd], "mn-pulse"); };
+      /* round 2e: a currency hint is a GLOW, never a pulse — a scaling piece is hard to grab.
+         hint(kd) glows three times; hintOn(kd) glows until that piece is dragged (a teach step that is
+         waiting for the child). Both are filter-only, so the piece never moves under the finger. */
+      const clearHints = ()=> Object.keys(srcs).forEach(kd => srcs[kd].classList.remove("mn-hintglow", "mn-hintglow-on", "mn-pulse"));
+      const pulse  = (kd)=>{ if(srcs[kd]) restart(srcs[kd], "mn-hintglow"); };
+      const hintOn = (kd)=>{ if(srcs[kd]){ srcs[kd].classList.remove("mn-hintglow"); srcs[kd].classList.add("mn-hintglow-on"); } };
 
       /* ---- idle ladder: pulse the currency that is needed, then send its ghost to the tray ---- */
       let lastAct = Date.now(), idleN = 0, idleTimer = 0;
@@ -491,7 +496,6 @@
         tray.querySelectorAll(".mn-placed").forEach((p, i)=> setTimeout(()=> p.classList.add("mn-glow"), i * 90));
         eq.textContent = equation(); root.classList.add("mn-finished");
         if(d.eq_in_band) $("promptText").innerHTML = '<span class="mn-band-eq">' + equation() + '</span>';
-        item.classList.add("mn-bought");
         fbCorrect(); mood("celebrate");
         if(typeof confettiCannon === "function") confettiCannon();
         const clean = wrongN.tens + wrongN.ones === 0;
@@ -514,6 +518,7 @@
       /* ---- the ladder (practice) ---- */
       const wrong = (type, kind, f, src)=>{
         bounceBack(f, src);
+        restart(tgt, "mn-shake");
         state.attempts++;
         SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, attempts:state.attempts, kind:type, total:total() });
         mood("tryagain");
@@ -544,7 +549,7 @@
         sfxDrop(n); mood("happy");
         addPlaced(tray, kind, f);
         setTotal(); touch(); idleN = 0;
-        Object.keys(srcs).forEach(kd => srcs[kd].classList.remove("mn-pulse"));
+        clearHints();
         if(total() === T){ onReached(); return true; }
         return false;
       };
@@ -563,7 +568,7 @@
           const hit = accept(kind, f);
           if(teach){
             const w = teachWait; teachWait = null;
-            srcs[w.kind] && srcs[w.kind].classList.remove("mn-pulse");
+            clearHints();
             if(!hit) setTimeout(runStep, 250);
           }
         }
@@ -604,11 +609,12 @@
           if(s.child){
             teachWait = { kind:s.child, idle:s.idle || [] };
             armed = true; touch(); idleN = 0;
-            pulse(s.child);
+            hintOn(s.child);                      /* glows from the moment it can be dragged */
           } else runStep();
         };
         if(s.auto) setTimeout(()=> autoPlace(s.auto).then(()=>{ moveDone = true; next(); }), s.auto_delay || 900);
-        if(s.child) pulse(s.child);
+        /* (4) the price tag pulses while the VO says the amount — as on the practice screens */
+        if(s.tag) restart(item.querySelector(".mn-tag"), "mn-pulse");
         say(s.say, ()=>{ voDone = true; next(); });
       }
 

@@ -111,7 +111,7 @@ def s_copy():
             "audio": {"prompt": "vo_g2_1", "done": vo("vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14। अब परी कॉपी खरीद सकती है।")},
             "data": {"mode": "teach", "target": 14, "item_img": "obj_copy", "item_name": "कॉपी", "sources": ["n10", "c1"], "no_engine_idle": True,
                      "script": [
-                         {"say": vo("vo_g2_1", "सबसे पहले परी को ₹14 की कॉपी लेनी है। आइए, ₹10 और ₹1 से ₹14 बनाते हैं।")},
+                         {"say": vo("vo_g2_1", "सबसे पहले परी को ₹14 की कॉपी लेनी है। आइए, ₹10 और ₹1 से ₹14 बनाते हैं।"), "tag": True},
                          {"say": vo("vo_g2_2", "पहले ₹10 का एक नोट रखते हैं।"), "auto": "n10"},
                          {"say": vo("vo_g2_3", "अभी कुल ₹10 हुए। ₹14 बनाने के लिए अभी ₹4 और चाहिए।"), "pulse_total": True},
                          # user 2026-09-29: only the NOTE is placed by Swiftie; the child places all four ₹1
@@ -128,11 +128,11 @@ def s_chips():
             "prompt_hi": "₹20 बनाइए।",
             "audio": {"prompt": "vo_g3_1a", "done": vo("vo_g3_done", "बहुत अच्छे! दो ₹10 के सिक्के — कुल मिलाकर बने ₹20।")},
             "data": {"mode": "teach", "target": 20, "item_img": "obj_chips", "item_name": "चिप्स", "sources": ["c10", "c1"],
-                     "prompt_delayed": True, "no_engine_idle": True,
+                     "no_engine_idle": True,
                      "teach_wrong": {"c1": vo("vo_g3_wrong", "₹20 बनाने के लिए ₹10 के सिक्के लगेंगे।")},
                      "script": [
-                         {"say": vo("vo_g3_1a", "अब परी को ₹20 के चिप्स लेने हैं।")},
-                         {"say": vo("vo_g3_1b", "आइए, ₹10 के सिक्कों से ₹20 बनाते हैं।"), "show_prompt": True},
+                         {"say": vo("vo_g3_1a", "अब परी को ₹20 के चिप्स लेने हैं।"), "tag": True},
+                         {"say": vo("vo_g3_1b", "आइए, ₹10 के सिक्कों से ₹20 बनाते हैं।")},
                          {"say": vo("vo_g3_2", "पहले ₹10 का सिक्का रखते हैं।"), "auto": "c10"},
                          {"say": vo("vo_g3_3", "अभी कुल ₹10 हुए। ₹20 के लिए ₹10 और चाहिए। चलिए, अब आप रखिए।"),
                           "pulse_total": True, "child": "c10",
@@ -163,7 +163,7 @@ NAMES = {"obj_chocolate": "चॉकलेट", "obj_plates": "प्लेट�
 
 def s_practice(id_, phase, T, img, sources, vo_prompt, done_line, lad, **extra):
     d = {"mode": "practice", "target": T, "item_img": img, "item_name": NAMES[img], "sources": sources, "ladder": lad,
-         "eq_in_band": True, "no_engine_idle": True}
+         "eq_in_band": False, "no_engine_idle": True}
     d.update(extra)
     return {"id": id_, "phase": phase, "eis": "enactive", "type": "MONEY_BUILD",
             "prompt_hi": "₹%d बनाइए।" % T,

@@ -232,7 +232,8 @@
     "no_engine_idle": true,
     "script": [
      {
-      "say": "vo_g2_1"
+      "say": "vo_g2_1",
+      "tag": true
      },
      {
       "say": "vo_g2_2",
@@ -296,18 +297,17 @@
      "c10",
      "c1"
     ],
-    "prompt_delayed": true,
     "no_engine_idle": true,
     "teach_wrong": {
      "c1": "vo_g3_wrong"
     },
     "script": [
      {
-      "say": "vo_g3_1a"
+      "say": "vo_g3_1a",
+      "tag": true
      },
      {
-      "say": "vo_g3_1b",
-      "show_prompt": true
+      "say": "vo_g3_1b"
      },
      {
       "say": "vo_g3_2",
@@ -379,7 +379,7 @@
       ]
      }
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true,
     "tag_fx": "pulse"
    },
@@ -442,7 +442,7 @@
       ]
      }
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true
    },
    "dev_label": "p13 · प्लेटें ₹35"
@@ -491,7 +491,7 @@
      },
      "ones": {}
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true
    },
    "dev_label": "added · टॉफ़ी ₹5"
@@ -553,7 +553,7 @@
       ]
      }
     },
-    "eq_in_band": true,
+    "eq_in_band": false,
     "no_engine_idle": true,
     "tag_fx": "glow"
    },
