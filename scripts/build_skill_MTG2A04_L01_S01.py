@@ -208,12 +208,11 @@ def s_done():
 
 # mastery shop (D3: all 8 from the mockup). The SME wrote the praise line for सेब/केले/अंगूर/आम;
 # the other four are written in the same pattern (flagged in CHANGES.md).
-SHOP = [("apple", "सेब", "obj_apple", 14, "शाबाश! सेब आपकी टोकरी में आ गया।"),
-        ("bananas", "केले", "obj_bananas", 20, "बहुत बढ़िया! केले आपने खरीद लिए।"),
-        ("carrots", "गाजर", "obj_carrots", 23, "शाबाश! गाजर आपकी टोकरी में आ गईं।"),
+SHOP = [   # round 2f (user): 6 items, one per stall panel, prices 14 / 25 / 35 / 42 / 60 / 65 ascending
+        ("apple", "सेब", "obj_apple", 14, "शाबाश! सेब आपकी टोकरी में आ गया।"),
+        ("oranges", "संतरे", "obj_oranges", 25, "कमाल! संतरे अब आपके हैं।"),
         ("tomatoes", "टमाटर", "obj_tomatoes", 35, "बहुत बढ़िया! टमाटर आपने खरीद लिए।"),
         ("grapes", "अंगूर", "obj_grapes", 42, "कमाल! अंगूर अब आपके हैं।"),
-        ("oranges", "संतरे", "obj_oranges", 25, "कमाल! संतरे अब आपके हैं।"),
         ("cucumbers", "खीरे", "obj_cucumbers", 60, "वाह! खीरे आपकी टोकरी में आ गए।"),
         ("mangoes", "आम", "obj_mangoes", 65, "वाह! आम आपकी टोकरी में आ गए।")]
 
@@ -247,9 +246,11 @@ def s_shop():
                       "idle": vo("vo_m_idle", "कोई वस्तु चुनिए।"),
                       "less": vo("vo_m_less", "ओह! रुपये कम हैं। फिर से बनाइए।"),
                       "more": vo("vo_m_more", "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।"),
+                      # round 2g: one-time drag-back tip (no Undo button)
+                      "tip": vo("vo_m_tip", "कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।"),
                       "done": vo("vo_m_done", "शाबाश! परी की सारी खरीदारी हो गई।")},
             "data": {"items": items, "detail": detail, "no_engine_idle": True, "idle_ms": 5500,
-                     "pari_img": "pari_basket", "pari_full_img": "pari_basket_full",
+                     "pari_img": "pari_basket", "pari_full_img": "pari_basket_full", "stall_img": "shop_stall",
                      "text": {"choose": "कोई वस्तु चुनिए।", "make": "₹{T} बनाइए।",
                               "less": "ओह! रुपये कम हैं। फिर से बनाइए।", "more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
                               "check": "जाँचें", "detail_tpl": "बहुत बढ़िया! {parts} मिलाकर ₹{T} बने।",
@@ -307,7 +308,7 @@ def guards(slides, src):
     def walk(o):
         if isinstance(o, dict):
             for k, v in o.items():
-                if k in ("img", "item_img", "pari_img", "pari_full_img") and isinstance(v, str): need.add(v)
+                if k in ("img", "item_img", "pari_img", "pari_full_img", "stall_img") and isinstance(v, str): need.add(v)
                 elif k in ("faces", "reveal_faces"): need.update(v)
                 else: walk(v)
         elif isinstance(o, list):
@@ -333,6 +334,7 @@ def main():
     src = open(ENGINE, encoding="utf-8").read()
     slides = [s_show(), s_pick10(), s_pick1(), s_market(), s_list(), s_copy(), s_chips(), s_choc(),
               s_plates(), s_toffee(), s_juice(), s_done(), s_shop(), s_cel()]
+    assert [x[3] for x in SHOP] == sorted(x[3] for x in SHOP), "shop prices must be ascending"
     DEV = {"T1": "p2 · ₹10 और ₹1 पहचानें", "T2": "p3–4 · ₹10 पर टैप", "T3": "p5–6 · ₹1 पर टैप", "T4": "p7 · बाज़ार",
            "G1": "p8 · परी की सूची", "G2": "p9 · कॉपी ₹14 (teach)", "G3": "p11 · चिप्स ₹20 (teach)",
            "G4": "p12 · चॉकलेट ₹25", "P1": "p13 · प्लेटें ₹35", "P2": "added · टॉफ़ी ₹5", "P3": "p16 · जूस ₹17 (हो गया)",

@@ -675,18 +675,26 @@
        basket  — the item jumps, flies to Pari's basket, the counter ticks, the item goes inactive.
      After all items: Pari with a full basket, the ticked list, the total. */
   SlideModules.SHOP_GAME = {
+    /* round 2f (user, 2026-09-30):
+         stall  — the team's 6-panel stall art; one item per panel, prices ascending. No basket counter:
+                  a bought item turns green with a tick and is disabled, which already says it.
+         make   — the page-6 build layout reused: item card (picture + price tag) left, drop zone right
+                  (no running total), coin tray below with ₹10 note · ₹10 coin · ₹1 coin, and «जाँचें»
+                  where the arrow button sits. No Undo button: a placed piece goes back by dragging it
+                  out of the drop zone (or tapping it). */
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data, items = d.items;
       $("navBtn").style.display = "none";
       const bought = new Set();
-      let first = true, busy = false, view = null, idleT = 0;
+      let first = true, busy = false, view = null, idleT = 0, justSold = -1;
+      let tipped = false;          /* round 2g: the drag-back tip is spoken ONCE per game */
       const root = el("div", "sg-root");
-      const counter = el("div", "sg-counter", '<span class="sg-basket-ic"></span><b>0/' + items.length + '</b>');
-      root.appendChild(counter);
       host.appendChild(root);
       const band = (t)=>{ $("promptText").textContent = t; };
-      const setCount = ()=>{ counter.querySelector("b").textContent = bought.size + "/" + items.length; restart(counter, "mn-bump"); };
+      /* panel rectangles of shop_stall.png, as % of the cropped image (measured off the art) */
+      const PANELS = [[9.89,31.18],[37.86,31.18],[65.55,31.18],[9.89,62.06],[37.86,62.06],[65.55,62.06]];
+      const PW = 25.0, PH = 26.3;
 
       /* ---------- choose ---------- */
       function showChoose(speak){
@@ -695,17 +703,21 @@
         band(d.text.choose);
         const v = el("div", "sg-choose");
         v.innerHTML = '<img class="sg-pari" src="' + img(d.pari_img) + '" alt="">';
-        const stall = el("div", "sg-stall", '<div class="sg-awning"></div>');
-        const shelves = el("div", "sg-shelves");
+        const stall = el("div", "sg-stall2");
+        stall.style.backgroundImage = 'url("' + img(d.stall_img) + '")';
         const cells = items.map((it, i)=>{
-          const c = el("div", "sg-cell" + (bought.has(i) ? " sg-sold" : ""),
-            '<img src="' + img(it.img) + '" alt="' + it.name + '" draggable="false"><div class="sg-price">₹' + it.price + '</div>');
-          c.style.animationDelay = (i % 4) * 0.35 + "s";
+          const c = el("div", "sg-cell2" + (bought.has(i) ? " sg-sold" : "") + (i === justSold ? " sg-justsold" : ""),
+            '<img src="' + img(it.img) + '" alt="' + it.name + '" draggable="false"><div class="sg-price">₹' + it.price + '</div>' +
+            '<span class="sg-tick"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 12.5l4.3 4.3L19 7.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
+          const p = PANELS[i];
+          c.style.left = p[0] + "%"; c.style.top = p[1] + "%"; c.style.width = PW + "%"; c.style.height = PH + "%";
+          c.style.animationDelay = (i % 3) * 0.4 + "s";
           c.onclick = ()=>{ if(busy || bought.has(i) || isPlaying) return; pick(i, c, cells); };
-          shelves.appendChild(c);
+          stall.appendChild(c);
           return c;
         });
-        stall.appendChild(shelves); v.appendChild(stall);
+        justSold = -1;
+        v.appendChild(stall);
         root.appendChild(v); view = v;
         let nags = 0;
         const arm = ()=>{
@@ -739,26 +751,26 @@
         const it = items[i], T = it.price, TP = Math.floor(T / 10), OP = T % 10;
         if(view) view.remove();
         band(d.text.make.replace("{T}", T));
-        const v = el("div", "sg-make");
-        const pari = el("img", "sg-pari-sm"); pari.src = img(d.pari_img); pari.alt = "";
-        const card = el("div", "sg-item-big mn-pop", '<img src="' + img(it.img) + '" alt=""><div class="sg-price-big">₹' + T + '</div>');
-        const amt = el("div", "sg-amount mn-target");
+        const v = el("div", "mn-build sg-make2");
+        const card = el("div", "mn-item mn-pop", '<img class="mn-item-img" src="' + img(it.img) + '" alt="' + it.name + '">' +
+                                               '<div class="mn-tag"><span>₹' + T + '</span></div>');
+        const amt = el("div", "mn-target");
         const tray = makeTray(); amt.appendChild(tray);
-        const bank = el("div", "sg-bank");
+        const top = el("div", "mn-top"); top.append(card, amt);
+        const bottom = el("div", "mn-bottom");
+        const bank = el("div", "mn-bank");
         const srcs = {};
-        ["n10", "c10", "c1"].forEach(kd => {
-          const w = el("div", "sg-src-w");
-          const s = piece(kd, "mn-src"); srcs[kd] = s;
-          w.append(s, el("div", "sg-src-l", KIND[kd].label));
-          bank.appendChild(w);
-        });
-        const undo = el("button", "sg-undo", '<svg viewBox="0 0 48 48" width="34" height="34"><path d="M18 12 8 22l10 10" fill="none" stroke="#0B3D8C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 22h19a11 11 0 0 1 0 22h-6" fill="none" stroke="#0B3D8C" stroke-width="5" stroke-linecap="round"/></svg>');
-        undo.setAttribute("aria-label", "Undo");
-        const chk = el("button", "sg-check", d.text.check);
-        const btns = el("div", "sg-btns"); btns.append(undo, chk);
-        const low = el("div", "sg-low"); low.append(bank, btns);
-        v.append(pari, card, amt, low);
+        ["n10", "c10", "c1"].forEach(kd => { const s = piece(kd, "mn-src"); srcs[kd] = s; bank.appendChild(s); });
+        bottom.appendChild(bank);
+        v.append(top, bottom);
         root.appendChild(v); view = v;
+        /* «जाँचें» takes the arrow button's place (same pill, same spot) */
+        const chk = el("button", "sg-checkpill", d.text.check);
+        /* sits next to the arrow button (same container, same spot); taken away with the screen */
+        const nav = $("navBtn");
+        (nav && nav.parentElement ? nav.parentElement : host).appendChild(chk);
+        const reap = setInterval(()=>{ if(!view || !view.isConnected || !root.isConnected){ chk.remove(); clearInterval(reap); } }, 300);
+        restart(card.querySelector(".mn-tag"), "mn-pulse");
 
         let attempts = 0, caps = false, working = false, solved = false;
         const placed = [];   /* {kind, el} in placement order */
@@ -767,7 +779,6 @@
         const sum  = ()=> tens() * 10 + ones();
         const refresh = ()=>{
           chk.disabled = !placed.length || solved;
-          undo.disabled = !placed.length || solved;
           const tOff = caps && tens() >= TP, oOff = caps && ones() >= OP;
           srcs.n10.classList.toggle("mn-off", tOff); srcs.c10.classList.toggle("mn-off", tOff);
           srcs.c1.classList.toggle("mn-off", oOff);
@@ -779,36 +790,78 @@
           if(v10 ? tens() >= 9 : ones() >= 9) return false;          /* the tray's physical room */
           return true;
         };
+        const giveBack = (rec, fromFloat)=>{
+          const i2 = placed.indexOf(rec); if(i2 < 0 || !rec.el) return;
+          placed.splice(i2, 1);
+          const f = fromFloat || floatAt(rec.kind, box(rec.el));
+          rec.el.remove();
+          bounceBack(f, srcs[rec.kind]);
+          refresh();
+        };
+        /* a placed piece: drag it OUT of the drop zone to give it back (tap also gives it back) */
+        const armPlaced = (rec)=>{
+          const p = rec.el;
+          p.style.touchAction = "none"; p.style.cursor = "grab";
+          p.addEventListener("pointerdown", (e)=>{
+            if(working || solved || e.button > 0) return;
+            e.preventDefault(); e.stopPropagation();
+            const p0 = { x:e.clientX, y:e.clientY }, b0 = box(p), s0 = toStage(e.clientX, e.clientY);
+            let f = null, moved = false;
+            const mv = (ev)=>{
+              if(!moved && Math.hypot(ev.clientX - p0.x, ev.clientY - p0.y) > 7){
+                moved = true; f = floatAt(rec.kind, b0, "mn-drag"); p.style.visibility = "hidden";
+              }
+              if(f){ const s = toStage(ev.clientX, ev.clientY);
+                     f.style.left = (b0.x + s.x - s0.x) + "px"; f.style.top = (b0.y + s.y - s0.y) + "px"; }
+            };
+            const up = (ev)=>{
+              document.removeEventListener("pointermove", mv);
+              document.removeEventListener("pointerup", up);
+              document.removeEventListener("pointercancel", up);
+              if(!moved) return;                           /* drag-only (round 2g): a tap does nothing */
+              if(ev.type !== "pointercancel" && inside(amt, ev.clientX, ev.clientY)){
+                /* dropped back inside: snap home */
+                animTo(f, box(p), 220, "ease-out").then(()=>{ f.remove(); p.style.visibility = ""; });
+              } else giveBack(rec, f);
+            };
+            document.addEventListener("pointermove", mv);
+            document.addEventListener("pointerup", up);
+            document.addEventListener("pointercancel", up);
+          });
+        };
         const put = (kind, f)=>{
           const rec = { kind, el:null };
           placed.push(rec);
           sfxDrop(placed.length);
-          addPlaced(tray, kind, f).then(p => {
-            rec.el = p;
-            p.onclick = ()=>{ if(working || solved) return; giveBack(rec); };
-          });
+          addPlaced(tray, kind, f).then(p => { rec.el = p; armPlaced(rec); if(!tipped) tipDragBack(p); });
           refresh();
         };
-        const giveBack = (rec)=>{
-          const i2 = placed.indexOf(rec); if(i2 < 0 || !rec.el) return;
-          placed.splice(i2, 1);
-          const b = box(rec.el); rec.el.remove();
-          const f = floatAt(rec.kind, b);
-          bounceBack(f, srcs[rec.kind]);
-          refresh();
+        /* round 2g/2h — the ONE-TIME TIP. There is no Undo button, so the first piece the child ever
+           places in the shop shows the way back: while Swiftie says «कोई पैसा हटाना हो, तो उसे वापस नीचे
+           खींच लीजिए।», a GHOST of that piece travels from the drop zone to its place in the tray — twice,
+           then stops. Waits for any clip already sounding (the item's own line) so it never cuts it off.
+           No hand (practice rounds). */
+        const tipDragBack = (p)=>{
+          tipped = true;
+          const kd = p.dataset.kind;
+          const ghostBack = (n)=>{
+            if(n <= 0 || !p.isConnected || solved || !srcs[kd]) return;
+            fly(kd, p, srcs[kd], { ghost:true, ms:1100 }).then(()=> setTimeout(()=> ghostBack(n - 1), 250));
+          };
+          const go = (tries)=>{
+            if(!p.isConnected || solved) return;
+            if((isPlaying || working) && tries < 40){ setTimeout(()=> go(tries + 1), 250); return; }
+            say(A(slide, "tip"));
+            setTimeout(()=> ghostBack(2), 300);
+          };
+          setTimeout(()=> go(0), 350);
         };
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
           canStart: (kind)=> !working && !solved && !srcs[kind].classList.contains("mn-off"),
-          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); return; } put(kind, f); },
-          onTap: (kind, src)=>{
-            if(working || solved || src.classList.contains("mn-off")) return;
-            if(!allowed(kind)){ restart(src, "mn-bump"); return; }
-            const f = floatAt(kind, box(src));
-            put(kind, f);
-          }
+          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); restart(amt, "mn-shake"); return; } put(kind, f); }
+          /* no onTap (round 2g): money reaches the drop zone ONLY by drag and drop */
         }));
-        undo.onclick = ()=>{ if(working || solved || !placed.length) return; giveBack(placed[placed.length - 1]); };
         chk.onclick = ()=>{
           if(working || solved || !placed.length || isPlaying) return;
           const s = sum();
@@ -844,9 +897,9 @@
           else { line = it.vo_praise; text = it.praise; }
           first = false;
           band(text);
-          say(line, ()=> toBasket(i, card, pari));
+          say(line, ()=> backToStall(i, card, chk));
         };
-        refresh();                                   /* जाँचें / undo start inactive — nothing placed yet */
+        refresh();                                   /* जाँचें starts inactive — nothing placed yet */
         state.replayAudio = ()=> say(it.vo_select);
         say(it.vo_select);
       }
@@ -860,23 +913,17 @@
         return d.text.detail_tpl.replace("{parts}", joined).replace("{T}", T);
       }
 
-      function toBasket(i, card, pari){
+      /* the bought item jumps, then the stall comes back with that panel green + ticked */
+      function backToStall(i, card, chk){
         restart(card, "sg-jump");
         setTimeout(()=>{
-          const img0 = card.querySelector("img");
-          const b0 = box(img0), bp = box(pari);
-          const f = el("img", "mn-float sg-flyitem"); f.src = img0.src;
-          f.style.left = b0.x + "px"; f.style.top = b0.y + "px"; f.style.width = b0.w + "px"; f.style.height = b0.h + "px";
-          stageEl().appendChild(f);
-          img0.style.visibility = "hidden";
-          animTo(f, { x:bp.x + bp.w * 0.28, y:bp.y + bp.h * 0.52, w:bp.w * 0.34, h:bp.w * 0.34 }, 700).then(()=>{
-            f.remove(); sfxPop();
-            bought.add(i); setCount();
-            busy = false;
-            if(bought.size >= items.length) showComplete();
-            else setTimeout(()=> showChoose(false), 350);
-          });
-        }, 520);
+          sfxPop();
+          chk.remove();
+          bought.add(i); justSold = i;
+          busy = false;
+          if(bought.size >= items.length) showComplete();
+          else showChoose(false);
+        }, 700);
       }
 
       /* ---------- complete ---------- */

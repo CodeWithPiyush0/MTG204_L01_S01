@@ -188,3 +188,18 @@ Deck page refs = the deck's slide number (S#) and the page label printed on it (
 | E6 | Page 10 (toffee, ₹1 only): coins centred in the drop zone on both axes | ✅ | Empty tens row no longer reserves space; symmetric inset. Applies to every build screen. drive: `P2 coins centred (x, y offset ≤ 3 px)`. |
 | E7 | Wrong currency: drop zone shakes, currency bounces back | ✅ | `mn-shake` on the target + spring-back to the tray. drive: `G3 wrong drop shakes the drop zone`. |
 - Checks: `_drive.py` 0 FAIL on build and dist · dist rebuilt.
+
+## Round 2f — mastery shop redesign (user, 2026-09-30)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| F1 | Use the new 6-panel shop image; 6 items, prices 14 · 25 · 35 · 42 · 60 · 65 ascending | ✅ | `shop_stall.png` (team art, cropped); items सेब ₹14 · संतरे ₹25 · टमाटर ₹35 · अंगूर ₹42 · खीरे ₹60 · आम ₹65, one per panel (positions measured off the art). केले ₹20 + गाजर ₹23 dropped; their 10 clips pruned. The builder asserts the prices are ascending. Complete-screen total now ₹241. |
+| F2 | Improve or remove the 0/8 counter | ✅ removed | A bought item's panel turns green with a ✓ and is disabled. |
+| F3 | Make screen = the page-6 layout: item card left, drop zone right (no total), tray with ₹10 note + ₹10 coin + ₹1 coin, no Pari, no Undo (drag back instead), «जाँचें» in place of the arrow | ✅ | drive: `no Pari, no undo, no running total`, `tray has ₹10 note, ₹10 coin, ₹1 coin`, `जाँचें in the arrow's place`, `drag-back returns the coin + re-activates ₹1`. Tap-to-add and tap-to-return still work too. After a purchase the item card jumps and the stall returns with that panel ticked. |
+- Checks: `_drive.py` 0 FAIL on build and dist.
+
+## Round 2g — shop: drag-only + one-time drag-back tip (user, 2026-09-30)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| G-1 | A tap must NOT put currency in the drop zone — drag and drop only | ✅ | Shop tap-to-add removed (pages 6–11 never had it). ⚑ Overrides deck S18 «Currency को tap या drag किया जा सकता है». drive: `M1 a TAP on currency does not add it`. |
+| G-2 | No Undo button → teach drag-back (user chose option 3 of 4 discussed) | ✅ | (round 2h: the wiggle became a GHOST of the piece travelling drop zone → tray, exactly 2 times, during the line) The first piece the child places in the shop shows the way back while Swiftie says «कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।» (`vo_m_tip`, 3.7 s, Leda). Once per game; waits for any clip already playing; no hand (practice rounds). drive: `tip spoken + wiggle`, `tip is NOT repeated`, `never spoken again on later items`. |
+| G-3 | (follows from G-2) tap-to-return removed too | ✅ | Dragging is the only way money moves, both ways — a tap on a placed coin does nothing. ⚑ Overrides deck S18 «रखे हुए पैसे पर tap करके उसे वापस कर सकता है» and «Undo button भी उपलब्ध रहेगा». A wrong जाँचें still returns everything to the tray. drive: `a TAP on a placed coin does nothing`, `drag it back out -> tray empty`. |

@@ -313,3 +313,37 @@
    (the कुल chip overlays the top-right corner) */
 .mn-target .mn-tray{inset:16px;}
 .mn-target .mn-row:empty{display:none;}
+
+
+/* ======================= round 2f (user, 2026-09-30) ======================= */
+/* shop stall = the team's 6-panel art; items sit on its cream panels */
+.sg-choose{justify-content:center;gap:10px;}
+.sg-stall2{position:relative;height:470px;aspect-ratio:1405/991;flex:0 0 auto;background:center/100% 100% no-repeat;
+  filter:drop-shadow(0 12px 18px rgba(84,46,12,.18));}
+.sg-cell2{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+  border-radius:16px;border:4px solid transparent;box-sizing:border-box;transition:opacity .25s,filter .25s,background .25s,border-color .25s;
+  animation:sgIdle 3.2s ease-in-out infinite;}
+.sg-cell2 img{width:72%;height:58%;object-fit:contain;pointer-events:none;}
+.sg-cell2 .sg-price{font-size:24px;padding:4px 14px;}
+.sg-cell2.sg-dull{opacity:.35;filter:grayscale(.6);}
+.sg-cell2.sg-shine{box-shadow:0 0 0 6px #FFD34E,0 0 26px 8px rgba(255,211,78,.9);background:rgba(255,245,200,.6);animation:none;z-index:2;}
+.sg-cell2.sg-glow{animation:sgGlow 1s ease-in-out 3;}
+.sg-tick{display:none;position:absolute;top:6px;right:6px;width:36px;height:36px;border-radius:50%;background:#2DB34A;align-items:center;justify-content:center;
+  border:3px solid #fff;box-shadow:0 3px 6px rgba(0,90,30,.3);}
+.sg-cell2.sg-sold{background:rgba(204,248,216,.92);border-color:#2DB34A;cursor:default;pointer-events:none;animation:none;}
+.sg-cell2.sg-sold .sg-tick{display:flex;}
+.sg-cell2.sg-sold .sg-price{background:var(--correct-bg);border-color:#2DB34A;}
+.sg-cell2.sg-justsold .sg-tick{animation:mnTick .45s ease-out .15s backwards;}
+.sg-cell2.sg-justsold{animation:mnBump .5s ease-out 1;}
+/* make view = the page-6 build layout; no running total, three sources in the tray */
+.sg-make2{flex:1;}
+.sg-make2 .mn-bank{gap:80px;}
+.sg-make2 .mn-item.sg-jump{animation:sgJump .5s ease-out 1;}
+/* «जाँचें» — the arrow pill's twin, in the arrow's place */
+.sg-checkpill{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:10;font-family:var(--font-hi);font-weight:800;font-size:30px;
+  min-width:190px;height:62px;padding:0 40px;border-radius:9999px;border:3px solid #fff;cursor:pointer;color:var(--navy);background:#FCB717;
+  box-shadow:0 6px 6px rgba(0,0,0,.25),inset 4.54px 9.09px 12.12px rgba(255,255,255,.25),inset -4.54px -4.54px 13.63px rgba(116,60,0,.19);}
+.sg-checkpill:disabled{background:#EDEDED;color:#C2C2C2;cursor:not-allowed;box-shadow:none;}
+.sg-checkpill:not(:disabled):active{transform:translateX(-50%) translateY(3px);}
+
+/* round 2h: the drag-back tip is a ghost travelling drop zone -> tray (fly(..., {ghost:true})), no wiggle */
