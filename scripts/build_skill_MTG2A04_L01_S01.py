@@ -329,6 +329,19 @@ def guards(slides, src):
     if unk: sys.exit("X  clip ids not registered: %s" % unk)
     return m.group(1), sorted(need)
 
+def gate_spec():
+    """round 2i: peek once -> talk loop while the VO sounds -> rest (scripts/make_gate_bird.py).
+    peek_ms is measured off the file so the talk starts on her last rising frame."""
+    ui = os.path.join(ROOT, "assets", "UI")
+    peek = os.path.join(ui, "gate_peek.webp")
+    if not os.path.isfile(peek):
+        return {"img": "assets/UI/swifty_gate.webp", "talk_at_ms": 3820}      # stock gate
+    from PIL import Image, ImageSequence
+    ms = sum((f.info.get("duration") or 40) for f in ImageSequence.Iterator(Image.open(peek)))
+    return {"img": "assets/UI/gate_peek.webp", "peek": "assets/UI/gate_peek.webp",
+            "talk": "assets/UI/gate_talk.webp", "rest": "assets/UI/gate_rest.webp",
+            "peek_ms": ms, "hold_ms": 450}
+
 # ============================================================== main
 def main():
     src = open(ENGINE, encoding="utf-8").read()
@@ -364,7 +377,7 @@ def main():
         "landing_scene": {"img": "scn_landing"},
         "phase_distribution": dist,
         "mastery_gate": MASTERY_GATE,
-        "gate": {"img": "assets/UI/swifty_gate.webp", "talk_at_ms": 3820},
+        "gate": gate_spec(),
         "scaffold_rules": {"max_attempts": 3, "hint_levels": 3},
         "signals_expected": ["slide_entered", "slide_completed", "money_pick_first_try", "money_build_done",
                              "answer_wrong", "phase_transition", "shop_item_bought", "mastery_score", "lesson_completed"],

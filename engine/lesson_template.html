@@ -4106,6 +4106,12 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 
 /* round 2h: the drag-back tip is a ghost travelling drop zone -> tray (fly(..., {ghost:true})), no wiggle */
 
+/* round 2i: transition title is WRITTEN in (left-to-right wipe — Devanagari-safe, no split clusters)
+   when Swiftie starts to talk; hidden during her peek */
+@keyframes pgWrite{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% 0 -20% 0)}}
+.pg-title.pg-wait{visibility:hidden;}
+.pg-title.pg-write{animation:pgWrite .9s ease-out both;}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/pic_kaam.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/pic_naak.png"></head>
@@ -15287,6 +15293,75 @@ if(document.fonts && document.fonts.load){
       });
     } catch(e){}
   })(0);
+
+  /* ============ TRANSITION GATE, round 2i (user, 2026-09-30) ============
+     "Swifty will peek once, then the text will be written and its VO will play, and the VO will sync
+     with her mouth." The stock gate played one 8.5 s animation (rise half-way, pause, rise again, talk)
+     and started the VO at a fixed 3.8 s, so the mouth and the voice only lined up by luck and the
+     screen felt long. CARD.gate now names three pieces (scripts/make_gate_bird.py):
+        peek  — one continuous rise, played once           (~1.5 s)
+        talk  — mouth open/close loop, shown ONLY while the gate VO is actually sounding
+        rest  — mouth closed, from the moment the VO ends
+     The title is written in (left-to-right wipe) as she starts to talk. Same shell as the engine's
+     phaseBlurTransition (blur, token, header hide); replaced by assignment, engine file untouched.
+     Falls back to the engine's own gate when the card has no gate.peek. */
+  setTimeout(()=> (function patchGate(tries){
+    let ok = false;
+    try {
+      if(typeof phaseBlurTransition === "function" && typeof _gateToken !== "undefined"){
+        const _orig = phaseBlurTransition;
+        phaseBlurTransition = function(cb, toPhase){
+          const G = (CARD && CARD.gate) || {};
+          if(!G.peek) return _orig(cb, toPhase);
+          const tok = ++_gateToken;
+          stopNudge(); stopAudio();
+          const gate = $("phaseGate"), im = $("phaseGateImg"), title = $("phaseGateTitle");
+          const setImg = (src)=>{ im.removeAttribute("src"); void im.offsetWidth; im.src = src; };
+          if(im){ im.classList.add("pg-card"); setImg(G.peek); }
+          if(title){ title.textContent = PHASE_GATE_TITLE[toPhase] || ""; title.classList.remove("pg-write"); title.classList.add("pg-wait"); }
+          $("stage").classList.add("blurred", "gating");
+          document.body.classList.add("gating");
+          gate.classList.add("show", "hint-glow");
+          SwiftPAL.emit("phase_transition", { to: toPhase });
+          const closeGate = ()=>{ gate.classList.remove("show"); $("stage").classList.remove("blurred", "gating"); document.body.classList.remove("gating"); };
+          const voId = PHASE_GATE_VO[toPhase];
+          const voSrc = voId ? ("assets/Audio/" + voId + "." + AUDIO_EXT) : null;
+          let finished = false;
+          const finish = ()=>{
+            if(finished) return; finished = true;
+            if(tok !== _gateToken){ closeGate(); return; }
+            if(im && G.rest) setImg(G.rest);                 /* mouth closes with the last word */
+            setTimeout(()=>{
+              if(tok !== _gateToken){ closeGate(); return; }
+              gate.classList.remove("show");
+              $("stage").classList.remove("blurred");
+              if(cb) cb();
+              $("stage").classList.remove("gating");
+              document.body.classList.remove("gating");
+            }, G.hold_ms || 450);
+          };
+          const talk = ()=>{
+            if(tok !== _gateToken){ closeGate(); return; }
+            if(title){ title.classList.remove("pg-wait"); void title.offsetWidth; title.classList.add("pg-write"); }
+            if(im && G.talk) setImg(G.talk);
+            /* play() starts the clip at once; the talk loop runs until its onEnd */
+            play(voSrc, finish);
+            setTimeout(finish, 12000);                       /* never strand the child */
+          };
+          /* the peek clock starts when the peek image has actually loaded (it is warmed at boot) */
+          let started = false;
+          const go = ()=>{ if(started) return; started = true; setTimeout(talk, G.peek_ms || 1500); };
+          if(!im || im.complete) go();
+          else { im.addEventListener("load", go, { once:true }); im.addEventListener("error", go, { once:true }); setTimeout(go, 2500); }
+        };
+        /* warm the three pieces too, so no gate opens on an empty frame */
+        const G = (CARD && CARD.gate) || {};
+        window.__gateWarm2 = [G.peek, G.talk, G.rest].filter(Boolean).map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; });
+        ok = true;
+      }
+    } catch(e){}
+    if(!ok && tries < 400) setTimeout(()=> patchGate(tries + 1), 25);
+  })(0), 0);
 
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";

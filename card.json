@@ -29,8 +29,12 @@
   "audio": "vo_pt_mastery"
  },
  "gate": {
-  "img": "assets/UI/swifty_gate.webp",
-  "talk_at_ms": 3820
+  "img": "assets/UI/gate_peek.webp",
+  "peek": "assets/UI/gate_peek.webp",
+  "talk": "assets/UI/gate_talk.webp",
+  "rest": "assets/UI/gate_rest.webp",
+  "peek_ms": 1520,
+  "hold_ms": 450
  },
  "scaffold_rules": {
   "max_attempts": 3,

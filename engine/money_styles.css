@@ -347,3 +347,9 @@
 .sg-checkpill:not(:disabled):active{transform:translateX(-50%) translateY(3px);}
 
 /* round 2h: the drag-back tip is a ghost travelling drop zone -> tray (fly(..., {ghost:true})), no wiggle */
+
+/* round 2i: transition title is WRITTEN in (left-to-right wipe — Devanagari-safe, no split clusters)
+   when Swiftie starts to talk; hidden during her peek */
+@keyframes pgWrite{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% 0 -20% 0)}}
+.pg-title.pg-wait{visibility:hidden;}
+.pg-title.pg-write{animation:pgWrite .9s ease-out both;}

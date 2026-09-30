@@ -25,13 +25,15 @@ def main():
     for sub in ("assets/Audio", "assets/Images", "assets/UI"):
         os.makedirs(os.path.join(DIST, sub), exist_ok=True)
 
+    # sw_lg_hint_anim is the mascot of the engine hint OVERLAY, which no module in this game opens.
+    SKIP = {"train_spritesheet.webp", "train_still.webp", "peeking.webp", "sw_lg_hint_anim.webp"}
     # UI: keep what the HTML names — minus three files that are named but never fetched here:
     # the train art belongs to the inherited train modules this card never mounts, and peeking.webp
     # is the gate bird ONLY when a card sets no CARD.gate (this one sets swifty_gate.webp). The gate
     # <img>'s initial src is pointed at the bird actually used, so nothing requests peeking at load.
-    # sw_lg_hint_anim is the mascot of the engine hint OVERLAY, which no module in this game opens.
-    SKIP = {"train_spritesheet.webp", "train_still.webp", "peeking.webp", "sw_lg_hint_anim.webp"}
-    html = html.replace('id="phaseGateImg" src="assets/UI/peeking.webp"', 'id="phaseGateImg" src="assets/UI/swifty_gate.webp"')
+    # round 2i: the gate plays gate_peek/talk/rest; the old 8.5 s swifty_gate.webp is never fetched
+    html = html.replace('id="phaseGateImg" src="assets/UI/peeking.webp"', 'id="phaseGateImg" src="assets/UI/gate_peek.webp"')
+    SKIP.add("swifty_gate.webp")
     ui = os.path.join(ROOT, "assets", "UI"); kept_ui = []
     for f in sorted(os.listdir(ui)):
         # Swiftie's head poses are chosen at runtime ("sw_head_" + expr + "_anim.webp"), so their
