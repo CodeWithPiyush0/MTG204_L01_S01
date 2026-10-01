@@ -426,6 +426,14 @@ def main():
         "assets": {"audio": all_audio, "audio_text": dict(AUDIO), "audio_ms": ms,
                    "image": {k: "assets/Images/%s.png" % k for k in imgs}, "audio_ext": "ogg", "img_ext": "png"}}
 
+    # round 2n: the loader holds until ALL of these are downloaded + decoded (engine/money_modules.js)
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    from ui_skip import ui_files
+    ui = ["assets/UI/" + f for f in ui_files(os.path.join(ROOT, "assets", "UI"), src + json.dumps(card))
+          if f.lower().endswith((".webp", ".png", ".svg", ".gif", ".jpg"))]
+    imgs_all = sorted(set(card["assets"]["image"].values()) | set(ui) |
+                      {"assets/Images/play_btn.svg", "assets/Images/play_btn_disabled.svg"})
+    card["preload"] = {"images": imgs_all, "audio": sorted(set(card["assets"]["audio"].values()))}
     payload = json.dumps(card, ensure_ascii=False, indent=1)
     if not CARD_TAG.search(src): sys.exit("X  cardData tag not found")
     html = CARD_TAG.sub(lambda m: m.group(1) + payload + m.group(3), src, count=1)

@@ -13,7 +13,12 @@ class Q(http.server.SimpleHTTPRequestHandler):
 srv = TS(("127.0.0.1", 0), functools.partial(Q, directory=ROOT)); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 o = Options(); o.add_argument("--headless=new"); o.add_argument("--window-size=1333,750"); o.add_argument("--autoplay-policy=no-user-gesture-required")
-d = webdriver.Chrome(options=o); d.get("http://127.0.0.1:%d/%s" % (port, PAGE)); time.sleep(4)
+d = webdriver.Chrome(options=o)
+if os.environ.get("NOGATE"):
+    d.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {"source":
+        "Object.defineProperty(window,'__assetGateFn',{configurable:true,set(v){},get(){return ()=>Promise.resolve();}});"})
+d.get("http://127.0.0.1:%d/%s" % (port, PAGE)); time.sleep(4)
+if os.environ.get("NOKEEP"): d.execute_script("window.__preloadKeep = []")
 js = d.execute_script
 js("""try{stopAudio()}catch(e){}; document.getElementById('startGate').classList.add('hidden'); document.body.classList.remove('is-start');
   window.__log=[]; window.__t0=0;
@@ -29,7 +34,10 @@ log = js("return window.__log"); A = js("return CARD.end_anim")
 bits, step = A["bits"], A["step_ms"]
 TOPEN = set(A["talk"]["open"])
 vo = [x for x in log if x[0] >= 0 and x[3] == 1]
-print("VO ran %d ms, %d samples" % (vo[-1][0] if vo else 0, len(vo)))
+gaps = [b[0] - a[0] for a, b in zip(vo, vo[1:])]
+big = sorted(((b[0] - a[0], a[0], a[1] + ":" + str(a[2]), b[1] + ":" + str(b[2])) for a, b in zip(vo, vo[1:])), reverse=True)[:3]
+print("longest stalls (gap ms, at t, from -> to):", big)
+print("VO ran %d ms, %d samples, frame gap median %d ms / max %d ms" % (vo[-1][0] if vo else 0, len(vo), sorted(gaps)[len(gaps)//2] if gaps else 0, max(gaps) if gaps else 0))
 print("sheets in order:", [k for i, k in enumerate(x[1] for x in vo) if i == 0 or k != vo[i - 1][1]])
 sh = [(t, f) for t, s, f, p in vo if s == "shabaash"]
 print("shabaash frames played:", sorted({f for t, f in sh}))

@@ -380,3 +380,6 @@
 .end-screen .cel-sprite{position:relative;height:358px;width:300px;background:none;aspect-ratio:auto;animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
 .end-screen .cel-sprite .cel-art{position:absolute;left:50%;bottom:0;height:420px;transform:translateX(-50%);
   background-repeat:no-repeat;background-size:600% 600%;filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));}
+
+/* round 2n: invisible one-time paint of the talk/idle sheets (decode + upload before they are needed) */
+.end-screen .cel-sprite .cel-prepaint{opacity:.01;pointer-events:none;filter:none;}

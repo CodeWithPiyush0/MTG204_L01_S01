@@ -4139,6 +4139,9 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .end-screen .cel-sprite .cel-art{position:absolute;left:50%;bottom:0;height:420px;transform:translateX(-50%);
   background-repeat:no-repeat;background-size:600% 600%;filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));}
 
+/* round 2n: invisible one-time paint of the talk/idle sheets (decode + upload before they are needed) */
+.end-screen .cel-sprite .cel-prepaint{opacity:.01;pointer-events:none;filter:none;}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
@@ -5533,6 +5536,206 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   },
   "audio_ext": "ogg",
   "img_ext": "png"
+ },
+ "preload": {
+  "images": [
+   "assets/Images/cur_coin1.png",
+   "assets/Images/cur_coin10.png",
+   "assets/Images/cur_coin10_back.png",
+   "assets/Images/cur_coin10_glow.png",
+   "assets/Images/cur_coin10_lock.png",
+   "assets/Images/cur_coin1_back.png",
+   "assets/Images/cur_coin1_glow.png",
+   "assets/Images/cur_coin1_lock.png",
+   "assets/Images/cur_note10.png",
+   "assets/Images/cur_note10_glow.png",
+   "assets/Images/cur_note10_lock.png",
+   "assets/Images/obj_apple.png",
+   "assets/Images/obj_bananas.png",
+   "assets/Images/obj_carrots.png",
+   "assets/Images/obj_chips.png",
+   "assets/Images/obj_chocolate.png",
+   "assets/Images/obj_copy.png",
+   "assets/Images/obj_grapes.png",
+   "assets/Images/obj_juice.png",
+   "assets/Images/obj_oranges.png",
+   "assets/Images/obj_plates.png",
+   "assets/Images/obj_toffee.png",
+   "assets/Images/obj_tomatoes.png",
+   "assets/Images/pari_basket.png",
+   "assets/Images/pari_basket_full.png",
+   "assets/Images/pari_celebrate.png",
+   "assets/Images/play_btn.svg",
+   "assets/Images/play_btn_disabled.svg",
+   "assets/Images/scn_landing.png",
+   "assets/Images/scn_market.png",
+   "assets/Images/shop_stall.png",
+   "assets/UI/bgdeco_spark.svg",
+   "assets/UI/bgdeco_star.svg",
+   "assets/UI/bgdeco_star_o.svg",
+   "assets/UI/cel_idle.webp",
+   "assets/UI/cel_shabaash.webp",
+   "assets/UI/cel_talk.webp",
+   "assets/UI/end_screen.webp",
+   "assets/UI/gate_peek.webp",
+   "assets/UI/gate_rest.webp",
+   "assets/UI/gate_talk.webp",
+   "assets/UI/loader.gif",
+   "assets/UI/mascot.webp",
+   "assets/UI/new_landing_swiftee_anim.webp",
+   "assets/UI/nudge_hand_new.svg",
+   "assets/UI/start_card.webp",
+   "assets/UI/start_mascot.webp",
+   "assets/UI/startnew_bg.webp",
+   "assets/UI/startnew_bg_plain.webp",
+   "assets/UI/sw_anim_rest.png",
+   "assets/UI/sw_head_celebrate.webp",
+   "assets/UI/sw_head_celebrate_anim.webp",
+   "assets/UI/sw_head_hint.webp",
+   "assets/UI/sw_head_hint_anim.webp",
+   "assets/UI/sw_head_neutral.webp",
+   "assets/UI/sw_head_talking.webp",
+   "assets/UI/sw_head_tryagain.webp",
+   "assets/UI/sw_head_tryagain_anim.webp"
+  ],
+  "audio": [
+   "assets/Audio/sfx_celebrate.ogg",
+   "assets/Audio/sfx_correct.ogg",
+   "assets/Audio/sfx_fb_correct.ogg",
+   "assets/Audio/sfx_fb_incorrect.ogg",
+   "assets/Audio/sfx_next_button.ogg",
+   "assets/Audio/sfx_play_button.ogg",
+   "assets/Audio/sfx_pop.ogg",
+   "assets/Audio/sfx_tap.ogg",
+   "assets/Audio/sfx_wrong.ogg",
+   "assets/Audio/vo_cel_prompt.ogg",
+   "assets/Audio/vo_g1_prompt.ogg",
+   "assets/Audio/vo_g2_1.ogg",
+   "assets/Audio/vo_g2_2.ogg",
+   "assets/Audio/vo_g2_3.ogg",
+   "assets/Audio/vo_g2_4.ogg",
+   "assets/Audio/vo_g2_5.ogg",
+   "assets/Audio/vo_g2_6.ogg",
+   "assets/Audio/vo_g2_7.ogg",
+   "assets/Audio/vo_g2_done.ogg",
+   "assets/Audio/vo_g2_idle.ogg",
+   "assets/Audio/vo_g3_1a.ogg",
+   "assets/Audio/vo_g3_1b.ogg",
+   "assets/Audio/vo_g3_2.ogg",
+   "assets/Audio/vo_g3_3.ogg",
+   "assets/Audio/vo_g3_done.ogg",
+   "assets/Audio/vo_g3_idle1.ogg",
+   "assets/Audio/vo_g3_idle2.ogg",
+   "assets/Audio/vo_g3_wrong.ogg",
+   "assets/Audio/vo_g4_done.ogg",
+   "assets/Audio/vo_g4_o15.ogg",
+   "assets/Audio/vo_g4_o5.ogg",
+   "assets/Audio/vo_g4_prompt.ogg",
+   "assets/Audio/vo_g4_t20.ogg",
+   "assets/Audio/vo_g4_t21.ogg",
+   "assets/Audio/vo_g4_t22.ogg",
+   "assets/Audio/vo_g4_t23.ogg",
+   "assets/Audio/vo_g4_t24.ogg",
+   "assets/Audio/vo_landing.ogg",
+   "assets/Audio/vo_m_det_14_0_1.ogg",
+   "assets/Audio/vo_m_det_14_1_0.ogg",
+   "assets/Audio/vo_m_det_25_0_2.ogg",
+   "assets/Audio/vo_m_det_25_1_1.ogg",
+   "assets/Audio/vo_m_det_25_2_0.ogg",
+   "assets/Audio/vo_m_det_35_0_3.ogg",
+   "assets/Audio/vo_m_det_35_1_2.ogg",
+   "assets/Audio/vo_m_det_35_2_1.ogg",
+   "assets/Audio/vo_m_det_35_3_0.ogg",
+   "assets/Audio/vo_m_det_42_0_4.ogg",
+   "assets/Audio/vo_m_det_42_1_3.ogg",
+   "assets/Audio/vo_m_det_42_2_2.ogg",
+   "assets/Audio/vo_m_det_42_3_1.ogg",
+   "assets/Audio/vo_m_det_42_4_0.ogg",
+   "assets/Audio/vo_m_det_60_0_6.ogg",
+   "assets/Audio/vo_m_det_60_1_5.ogg",
+   "assets/Audio/vo_m_det_60_2_4.ogg",
+   "assets/Audio/vo_m_det_60_3_3.ogg",
+   "assets/Audio/vo_m_det_60_4_2.ogg",
+   "assets/Audio/vo_m_det_60_5_1.ogg",
+   "assets/Audio/vo_m_det_60_6_0.ogg",
+   "assets/Audio/vo_m_det_65_0_6.ogg",
+   "assets/Audio/vo_m_det_65_1_5.ogg",
+   "assets/Audio/vo_m_det_65_2_4.ogg",
+   "assets/Audio/vo_m_det_65_3_3.ogg",
+   "assets/Audio/vo_m_det_65_4_2.ogg",
+   "assets/Audio/vo_m_det_65_5_1.ogg",
+   "assets/Audio/vo_m_det_65_6_0.ogg",
+   "assets/Audio/vo_m_done.ogg",
+   "assets/Audio/vo_m_idle.ogg",
+   "assets/Audio/vo_m_less.ogg",
+   "assets/Audio/vo_m_more.ogg",
+   "assets/Audio/vo_m_ok_apple.ogg",
+   "assets/Audio/vo_m_ok_bananas.ogg",
+   "assets/Audio/vo_m_ok_carrots.ogg",
+   "assets/Audio/vo_m_ok_grapes.ogg",
+   "assets/Audio/vo_m_ok_oranges.ogg",
+   "assets/Audio/vo_m_ok_tomatoes.ogg",
+   "assets/Audio/vo_m_prompt.ogg",
+   "assets/Audio/vo_m_sel_apple.ogg",
+   "assets/Audio/vo_m_sel_bananas.ogg",
+   "assets/Audio/vo_m_sel_carrots.ogg",
+   "assets/Audio/vo_m_sel_grapes.ogg",
+   "assets/Audio/vo_m_sel_oranges.ogg",
+   "assets/Audio/vo_m_sel_tomatoes.ogg",
+   "assets/Audio/vo_m_tip.ogg",
+   "assets/Audio/vo_ones_use_1.ogg",
+   "assets/Audio/vo_ones_use_2.ogg",
+   "assets/Audio/vo_ones_use_3.ogg",
+   "assets/Audio/vo_ones_use_4.ogg",
+   "assets/Audio/vo_ones_use_5.ogg",
+   "assets/Audio/vo_ones_use_6.ogg",
+   "assets/Audio/vo_ones_use_7.ogg",
+   "assets/Audio/vo_p1_done.ogg",
+   "assets/Audio/vo_p1_o15.ogg",
+   "assets/Audio/vo_p1_o25.ogg",
+   "assets/Audio/vo_p1_o5.ogg",
+   "assets/Audio/vo_p1_prompt.ogg",
+   "assets/Audio/vo_p1_t30.ogg",
+   "assets/Audio/vo_p1_t31.ogg",
+   "assets/Audio/vo_p1_t32.ogg",
+   "assets/Audio/vo_p1_t33.ogg",
+   "assets/Audio/vo_p1_t34.ogg",
+   "assets/Audio/vo_p2_done.ogg",
+   "assets/Audio/vo_p2_prompt.ogg",
+   "assets/Audio/vo_p2_t0.ogg",
+   "assets/Audio/vo_p2_t1.ogg",
+   "assets/Audio/vo_p2_t2.ogg",
+   "assets/Audio/vo_p2_t3.ogg",
+   "assets/Audio/vo_p2_t4.ogg",
+   "assets/Audio/vo_p3_done.ogg",
+   "assets/Audio/vo_p3_o7.ogg",
+   "assets/Audio/vo_p3_prompt.ogg",
+   "assets/Audio/vo_p3_t10.ogg",
+   "assets/Audio/vo_p3_t11.ogg",
+   "assets/Audio/vo_p3_t12.ogg",
+   "assets/Audio/vo_p3_t13.ogg",
+   "assets/Audio/vo_p3_t14.ogg",
+   "assets/Audio/vo_p3_t15.ogg",
+   "assets/Audio/vo_p3_t16.ogg",
+   "assets/Audio/vo_p4_prompt.ogg",
+   "assets/Audio/vo_pt_guided.ogg",
+   "assets/Audio/vo_pt_mastery.ogg",
+   "assets/Audio/vo_pt_practice.ogg",
+   "assets/Audio/vo_pt_tutorial.ogg",
+   "assets/Audio/vo_t1_prompt.ogg",
+   "assets/Audio/vo_t2_correct.ogg",
+   "assets/Audio/vo_t2_prompt.ogg",
+   "assets/Audio/vo_t2_wrong.ogg",
+   "assets/Audio/vo_t3_correct.ogg",
+   "assets/Audio/vo_t3_prompt.ogg",
+   "assets/Audio/vo_t3_wrong.ogg",
+   "assets/Audio/vo_t4_prompt.ogg",
+   "assets/Audio/vo_tens_use_coin_10.ogg",
+   "assets/Audio/vo_tens_use_coin_20.ogg",
+   "assets/Audio/vo_tens_use_note_10.ogg",
+   "assets/Audio/vo_tens_use_note_20.ogg",
+   "assets/Audio/vo_tens_use_note_30.ogg"
+  ]
  }
 }</script>
 
@@ -16737,6 +16940,14 @@ if(document.fonts && document.fonts.load){
     }
     im.style.display = "none";
     const art = sp.querySelector(".cel-art");
+    /* paint the talk + idle sheets once, invisibly, while the screen opens — so the browser decodes and
+       uploads them now, not at the शाबाश -> talk switch (measured: a 130-180 ms stall there) */
+    [A.talk, A.idle].forEach(sh => {
+      const pp = document.createElement("div"); pp.className = "cel-art cel-prepaint";
+      pp.style.aspectRatio = A.fw + " / " + A.fh; pp.style.backgroundImage = 'url("' + sh.src + '")';
+      sp.appendChild(pp);
+      requestAnimationFrame(()=> requestAnimationFrame(()=> setTimeout(()=> pp.remove(), 120)));
+    });
     art.style.aspectRatio = A.fw + " / " + A.fh;
     let curSrc = "";
     const show = (sheet, i)=>{
@@ -16800,6 +17011,56 @@ if(document.fonts && document.fonts.load){
   setTimeout(()=>{ try { const A = CARD && CARD.end_anim; if(A && A.shabaash){
     window.__celWarm = [A.shabaash.src, A.talk.src, A.idle.src].map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; }); } } catch(e){} }, 1500);
 
+  /* ============ ASSET GATE, round 2n (user, 2026-10-01) ============
+     "The landing image should load completely before the loader disappears ... load all the assets
+     before entering, so nothing loads with a delay." The stock loader left on window 'load' OR a 2.5 s
+     watchdog, and nothing waited for the landing scene (a CSS background), the other screens' art or
+     any sound. Now the loader's dismissal (engine boot loader, patched by inject_money.py) awaits
+     this: every image in CARD.preload downloaded AND decoded, every sound fetched AND decoded into the
+     engine's own voice-buffer cache (the same URLs play() asks for). Hard cap 30 s — a child is never
+     stranded on the loader; the cap is logged. Defined synchronously: boot() may ask before any timer. */
+  window.__assetGateFn = function(){
+    if(window.__assetGateP) return window.__assetGateP;
+    const t0 = performance.now(); window.__gateStartedAt = t0;
+    const P = (CARD && CARD.preload) || {};
+    const imgs = (P.images || []).map(u => new Promise(res => {
+      const im = new Image();
+      im.onload = ()=>{ (im.decode ? im.decode() : Promise.resolve()).then(res, res); };
+      im.onerror = ()=>{ console.warn("[preload] image failed:", u); res(); };
+      im.src = u;
+      /* keep decoded copies only of what is on screen the instant the loader goes (the landing);
+         holding all 58 decoded bitmaps measurably cost frame rate on the celebration. Everything
+         else is in the HTTP cache, so it never touches the network again. */
+      if(/scn_landing|new_landing_swiftee|play_btn|startnew_bg|start_card/.test(u))
+        (window.__preloadKeep = window.__preloadKeep || []).push(im);
+    }));
+    const av = (u)=> (typeof _av === "function" ? _av(u) : u);
+    /* voice clips are played through play() at the version-stamped URL; sound effects only through
+       playSfx() at the PLAIN URL — each is warmed under exactly the key it is played with */
+    const aurls = [];
+    (P.audio || []).forEach(u => { aurls.push(/\/sfx_/.test(u) ? u : av(u)); });
+    const aud = aurls.map(u => (typeof _loadVoiceBuffer === "function"
+        ? _loadVoiceBuffer(u) : fetch(u, { cache:"force-cache" })).catch(()=>{ console.warn("[preload] audio failed:", u); }));
+    let total = imgs.length + aud.length, done = 0;
+    const tick = (p)=> p.then(()=>{ done++; window.__preloadProgress = done / Math.max(1, total); });
+    const all = Promise.all(imgs.concat(aud).map(tick)).then(()=>{
+      window.__preloadMs = Math.round(performance.now() - t0);
+      console.log("[preload] %d images + %d sounds ready in %d ms", imgs.length, aud.length, window.__preloadMs);
+    });
+    const cap = new Promise(res => setTimeout(()=>{ if(window.__preloadMs == null){
+      console.warn("[preload] 30 s cap reached at %d%% — entering anyway", Math.round(100 * (window.__preloadProgress || 0)));
+      window.__preloadCapped = true; } res(); }, 30000));
+    window.__assetGateP = Promise.race([all, cap]);
+    return window.__assetGateP;
+  };
+  /* start downloading at once — not when the loader first asks (window 'load' / the 2.5 s watchdog,
+     measured 9.8 s in on a slow link). Waits only for CARD to exist. */
+  setTimeout(()=> (function startGate(tries){
+    let ok = false; try { ok = !!CARD; } catch(e){}
+    if(ok){ window.__assetGateFn(); return; }
+    if(tries < 400) setTimeout(()=> startGate(tries + 1), 10);
+  })(0), 0);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -16833,6 +17094,9 @@ if(document.fonts && document.fonts.load){
     setTimeout(()=>{ if(tok === _tok) go(); }, ms);
   }
   function sfxFile(name, fb){
+    /* round 2n: through the engine's playSfx — the DECODED buffer the loader already warmed, so a sound
+       effect never waits on the network (an <audio> element re-requested it, measured on a slow link) */
+    if(typeof playSfx === "function"){ try { playSfx(name); return; } catch(e){} }
     try {
       const p = "assets/Audio/" + name + "." + AUDIO_EXT;
       const a = new Audio(typeof _av === "function" ? _av(p) : p);
@@ -18316,12 +18580,14 @@ function boot(){
     const ready = ()=>{
       if(fired) return;   // load event + watchdog both land here → dedup
       fired = true;
-      setTimeout(()=>{
+      /* [MTG2A04 r2n] ASSET GATE: hold the loader until every image + sound is ready (cap 30 s) */
+      const _gate = (typeof window.__assetGateFn === "function") ? window.__assetGateFn() : Promise.resolve();
+      Promise.all([_gate, new Promise(r => setTimeout(r, Math.max(0, MIN_MS - (performance.now() - T0))))]).then(()=>{
         bl.classList.add("done");                  // NOW start the fade (after the brand beat)
         document.body.classList.add("loaded");     // starts the .sg-acell pop chain
         playLanding();
         setTimeout(()=> bl.remove(), 450);
-      }, Math.max(0, MIN_MS - (performance.now() - T0)));
+      });
     };
     if(document.readyState === "complete") ready();
     else window.addEventListener("load", ready);

@@ -54,6 +54,23 @@ i = src.rfind(close)
 if i < 0: sys.exit("X  no closing style tag")
 src = src[:i] + "\n" + CSS_BEGIN + "\n" + css + "\n" + CSS_END + "\n" + src[i:]
 
+# round 2n: the boot loader waits for window.__assetGateFn() (money_modules.js) before it fades.
+# A targeted, idempotent edit of this per-game engine copy (marker-guarded).
+LOADER_OLD = """      setTimeout(()=>{
+        bl.classList.add("done");                  // NOW start the fade (after the brand beat)"""
+LOADER_NEW = """      /* [MTG2A04 r2n] ASSET GATE: hold the loader until every image + sound is ready (cap 30 s) */
+      const _gate = (typeof window.__assetGateFn === "function") ? window.__assetGateFn() : Promise.resolve();
+      Promise.all([_gate, new Promise(r => setTimeout(r, Math.max(0, MIN_MS - (performance.now() - T0))))]).then(()=>{
+        bl.classList.add("done");                  // NOW start the fade (after the brand beat)"""
+LOADER_TAIL_OLD = """        setTimeout(()=> bl.remove(), 450);
+      }, Math.max(0, MIN_MS - (performance.now() - T0)));"""
+LOADER_TAIL_NEW = """        setTimeout(()=> bl.remove(), 450);
+      });"""
+if "[MTG2A04 r2n] ASSET GATE" not in src:
+    if src.count(LOADER_OLD) != 1 or src.count(LOADER_TAIL_OLD) != 1:
+        sys.exit("X  boot-loader block not found — cannot install the asset gate")
+    src = src.replace(LOADER_OLD, LOADER_NEW).replace(LOADER_TAIL_OLD, LOADER_TAIL_NEW)
+    # the 2.5 s watchdog now only STARTS the wait; it can no longer dismiss early
 io.open(ENGINE, "w", encoding="utf-8").write(src)
 out = io.open(ENGINE, encoding="utf-8").read()
 mods = ["MONEY_SHOW", "MONEY_PICK", "MONEY_SCENE", "MONEY_LIST", "MONEY_BUILD", "MONEY_DONE", "SHOP_GAME"]
@@ -61,3 +78,4 @@ print("engine:", os.path.basename(ENGINE), "%.0f KB" % (len(out.encode("utf-8"))
 for m in mods:
     print("   %-12s registered: %s" % (m, ("SlideModules." + m + " = {") in out))
 print("   injected once:", out.count(JS_BEGIN) == 1 and out.count(CSS_BEGIN) == 1)
+print("   asset gate on the loader:", out.count("[MTG2A04 r2n] ASSET GATE") == 1)

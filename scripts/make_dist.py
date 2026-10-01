@@ -26,7 +26,9 @@ def main():
         os.makedirs(os.path.join(DIST, sub), exist_ok=True)
 
     # sw_lg_hint_anim is the mascot of the engine hint OVERLAY, which no module in this game opens.
-    SKIP = {"train_spritesheet.webp", "train_still.webp", "peeking.webp", "sw_lg_hint_anim.webp"}
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from ui_skip import UI_SKIP
+    SKIP = set(UI_SKIP)
     # UI: keep what the HTML names — minus three files that are named but never fetched here:
     # the train art belongs to the inherited train modules this card never mounts, and peeking.webp
     # is the gate bird ONLY when a card sets no CARD.gate (this one sets swifty_gate.webp). The gate
@@ -90,6 +92,14 @@ def main():
         if r.returncode: sys.exit("X  ffmpeg failed on %s: %s" % (f, r.stderr[:200]))
         n_au += 1
 
+    # round 2n: every file the loader waits for must exist in the delivery copy, or the gate would
+    # wait on a 404 (it would still open at its 30 s cap, but that is a bug, not a slow network)
+    import json as _json
+    m = re.search(r'<script type="application/json" id="cardData">(.*?)</script>', html, re.S)
+    pre = _json.loads(m.group(1)).get("preload", {})
+    missing = [u for u in pre.get("images", []) + pre.get("audio", []) if not os.path.isfile(os.path.join(DIST, u))]
+    if missing: sys.exit("X  preload lists files dist does not ship: %s" % missing[:10])
+    print("  OK  loader preload: %d images + %d sounds, all present" % (len(pre.get("images", [])), len(pre.get("audio", []))))
     open(os.path.join(DIST, "index.html"), "w", encoding="utf-8").write(html)
     fav = os.path.join(ROOT, "assets", "UI", "favicon.ico")      # browsers ask for /favicon.ico
     if os.path.isfile(fav): shutil.copy2(fav, os.path.join(DIST, "favicon.ico"))

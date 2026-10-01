@@ -11,7 +11,7 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 o = Options(); o.add_argument("--headless=new"); o.add_argument("--window-size=1333,750"); o.add_argument("--autoplay-policy=no-user-gesture-required")
 d = webdriver.Chrome(options=o); d.get("http://127.0.0.1:%d/%s" % (port, PAGE)); time.sleep(3)
 js = d.execute_script
-js("""window.__sfx=[]; const _A=window.Audio; window.Audio=function(src){ if(src && /sfx_(play|next)_button/.test(src)) window.__sfx.push(src.split('/').pop().split('?')[0]); return new _A(src); };""")
+js("""window.__sfx=[]; const _P=window.playSfx; window.playSfx=function(id){ if(/sfx_(play|next)_button/.test(id)) window.__sfx.push(id); return _P.apply(this, arguments); };""")
 js("document.getElementById('sgBtn').disabled=false; document.getElementById('sgBtn').click()"); time.sleep(0.4)
 print("play button ->", js("return window.__sfx"))
 time.sleep(1.9); d.save_screenshot(sys.argv[1]); print("title class:", js("return document.getElementById('phaseGateTitle').className"))

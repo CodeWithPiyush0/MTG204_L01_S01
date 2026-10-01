@@ -219,6 +219,14 @@
     }
     im.style.display = "none";
     const art = sp.querySelector(".cel-art");
+    /* paint the talk + idle sheets once, invisibly, while the screen opens — so the browser decodes and
+       uploads them now, not at the शाबाश -> talk switch (measured: a 130-180 ms stall there) */
+    [A.talk, A.idle].forEach(sh => {
+      const pp = document.createElement("div"); pp.className = "cel-art cel-prepaint";
+      pp.style.aspectRatio = A.fw + " / " + A.fh; pp.style.backgroundImage = 'url("' + sh.src + '")';
+      sp.appendChild(pp);
+      requestAnimationFrame(()=> requestAnimationFrame(()=> setTimeout(()=> pp.remove(), 120)));
+    });
     art.style.aspectRatio = A.fw + " / " + A.fh;
     let curSrc = "";
     const show = (sheet, i)=>{
@@ -282,6 +290,56 @@
   setTimeout(()=>{ try { const A = CARD && CARD.end_anim; if(A && A.shabaash){
     window.__celWarm = [A.shabaash.src, A.talk.src, A.idle.src].map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; }); } } catch(e){} }, 1500);
 
+  /* ============ ASSET GATE, round 2n (user, 2026-10-01) ============
+     "The landing image should load completely before the loader disappears ... load all the assets
+     before entering, so nothing loads with a delay." The stock loader left on window 'load' OR a 2.5 s
+     watchdog, and nothing waited for the landing scene (a CSS background), the other screens' art or
+     any sound. Now the loader's dismissal (engine boot loader, patched by inject_money.py) awaits
+     this: every image in CARD.preload downloaded AND decoded, every sound fetched AND decoded into the
+     engine's own voice-buffer cache (the same URLs play() asks for). Hard cap 30 s — a child is never
+     stranded on the loader; the cap is logged. Defined synchronously: boot() may ask before any timer. */
+  window.__assetGateFn = function(){
+    if(window.__assetGateP) return window.__assetGateP;
+    const t0 = performance.now(); window.__gateStartedAt = t0;
+    const P = (CARD && CARD.preload) || {};
+    const imgs = (P.images || []).map(u => new Promise(res => {
+      const im = new Image();
+      im.onload = ()=>{ (im.decode ? im.decode() : Promise.resolve()).then(res, res); };
+      im.onerror = ()=>{ console.warn("[preload] image failed:", u); res(); };
+      im.src = u;
+      /* keep decoded copies only of what is on screen the instant the loader goes (the landing);
+         holding all 58 decoded bitmaps measurably cost frame rate on the celebration. Everything
+         else is in the HTTP cache, so it never touches the network again. */
+      if(/scn_landing|new_landing_swiftee|play_btn|startnew_bg|start_card/.test(u))
+        (window.__preloadKeep = window.__preloadKeep || []).push(im);
+    }));
+    const av = (u)=> (typeof _av === "function" ? _av(u) : u);
+    /* voice clips are played through play() at the version-stamped URL; sound effects only through
+       playSfx() at the PLAIN URL — each is warmed under exactly the key it is played with */
+    const aurls = [];
+    (P.audio || []).forEach(u => { aurls.push(/\/sfx_/.test(u) ? u : av(u)); });
+    const aud = aurls.map(u => (typeof _loadVoiceBuffer === "function"
+        ? _loadVoiceBuffer(u) : fetch(u, { cache:"force-cache" })).catch(()=>{ console.warn("[preload] audio failed:", u); }));
+    let total = imgs.length + aud.length, done = 0;
+    const tick = (p)=> p.then(()=>{ done++; window.__preloadProgress = done / Math.max(1, total); });
+    const all = Promise.all(imgs.concat(aud).map(tick)).then(()=>{
+      window.__preloadMs = Math.round(performance.now() - t0);
+      console.log("[preload] %d images + %d sounds ready in %d ms", imgs.length, aud.length, window.__preloadMs);
+    });
+    const cap = new Promise(res => setTimeout(()=>{ if(window.__preloadMs == null){
+      console.warn("[preload] 30 s cap reached at %d%% — entering anyway", Math.round(100 * (window.__preloadProgress || 0)));
+      window.__preloadCapped = true; } res(); }, 30000));
+    window.__assetGateP = Promise.race([all, cap]);
+    return window.__assetGateP;
+  };
+  /* start downloading at once — not when the loader first asks (window 'load' / the 2.5 s watchdog,
+     measured 9.8 s in on a slow link). Waits only for CARD to exist. */
+  setTimeout(()=> (function startGate(tries){
+    let ok = false; try { ok = !!CARD; } catch(e){}
+    if(ok){ window.__assetGateFn(); return; }
+    if(tries < 400) setTimeout(()=> startGate(tries + 1), 10);
+  })(0), 0);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -315,6 +373,9 @@
     setTimeout(()=>{ if(tok === _tok) go(); }, ms);
   }
   function sfxFile(name, fb){
+    /* round 2n: through the engine's playSfx — the DECODED buffer the loader already warmed, so a sound
+       effect never waits on the network (an <audio> element re-requested it, measured on a slow link) */
+    if(typeof playSfx === "function"){ try { playSfx(name); return; } catch(e){} }
     try {
       const p = "assets/Audio/" + name + "." + AUDIO_EXT;
       const a = new Audio(typeof _av === "function" ? _av(p) : p);
