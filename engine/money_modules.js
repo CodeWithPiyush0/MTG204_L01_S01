@@ -340,6 +340,44 @@
     if(tries < 400) setTimeout(()=> startGate(tries + 1), 10);
   })(0), 0);
 
+  /* ============ TRANSITIONS, round 2o (user: "some transition screens sometimes appear and sometimes
+     do not") ============ Three causes, all fixed here (engine file untouched, wrapped):
+       1. a double tap on the arrow called completeSlide() twice; the second call took the no-gate path
+          and mounted the next screen first, so the gate's callback saw the screen had moved and quit.
+          -> completeSlide runs once per screen.
+       2. the engine shows each round's gate ONCE PER PAGE LOAD (_gatedPhases), so replaying the lesson
+          without a reload, or going back with the dev bar, skipped every gate the second time.
+          -> a gate is shown every time its round boundary is crossed.
+       3. the dev bar's ▶ mounted the next screen directly, so testing with ▶ never showed a gate.
+          -> ▶ now goes through the same path as the arrow when it crosses into a new round. */
+  setTimeout(()=> (function patchFlow(tries){
+    let ok = false;
+    try {
+      if(typeof completeSlide === "function" && typeof _gatedPhases !== "undefined" && typeof mountSlide === "function"){
+        const _cs = completeSlide, _ms = mountSlide;
+        let doneFor = -1;
+        completeSlide = function(success){
+          if(doneFor === state.idx) return;              /* (1) once per screen */
+          doneFor = state.idx;
+          const nx = CARD.slides[state.idx + 1];
+          const r = nx && PHASE_ROUND[nx.phase];
+          if(r) _gatedPhases.delete(r);                   /* (2) every crossing shows its gate */
+          return _cs.apply(this, arguments);
+        };
+        mountSlide = function(i){ doneFor = -1; return _ms.apply(this, arguments); };
+        window.__devAdvance = (i)=>{                      /* (3) ▶ on the dev bar */
+          const cur = CARD.slides[state.idx], nx = CARD.slides[i];
+          if(i === state.idx + 1 && nx && PHASE_ROUND[nx.phase] && PHASE_ROUND[nx.phase] !== PHASE_ROUND[cur.phase]){
+            completeSlide(true); return true;
+          }
+          return false;
+        };
+        ok = true;
+      }
+    } catch(e){}
+    if(!ok && tries < 400) setTimeout(()=> patchFlow(tries + 1), 25);
+  })(0), 0);
+
   const SW = 1333;
   const IE = ()=> (typeof IMG_EXT !== "undefined" && IMG_EXT) ? IMG_EXT : "png";
   const img = (k)=> "assets/Images/" + k + "." + IE();
@@ -386,7 +424,9 @@
   const tone = (f, w, d, v)=>{ if(typeof _tone === "function") _tone(f, w, d, v); };
   const fbCorrect = ()=> sfxFile("sfx_fb_correct", ()=>{ if(typeof sfxCorrect === "function") sfxCorrect(); });
   const fbWrong   = ()=> sfxFile("sfx_fb_incorrect", ()=>{ if(typeof sfxWrongSoft === "function") sfxWrongSoft(); });
-  const sfxDrop   = (n)=> tone([560 + (n || 0) * 26, 840 + (n || 0) * 26], "sine", 0.13, 0.07);
+  /* round 2o: the team's drop sounds — a note lands with the note sound, a coin with the coin sound */
+  const sfxDrop   = (kind)=> sfxFile(kind === "n10" ? "sfx_drop_note" : "sfx_drop_coin",
+                                     ()=> tone([560, 840], "sine", 0.13, 0.07));
   const sfxPop    = ()=> tone([720], "sine", 0.10, 0.06);
   const mood = (m)=>{ if(typeof setSwMood === "function") setSwMood(m); };
 
@@ -726,14 +766,19 @@
       const idleTick = ()=>{
         if(!root.isConnected){ clearInterval(idleTimer); return; }
         if(done || !armed || reached || isPlaying || (teach && !teachWait)){ touch(); return; }
-        if(Date.now() - lastAct < (d.idle_ms || 7000)) return;
-        lastAct = Date.now(); idleN++;
+        /* round 2o (user): the teaching reminder plays ONCE, ~10 s after the child stops — a gentle
+           reminder, not a loop. Practice keeps its silent pulse -> ghost nudge, capped at 3. */
+        if(Date.now() - lastAct < (teach ? 10000 : (d.idle_ms || 7000))) return;
+        lastAct = Date.now();
         if(teach){
-          if(!teachWait) return;
+          if(!teachWait || teachWait.reminded) return;
+          teachWait.reminded = true;
           const lines = teachWait.idle || [];
           pulse(teachWait.kind);
-          if(lines.length) say(lines[Math.min(idleN - 1, lines.length - 1)]);
+          if(lines.length) say(lines[0]);
         } else {
+          if(idleN >= 3) return;
+          idleN++;
           const kd = needKind();
           if(idleN === 1) pulse(kd); else { pulse(kd); ghost(kd); }
         }
@@ -806,7 +851,7 @@
       const accept = (kind, f)=>{
         if(KIND[kind].v === 10) tc++; else oc++;
         const n = tc + oc;
-        sfxDrop(n); mood("happy");
+        sfxDrop(kind); mood("happy");
         addPlaced(tray, kind, f);
         setTotal(); touch(); idleN = 0;
         clearHints();
@@ -853,14 +898,14 @@
         fly(kind, src, slot, { ms:1000 }).then(()=>{
           slot.remove();
           if(KIND[kind].v === 10) tc++; else oc++;
-          addPlaced(tray, kind, null); sfxDrop(tc + oc); setTotal();
+          addPlaced(tray, kind, null); sfxDrop(kind); setTotal();
           res();
         });
       });
       function runStep(){
         if(done || si >= steps.length) return;
         const s = steps[si++];
-        curLine = s.say;
+        if(s.say) curLine = s.say;               /* a silent step keeps the last instruction for 🔊 */
         if(s.show_prompt) $("promptText").textContent = slide.prompt_hi || "";
         if(s.pulse_total) setTimeout(()=> restart(tot, "mn-pulse"), 400);
         let voDone = false, moveDone = !s.auto;
@@ -1095,7 +1140,7 @@
         const put = (kind, f)=>{
           const rec = { kind, el:null };
           placed.push(rec);
-          sfxDrop(placed.length);
+          sfxDrop(kind);
           addPlaced(tray, kind, f).then(p => { rec.el = p; armPlaced(rec); if(!tipped) tipDragBack(p); });
           refresh();
         };
@@ -1158,13 +1203,33 @@
           state.masteryAttempts = (state.masteryAttempts || 0) + 1;
           if(attempts === 0) state.masteryHits = (state.masteryHits || 0) + 1;
           let line, text;
-          if(first){ line = ((d.detail || {})[String(T)] || {})[n + "," + c]; text = detailText(n, c, o, T); }
+          /* round 2o: short success only — the first purchase «बहुत बढ़िया!», the rest per item */
+          if(first){ line = A(slide, "first_ok") || it.vo_praise; text = d.text.first_ok || "बहुत बढ़िया!"; }
           else { line = it.vo_praise; text = it.praise; }
           first = false;
           band(text);
           say(line, ()=> backToStall(i, card, chk));
         };
         refresh();                                   /* जाँचें starts inactive — nothing placed yet */
+        /* round 2o (user): INACTIVITY NUDGE. If the child does nothing, one ghost currency glides from
+           the tray into the amount area — a reminder of the drag, never the answer (one piece only: a
+           ₹10 while tens are still missing, else a ₹1). First nudge after 10 s on the first item of the
+           game (12 s later), then again every 15 s, at most 3 per item. Any touch restarts the clock. */
+        let idleAt = Date.now(), nudges = 0;
+        const firstWait = (bought.size === 0) ? 10000 : 12000;
+        v.addEventListener("pointerdown", ()=>{ idleAt = Date.now(); }, true);
+        const nudgeT = setInterval(()=>{
+          if(!v.isConnected){ clearInterval(nudgeT); return; }
+          if(working || solved || tipping || isPlaying){ idleAt = Math.max(idleAt, Date.now() - 1000); return; }
+          if(nudges >= 3 || Date.now() - idleAt < (nudges === 0 ? firstWait : 15000)) return;
+          nudges++; idleAt = Date.now();
+          const kd = tens() < TP ? (nudges % 2 ? "n10" : "c10") : "c1";
+          if(srcs[kd].classList.contains("mn-off")) return;
+          const slot = nextSlot(tray, kd);
+          restart(srcs[kd], "mn-hintglow");
+          fly(kd, srcs[kd], slot, { ghost:true, ms:1100 }).then(()=> slot.remove());
+          SwiftPAL.emit("hint_shown", { slide_id:slide.id, level:"idle_ghost", item:it.id });
+        }, 500);
         state.replayAudio = ()=> say(it.vo_select);
         say(it.vo_select);
       }

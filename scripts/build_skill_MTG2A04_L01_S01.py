@@ -31,7 +31,8 @@ VER_RE = re.compile(r'ENGINE_VERSION\s*=\s*["\']([^"\']+)["\']')
 MODULES = ["MONEY_SHOW", "MONEY_PICK", "MONEY_SCENE", "MONEY_LIST", "MONEY_BUILD", "MONEY_DONE", "SHOP_GAME", "CELEBRATION"]
 COPY_AUDIO = ["vo_pt_tutorial", "vo_pt_guided", "vo_pt_practice", "sfx_celebrate", "sfx_correct", "sfx_wrong",
               "sfx_tap", "sfx_pop", "sfx_fb_correct", "sfx_fb_incorrect",
-              "sfx_play_button", "sfx_next_button"]      # round 2k: the team's button sounds
+              "sfx_play_button", "sfx_next_button",      # round 2k: the team's button sounds
+              "sfx_drop_coin", "sfx_drop_note"]          # round 2o: the team's coin / note drop sounds
 
 NUM = ("शून्य एक दो तीन चार पाँच छह सात आठ नौ दस ग्यारह बारह तेरह चौदह पंद्रह सोलह सत्रह अठारह उन्नीस "
        "बीस इक्कीस बाईस तेईस चौबीस पच्चीस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस तैंतीस चौंतीस "
@@ -109,19 +110,19 @@ def s_list():
 def s_copy():
     return {"id": "G2", "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
             "prompt_hi": "₹14 बनाइए",
-            "audio": {"prompt": "vo_g2_1", "done": vo("vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14। अब परी कॉपी खरीद सकती है।")},
+            "audio": {"prompt": "vo_g2_1", "done": vo("vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14।")},
             "data": {"mode": "teach", "target": 14, "item_img": "obj_copy", "item_name": "कॉपी", "sources": ["n10", "c1"], "no_engine_idle": True,
                      "script": [
                          {"say": vo("vo_g2_1", "सबसे पहले परी को ₹14 की कॉपी लेनी है। आइए, ₹10 और ₹1 से ₹14 बनाते हैं।"), "tag": True},
                          {"say": vo("vo_g2_2", "पहले ₹10 का एक नोट रखते हैं।"), "auto": "n10"},
                          {"say": vo("vo_g2_3", "अभी कुल ₹10 हुए। ₹14 बनाने के लिए अभी ₹4 और चाहिए।"), "pulse_total": True},
                          # user 2026-09-29: only the NOTE is placed by Swiftie; the child places all four ₹1
-                         {"say": vo("vo_g2_4", "अब एक-एक रुपए के सिक्के रखेंगे।")},
+                         # round 2o (updated deck): VO4 «अब एक-एक रुपए के सिक्के रखेंगे।» and VO6 «अब एक रुपए
+                         # का और सिक्का रखो» are struck — coins 2 and 3 are placed without a line
                          {"say": vo("vo_g2_5", "चलो, अब तुम रखो।"), "child": "c1",
-                          "idle": [vo("vo_g2_idle", "सिक्के को ऊपर ट्रे में रखो।")]},
-                         {"say": vo("vo_g2_6", "अब एक रुपए का और सिक्का रखो।"), "child": "c1",
-                          "idle": ["vo_g2_idle"]},
-                         {"say": "vo_g2_6", "child": "c1", "idle": ["vo_g2_idle"]},
+                          "idle": [vo("vo_g2_idle", "सिक्के को ऊपर वाली ट्रे में रखिए।")]},
+                         {"say": None, "child": "c1", "idle": ["vo_g2_idle"]},
+                         {"say": None, "child": "c1", "idle": ["vo_g2_idle"]},
                          {"say": vo("vo_g2_7", "आखिरी सिक्का।"), "child": "c1", "idle": ["vo_g2_idle"]}]}}
 
 def s_chips():
@@ -135,10 +136,9 @@ def s_chips():
                          {"say": vo("vo_g3_1a", "अब परी को ₹20 के चिप्स लेने हैं।"), "tag": True},
                          {"say": vo("vo_g3_1b", "आइए, ₹10 के सिक्कों से ₹20 बनाते हैं।")},
                          {"say": vo("vo_g3_2", "पहले ₹10 का सिक्का रखते हैं।"), "auto": "c10"},
-                         {"say": vo("vo_g3_3", "अभी कुल ₹10 हुए। ₹20 के लिए ₹10 और चाहिए। चलिए, अब आप रखिए।"),
+                         {"say": vo("vo_g3_3", "कुल ₹10 हुए। ₹20 के लिए ₹10 और रखिए।"),     # round 2o: deck rewording
                           "pulse_total": True, "child": "c10",
-                          "idle": [vo("vo_g3_idle1", "अब तुम एक और ₹10 का सिक्का रखो।"),
-                                   vo("vo_g3_idle2", "₹10 का सिक्का ट्रे में रखिए।")]}]}}
+                          "idle": [vo("vo_g3_idle2", "₹10 का सिक्का ट्रे में रखिए।")]}]}}   # round 2o: VO4 struck
 
 def ladder(tag, T, tens_note, tens_totals, ones_totals, ten_word, zero_line=None):
     """per-total A2/A3 lines. tens = a ₹10 dropped when fewer than ₹10 remain (S11–S13 wording);
@@ -180,14 +180,14 @@ def s_choc():
 def s_plates():
     T = 35
     return s_practice("P1", "practice", T, "obj_plates", ["n10", "c1"],
-        vo("vo_p1_prompt", "परी को ₹35 का प्लेटों का पैकेट लेना है। ₹10 के नोट और ₹1 के सिक्कों से ₹35 बनाइए।"),
+        vo("vo_p1_prompt", "अब परी को ₹35 का प्लेटों का पैकेट लेना है।"),          # round 2o: updated deck
         vo("vo_p1_done", "शाबाश! तीन ₹10 के नोट और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹35। अब परी प्लेटों का पैकेट खरीद सकती है।"),
         ladder("p1", T, False, range(30, 35), [5, 15, 25], ("note", "नोट")), tray_down=True)
 
 def s_toffee():   # D5 — added; the deck lists toffee but gives it no screen
     T = 5
     return s_practice("P2", "practice", T, "obj_toffee", ["n10", "c1"],
-        vo("vo_p2_prompt", "परी को ₹5 की टॉफ़ी लेनी है। ₹10 के नोट और ₹1 के सिक्कों से ₹5 बनाइए।"),
+        vo("vo_p2_prompt", "परी को ₹5 की टॉफ़ी लेनी है।"),                          # round 2o: same cut as p13/p16
         vo("vo_p2_done", "शाबाश! पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹5। अब परी टॉफ़ी खरीद सकती है।"),
         ladder("p2", T, False, range(0, 5), [], ("note", "नोट"), zero_line="₹10 का नोट ₹5 से ज़्यादा है।"))
 
@@ -195,7 +195,7 @@ def s_juice():
     # round 2d (user): no «हो गया» — juice completes at ₹17 like every other build screen
     T = 17
     return s_practice("P3", "practice", T, "obj_juice", ["n10", "c1"],
-        vo("vo_p3_prompt", "परी को ₹17 का जूस पैकेट लेना है। ₹10 के नोट और ₹1 के सिक्कों से ₹17 बनाइए।"),
+        vo("vo_p3_prompt", "परी को ₹17 का जूस पैकेट लेना है।"),                      # round 2o: updated deck
         vo("vo_p3_done", "शाबाश! एक ₹10 का नोट और सात ₹1 के सिक्के — कुल मिलाकर बने ₹17। अब परी जूस पैकेट खरीद सकती है।"),
         ladder("p3", T, False, range(10, 17), [7], ("note", "नोट")),
         tag_fx="glow")
@@ -210,12 +210,13 @@ def s_done():
 # mastery shop (D3: all 8 from the mockup). The SME wrote the praise line for सेब/केले/अंगूर/आम;
 # the other four are written in the same pattern (flagged in CHANGES.md).
 SHOP = [   # round 2f (user): 6 items, one per stall panel, prices 14 / 25 / 35 / 42 / 60 / 65 ascending
-        ("apple", "सेब", "obj_apple", 14, "शाबाश! सेब आपकी टोकरी में आ गया।"),
-        ("oranges", "संतरे", "obj_oranges", 25, "कमाल! संतरे अब आपके हैं।"),
-        ("tomatoes", "टमाटर", "obj_tomatoes", 35, "बहुत बढ़िया! टमाटर आपने खरीद लिए।"),
-        ("grapes", "अंगूर", "obj_grapes", 42, "कमाल! अंगूर अब आपके हैं।"),
-        ("bananas", "केले", "obj_bananas", 60, "बहुत बढ़िया! केले आपने खरीद लिए।"),     # round 2k: replaces खीरे
-        ("carrots", "गाजर", "obj_carrots", 65, "वाह! गाजर आपकी टोकरी में आ गईं।")]      # round 2k: replaces आम
+        # round 2o (updated deck + user): success is short only — «शाबाश!» / «बहुत बढ़िया!»
+        ("apple", "सेब", "obj_apple", 14, "शाबाश!"),
+        ("oranges", "संतरे", "obj_oranges", 25, "बहुत बढ़िया!"),
+        ("tomatoes", "टमाटर", "obj_tomatoes", 35, "शाबाश!"),
+        ("grapes", "अंगूर", "obj_grapes", 42, "शाबाश!"),
+        ("bananas", "केले", "obj_bananas", 60, "बहुत बढ़िया!"),     # round 2k: replaces खीरे
+        ("carrots", "गाजर", "obj_carrots", 65, "बहुत बढ़िया!")]      # round 2k: replaces आम
 
 def detail_spoken(n, c, o, T):
     parts = []
@@ -226,27 +227,19 @@ def detail_spoken(n, c, o, T):
     return "बहुत बढ़िया! %s मिलाकर %s रुपये बने।" % (j, NUM[T])
 
 def s_shop():
-    items, detail = [], {}
+    items = []
     for key, name, im, price, praise in SHOP:
         items.append({"id": key, "name": name, "img": im, "price": price, "praise": praise,
                       "vo_select": vo("vo_m_sel_%s" % key, "%s की कीमत %s रुपये है। %s रुपये बनाइए।" % (name, NUM[price], NUM[price])),
-                      "vo_praise": vo("vo_m_ok_%s" % key, praise)})
-        t, o = divmod(price, 10)
-        dd = {}
-        for n in range(t + 1):
-            c = t - n
-            txt = detail_spoken(n, c, o, price)
-            # spoken text is already in words; register it verbatim (no ₹ to convert)
-            id_ = "vo_m_det_%d_%d_%d" % (price, n, c)
-            AUDIO[id_] = txt; SHOWN[id_] = txt; _BY_TEXT[txt] = id_
-            dd["%d,%d" % (n, c)] = id_
-        detail[str(price)] = dd
+                      "vo_praise": vo("vo_m_ok_%s" % key, praise)})     # identical lines share one clip
+    detail = {}    # round 2o: the detailed decomposition line is struck — first purchase = «बहुत बढ़िया!»
     return {"id": "M1", "phase": "mastery", "eis": "enactive", "type": "SHOP_GAME",
             "prompt_hi": "कोई वस्तु चुनिए।",
             "audio": {"prompt": vo("vo_m_prompt", "कोई वस्तु चुनिए और उसकी राशि बनाइए।"),
                       "idle": vo("vo_m_idle", "कोई वस्तु चुनिए।"),
                       "less": vo("vo_m_less", "ओह! रुपये कम हैं। फिर से बनाइए।"),
                       "more": vo("vo_m_more", "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।"),
+                      "first_ok": vo("vo_m_ok_first", "बहुत बढ़िया!"),
                       # round 2g: one-time drag-back tip (no Undo button)
                       "tip": vo("vo_m_tip", "कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।"),
                       "done": vo("vo_m_done", "शाबाश! परी की सारी खरीदारी हो गई।")},

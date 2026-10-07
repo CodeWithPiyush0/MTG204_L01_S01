@@ -383,3 +383,13 @@
 
 /* round 2n: invisible one-time paint of the talk/idle sheets (decode + upload before they are needed) */
 .end-screen .cel-sprite .cel-prepaint{opacity:.01;pointer-events:none;filter:none;}
+
+
+/* ======================= round 2o (user, 2026-10-07) ======================= */
+/* (2) solved drop zone: a strong, breathing green glow on the note + coins while the closing VO
+   explains them — clearly stronger than the equation strip below */
+@keyframes mnSolvedGlow{
+  0%,100%{filter:drop-shadow(0 0 4px #00E04B) drop-shadow(0 0 12px rgba(0,214,72,.95)) drop-shadow(0 0 22px rgba(0,200,70,.6))}
+  50%{filter:drop-shadow(0 0 7px #00FF55) drop-shadow(0 0 20px rgba(0,230,80,1)) drop-shadow(0 0 36px rgba(0,210,75,.85))}}
+.mn-target.mn-done .mn-piece.mn-placed.mn-glow img{animation:mnSolvedGlow 1.1s ease-in-out infinite;}
+.mn-target.mn-done .mn-piece.mn-placed.mn-glow{transform:scale(1.08);transition:transform .3s ease-out;}

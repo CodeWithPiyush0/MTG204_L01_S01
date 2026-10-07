@@ -71,6 +71,13 @@ if "[MTG2A04 r2n] ASSET GATE" not in src:
         sys.exit("X  boot-loader block not found — cannot install the asset gate")
     src = src.replace(LOADER_OLD, LOADER_NEW).replace(LOADER_TAIL_OLD, LOADER_TAIL_NEW)
     # the 2.5 s watchdog now only STARTS the wait; it can no longer dismiss early
+# round 2o: the dev bar's ▶ crosses into a new round the way the arrow does (shows the gate)
+DEV_OLD = "prev.onclick = ()=> go(cur() - 1); next.onclick = ()=> go(cur() + 1);"
+DEV_NEW = ("prev.onclick = ()=> go(cur() - 1); next.onclick = ()=>{ /* [MTG2A04 r2o] */ "
+           "if(window.__devAdvance && window.__devAdvance(cur() + 1)) return; go(cur() + 1); };")
+if "[MTG2A04 r2o]" not in src:
+    if src.count(DEV_OLD) != 1: sys.exit("X  dev-bar next handler not found")
+    src = src.replace(DEV_OLD, DEV_NEW)
 io.open(ENGINE, "w", encoding="utf-8").write(src)
 out = io.open(ENGINE, encoding="utf-8").read()
 mods = ["MONEY_SHOW", "MONEY_PICK", "MONEY_SCENE", "MONEY_LIST", "MONEY_BUILD", "MONEY_DONE", "SHOP_GAME"]
@@ -79,3 +86,4 @@ for m in mods:
     print("   %-12s registered: %s" % (m, ("SlideModules." + m + " = {") in out))
 print("   injected once:", out.count(JS_BEGIN) == 1 and out.count(CSS_BEGIN) == 1)
 print("   asset gate on the loader:", out.count("[MTG2A04 r2n] ASSET GATE") == 1)
+print("   dev ▶ shows transitions:", out.count("[MTG2A04 r2o]") == 1)

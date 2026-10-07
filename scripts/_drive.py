@@ -176,8 +176,8 @@ js("drag(document.querySelectorAll('.sg-make2 .mn-row-o .mn-placed')[3], src('c1
 check("M1 drag-back returns the coin + re-activates ₹1", js("return document.querySelectorAll('.sg-make2 .mn-target .mn-placed').length") == 4
       and "c1" not in js("return [...document.querySelectorAll('.sg-make2 .mn-bank .mn-src.mn-off')].map(e=>e.dataset.kind)"))
 dragk("c1"); js(chk + ".click()"); w(0.4); shot("M1_win")
-check("M1 first purchase = detailed OST", st()["prompt"] == "बहुत बढ़िया! ₹10 का 1 सिक्का और ₹1 के 4 सिक्के मिलाकर ₹14 बने।", st()["prompt"])
-check("M1 detailed VO chosen by actual currency", "vo_m_det_14_0_1" in js("return window.__said"), js("return window.__said"))
+check("M1 first purchase = short «बहुत बढ़िया!» (round 2o)", st()["prompt"] == "बहुत बढ़िया!", st()["prompt"])
+check("M1 first purchase VO = the short clip", js("return window.__said").count("vo_m_ok_oranges") >= 1 and not any(x.startswith("vo_m_det") for x in js("return window.__said")), js("return window.__said"))
 w(1.6)
 check("M1 back to stall, apple green + ticked + disabled", js("return !!document.querySelector('.sg-choose') && document.querySelectorAll('.sg-cell2')[0].classList.contains('sg-sold')"))
 check("M1 जाँचें removed on the stall", js("return !document.querySelector('.sg-checkpill')"))
