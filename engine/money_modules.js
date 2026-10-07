@@ -83,74 +83,8 @@
     } catch(e){}
   })(0);
 
-  /* ============ TRANSITION GATE, round 2i (user, 2026-09-30) ============
-     "Swifty will peek once, then the text will be written and its VO will play, and the VO will sync
-     with her mouth." The stock gate played one 8.5 s animation (rise half-way, pause, rise again, talk)
-     and started the VO at a fixed 3.8 s, so the mouth and the voice only lined up by luck and the
-     screen felt long. CARD.gate now names three pieces (scripts/make_gate_bird.py):
-        peek  — one continuous rise, played once           (~1.5 s)
-        talk  — mouth open/close loop, shown ONLY while the gate VO is actually sounding
-        rest  — mouth closed, from the moment the VO ends
-     The title is written in (left-to-right wipe) as she starts to talk. Same shell as the engine's
-     phaseBlurTransition (blur, token, header hide); replaced by assignment, engine file untouched.
-     Falls back to the engine's own gate when the card has no gate.peek. */
-  setTimeout(()=> (function patchGate(tries){
-    let ok = false;
-    try {
-      if(typeof phaseBlurTransition === "function" && typeof _gateToken !== "undefined"){
-        const _orig = phaseBlurTransition;
-        phaseBlurTransition = function(cb, toPhase){
-          const G = (CARD && CARD.gate) || {};
-          if(!G.peek) return _orig(cb, toPhase);
-          const tok = ++_gateToken;
-          stopNudge(); stopAudio();
-          const gate = $("phaseGate"), im = $("phaseGateImg"), title = $("phaseGateTitle");
-          const setImg = (src)=>{ im.removeAttribute("src"); void im.offsetWidth; im.src = src; };
-          if(im){ im.classList.add("pg-card"); setImg(G.peek); }
-          if(title){ title.textContent = PHASE_GATE_TITLE[toPhase] || ""; title.classList.remove("pg-write"); title.classList.add("pg-wait"); }
-          $("stage").classList.add("blurred", "gating");
-          document.body.classList.add("gating");
-          gate.classList.add("show", "hint-glow");
-          SwiftPAL.emit("phase_transition", { to: toPhase });
-          const closeGate = ()=>{ gate.classList.remove("show"); $("stage").classList.remove("blurred", "gating"); document.body.classList.remove("gating"); };
-          const voId = PHASE_GATE_VO[toPhase];
-          const voSrc = voId ? ("assets/Audio/" + voId + "." + AUDIO_EXT) : null;
-          let finished = false;
-          const finish = ()=>{
-            if(finished) return; finished = true;
-            if(tok !== _gateToken){ closeGate(); return; }
-            if(im && G.rest) setImg(G.rest);                 /* mouth closes with the last word */
-            setTimeout(()=>{
-              if(tok !== _gateToken){ closeGate(); return; }
-              gate.classList.remove("show");
-              $("stage").classList.remove("blurred");
-              if(cb) cb();
-              $("stage").classList.remove("gating");
-              document.body.classList.remove("gating");
-            }, G.hold_ms || 450);
-          };
-          const talk = ()=>{
-            if(tok !== _gateToken){ closeGate(); return; }
-            if(title){ title.classList.remove("pg-wait"); void title.offsetWidth; title.classList.add("pg-write"); }
-            if(im && G.talk) setImg(G.talk);
-            /* play() starts the clip at once; the talk loop runs until its onEnd */
-            play(voSrc, finish);
-            setTimeout(finish, 12000);                       /* never strand the child */
-          };
-          /* the peek clock starts when the peek image has actually loaded (it is warmed at boot) */
-          let started = false;
-          const go = ()=>{ if(started) return; started = true; setTimeout(talk, G.peek_ms || 1500); };
-          if(!im || im.complete) go();
-          else { im.addEventListener("load", go, { once:true }); im.addEventListener("error", go, { once:true }); setTimeout(go, 2500); }
-        };
-        /* warm the three pieces too, so no gate opens on an empty frame */
-        const G = (CARD && CARD.gate) || {};
-        window.__gateWarm2 = [G.peek, G.talk, G.rest].filter(Boolean).map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; });
-        ok = true;
-      }
-    } catch(e){}
-    if(!ok && tries < 400) setTimeout(()=> patchGate(tries + 1), 25);
-  })(0), 0);
+  /* (round 2i's own transition gate removed in round 2p: the engine's r107/r108 gate is used —
+     rise animation, lip-synced talk sheet, typewriter title on the clip's clock; data on CARD.gate) */
 
   /* round 2j: the celebration screen shows the team's own Swiftie GIF (CARD.end_mascot), used exactly as
      supplied — background included (user instruction: do not remove or alter its background). */
@@ -164,14 +98,8 @@
     } catch(e){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); }
   })(0), 0);
 
-  /* round 2k: the team's button sounds — ▶ on the landing plays sfx_play_button; the arrow (आगे) and
-     the celebration's arrow play sfx_next_button. Own Audio element, so no VO is cut by it. Only a
-     real, enabled press counts (a disabled button fires no click). */
-  document.addEventListener("click", (e)=>{
-    const b = e.target && e.target.closest && e.target.closest("#sgBtn, #navBtn, #endBtn");
-    if(!b || b.disabled) return;
-    sfxFile(b.id === "sgBtn" ? "sfx_play_button" : "sfx_next_button", null);
-  }, true);
+  /* (round 2k's button-sound listener removed in round 2p: the engine plays CARD.ui_sfx — the play
+     sound on the press, the next sound on a real click of the arrow / celebration arrow) */
 
   /* ============ CELEBRATION SWIFTIE, round 2l — lip-synced to the VO ============
      The team's jumping + speaking Swiftie (36 frames) is a sprite sheet the page drives itself, because
@@ -184,6 +112,21 @@
                               syllables and shuts on every pause
        after the voice        two fist pumps, then a standing idle with a blink, mouth shut
      The VO clock is the moment the engine's clip actually starts (isPlaying), not the mount. */
+  /* round 2p (user): "once the VO finishes, the button is enabled and pulses" — on the celebration too.
+     The engine shows its arrow at once; here it waits (dim, not pressable) until the celebration
+     line has ended, then it pulses like the in-lesson arrow (no glow, no border change). */
+  function celArrowAfterVO(){
+    const eb = document.getElementById("endBtn"); if(!eb) return;
+    eb.classList.remove("hint-glow"); eb.classList.add("cel-wait");
+    const t0 = performance.now(); let heard = false;
+    (function tick(){
+      if(!eb.isConnected) return;
+      if(isPlaying) heard = true;
+      if((heard && !isPlaying) || performance.now() - t0 > 15000){
+        eb.classList.remove("cel-wait"); eb.classList.add("cel-ready"); return; }
+      requestAnimationFrame(tick);
+    })();
+  }
   setTimeout(()=> (function wrapCel(tries){
     const C = (typeof SlideModules !== "undefined") && SlideModules.CELEBRATION;
     if(!C || !C.mount){ if(tries < 200) setTimeout(()=> wrapCel(tries + 1), 25); return; }
@@ -191,6 +134,7 @@
     const _mount = C.mount;
     C.mount = function(host, slide){
       const r = _mount.apply(this, arguments);
+      try { celArrowAfterVO(); } catch(e){}
       try { runCelSprite(); } catch(e){}
       return r;
     };
@@ -806,12 +750,36 @@
         const clean = wrongN.tens + wrongN.ones === 0;
         SwiftPAL.emit("money_build_done", { slide_id:slide.id, phase:slide.phase, value:clean, target:T,
           tens:tc, ones:oc, wrong_tens:wrongN.tens, wrong_ones:wrongN.ones, latency_ms:Date.now() - state.slideStart });
-        state.replayAudio = ()=> say(A(slide, "done"));
+        state.replayAudio = ()=>{ say(A(slide, "done")); spokenHighlight(); };
         say(A(slide, "done"), ()=>{
           setNavActive(true);
           $("navBtn").onclick = ()=> completeSlide(clean);
         });
+        spokenHighlight();
       };
+      /* round 2p: AS THE CLOSING LINE NAMES THEM. «एक दस रुपये का नोट» lights the ₹10 row, «चार एक रुपये के
+         सिक्के» the ₹1 row, «कुल मिलाकर बने …» both + the total. The windows are measured from the clip
+         by the build (data.done_cues, ms in the clip) and read on the clip's own clock (engine
+         _voiceClock — when it is really audible), so the light moves with the words. */
+      function spokenHighlight(){
+        const C = d.done_cues; if(!C) return;
+        const rowT = tray.querySelector(".mn-row-t"), rowO = tray.querySelector(".mn-row-o");
+        const clock = (typeof _voiceClock === "function") ? _voiceClock() : null;
+        const t0 = performance.now(), g = _gen;
+        const set = (el, on)=>{ if(el) el.classList.toggle("mn-say-hi", !!on); };
+        (function tick(){
+          if(!root.isConnected || g !== _gen) return;
+          let t = null, ended = false;
+          if(clock){ const c = clock(); t = c.t; ended = c.ended; }
+          else t = performance.now() - t0 - 80;
+          if(clock && t == null && !ended && performance.now() - t0 > 2500) ended = true;   /* never started */
+          const inW = (w)=> w && t != null && t >= w[0] && t <= w[1];
+          const tot_on = inW(C.total);
+          set(rowT, inW(C.tens) || tot_on); set(rowO, inW(C.ones) || tot_on); set(tot, tot_on);
+          if(ended){ set(rowT, 0); set(rowO, 0); set(tot, 0); return; }
+          requestAnimationFrame(tick);
+        })();
+      }
       const onReached = ()=>{
         reached = true;
         tot.classList.add("mn-green");
@@ -862,7 +830,12 @@
       Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
         zone: ()=> tgt,
         canStart: (kind)=> armed && !done && !reached && !off.has(kind) && !isPlaying,
-        onDrop: (kind, f, src)=>{
+        /* round 2p: a TAP on a note / coin works like dragging it into the tray (same rules) */
+        onTap: (kind, src)=> handleDrop(kind, floatAt(kind, box(src)), src),
+        onDrop: (kind, f, src)=> handleDrop(kind, f, src)
+      }));
+      function handleDrop(kind, f, src){
+        {
           const v = KIND[kind].v;
           /* teach: a drop only counts while a child step is open — never between two scripted beats */
           if(teach && !teachWait){ bounceBack(f, src); return; }
@@ -877,7 +850,7 @@
             if(!hit) setTimeout(runStep, 250);
           }
         }
-      }));
+      }
 
       if(chk) chk.onclick = ()=>{
         if(done || !(tc + oc) || isPlaying) return;
@@ -1037,7 +1010,9 @@
             nags++;
             const free = cells.filter((c, i)=> !bought.has(i));
             const c = free[Math.floor(Math.random() * free.length)];
-            if(c) restart(c, "sg-glow");
+            /* round 2p: NOT "sg-glow" — the engine owns .sg-glow (a full-screen landing layer with
+               pointer-events:none / display:none), so a glowed item stopped taking taps for good */
+            if(c){ restart(c, "sg-hilite"); setTimeout(()=> c.classList.remove("sg-hilite"), 3200); }
             say(A(slide, "idle"), arm);
           }, d.idle_ms || 5500);
         };
@@ -1169,8 +1144,12 @@
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
           canStart: (kind)=> !working && !solved && !tipping && !srcs[kind].classList.contains("mn-off"),
-          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); restart(amt, "mn-shake"); return; } put(kind, f); }
-          /* no onTap (round 2g): money reaches the drop zone ONLY by drag and drop */
+          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); restart(amt, "mn-shake"); return; } put(kind, f); },
+          /* round 2p: tap works too (user: "giving the user both interactions") — same rules as a drop */
+          onTap: (kind, src)=>{
+            if(!allowed(kind)){ restart(src, "mn-bump"); restart(amt, "mn-shake"); return; }
+            put(kind, floatAt(kind, box(src)));
+          }
         }));
         chk.onclick = ()=>{
           if(working || solved || !placed.length || isPlaying) return;
@@ -1231,7 +1210,24 @@
           SwiftPAL.emit("hint_shown", { slide_id:slide.id, level:"idle_ghost", item:it.id });
         }, 500);
         state.replayAudio = ()=> say(it.vo_select);
-        say(it.vo_select);
+        /* round 2p: the first time the game opens an item, a ghost ₹10 note glides from the tray into
+           the amount area twice once the item's line has finished — the drag-in, shown (as the
+           drag-back is shown by the tip). One piece only, never the answer; skipped once the child acts. */
+        const showDragIn = !window.__sgDragInShown;
+        let acted = false;
+        v.addEventListener("pointerdown", ()=>{ acted = true; }, true);
+        say(it.vo_select, ()=>{
+          if(!showDragIn || acted || solved) return;
+          window.__sgDragInShown = true;
+          const once = (n)=>{
+            if(n <= 0 || acted || solved || !v.isConnected) return;
+            const slot = nextSlot(tray, "n10");
+            restart(srcs.n10, "mn-hintglow");
+            fly("n10", srcs.n10, slot, { ghost:true, ms:1100 }).then(()=>{ slot.remove(); setTimeout(()=> once(n - 1), 300); });
+          };
+          setTimeout(()=> once(2), 250);
+          idleAt = Date.now();
+        });
       }
 
       function detailText(n, c, o, T){
@@ -1261,20 +1257,21 @@
         clearTimeout(idleT);
         if(view) view.remove();
         band(d.text.done);
-        const v = el("div", "sg-complete");
-        v.innerHTML = '<img class="sg-pari-full mn-pop" src="' + img(d.pari_full_img) + '" alt="">';
-        const list = el("div", "sg-list", '<div class="sg-list-h">' + d.text.list_title + '</div>');
+        /* round 2p (user): only the list — the same card as page 12 (rows: picture · name · price · ✓,
+           green, arriving one by one), beside Pari with her full basket. No total, no extra card. */
+        const v = el("div", "mn-fin sg-complete");
+        v.innerHTML = '<img class="mn-fin-pari mn-pop" src="' + img(d.pari_full_img) + '" alt="">';
+        const list = el("div", "mn-list mn-fin-list");
         items.forEach((it, j)=>{
-          const r = el("div", "sg-list-r", '<img src="' + img(it.img) + '" alt=""><span class="sg-ln">' + it.name +
-            '</span><span class="sg-lp">₹' + it.price + '</span><span class="mn-tick">✓</span>');
-          r.querySelector(".mn-tick").style.animationDelay = (300 + j * 180) + "ms";
+          const r = el("div", "mn-li mn-li-ok mn-li-wait",
+            '<span class="mn-li-ic"><img src="' + img(it.img) + '" alt="" draggable="false"></span>' +
+            '<span class="mn-li-n">' + it.name + '</span>' +
+            '<span class="mn-li-p"><span>₹' + it.price + '</span></span>' +
+            '<span class="mn-li-tick"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M5 12.5l4.3 4.3L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
           list.appendChild(r);
+          setTimeout(()=>{ if(!r.isConnected) return; r.classList.remove("mn-li-wait"); sfxPop(); }, 450 + j * 380);
         });
-        const sumAll = items.reduce((a, it)=> a + it.price, 0);
-        const side = el("div", "sg-side",
-          '<div class="sg-till"><div class="sg-till-l">' + d.text.total + '</div><div class="sg-till-v">₹' + sumAll + '</div></div>' +
-          '<div class="sg-great"><span class="mn-tick">✓</span><span>' + d.text.great + '</span></div>');
-        v.append(list, side);
+        v.append(list);
         root.appendChild(v); view = v;
         if(typeof confettiCannon === "function") confettiCannon();
         mood("celebrate");

@@ -34,7 +34,7 @@ def main():
     # is the gate bird ONLY when a card sets no CARD.gate (this one sets swifty_gate.webp). The gate
     # <img>'s initial src is pointed at the bird actually used, so nothing requests peeking at load.
     # round 2i: the gate plays gate_peek/talk/rest; the old 8.5 s swifty_gate.webp is never fetched
-    html = html.replace('id="phaseGateImg" src="assets/UI/peeking.webp"', 'id="phaseGateImg" src="assets/UI/gate_peek.webp"')
+    html = html.replace('id="phaseGateImg" src="assets/UI/peeking.webp"', 'id="phaseGateImg" src="assets/UI/swifty_gate_seek.webp"')
     SKIP.add("swifty_gate.webp")
     # round 2j: the celebration shows the team GIF (end_swiftee.gif, shipped unchanged); the stock
     # celebrating mascot is never shown, so its <img> starts on the GIF and the old file stays out
@@ -48,7 +48,30 @@ def main():
         # Swiftie's head poses are chosen at runtime ("sw_head_" + expr + "_anim.webp"), so their
         # names never appear literally in the HTML - a literal-name prune dropped all of them.
         if (f in html or f.startswith("sw_head_")) and f not in SKIP:
-            if f == "new_landing_swiftee_anim.webp":
+            if f in ("swifty_gate_seek.webp", "swifty_gate_talk.webp"):
+                # round 2p: the reference lesson's transition art, re-encoded for dist only (q70). The rise
+                # animation keeps only its frames up to her first speaking frame (+0.25 s) and holds there:
+                # from that moment the engine draws her from the talking sheet (CARD.gate.talk), so the
+                # animation's later frames are never on screen. Keeps the delivery under 10 MB.
+                from PIL import ImageSequence
+                an = Image.open(os.path.join(ui, f))
+                if getattr(an, "n_frames", 1) > 1:
+                    fr, ds = [], []
+                    for fx in ImageSequence.Iterator(an):
+                        fr.append(fx.convert("RGBA").copy()); ds.append(fx.info.get("duration") or 40)
+                    if f == "swifty_gate_seek.webp":
+                        import json as _j
+                        _m = re.search(r'<script type="application/json" id="cardData">(.*?)</script>', html, re.S)
+                        keep_ms = _j.loads(_m.group(1)).get("gate", {}).get("talk_at_ms", 1960) + 250
+                        t, n = 0, 0
+                        while n < len(ds) and t < keep_ms: t += ds[n]; n += 1
+                        fr, ds = fr[:n], ds[:n]
+                    fr[0].save(os.path.join(DIST, "assets", "UI", f), "WEBP", save_all=True, append_images=fr[1:],
+                               duration=ds, loop=(1 if f == "swifty_gate_seek.webp" else an.info.get("loop", 0)),
+                               quality=70, method=4)
+                else:
+                    an.convert("RGBA").save(os.path.join(DIST, "assets", "UI", f), "WEBP", quality=70, method=4)
+            elif f == "new_landing_swiftee_anim.webp":
                 # round 2j: the 1.7 MB landing Swiftie re-encoded at q72 (no visible difference, -0.66 MB)
                 # to make room for the team's celebration GIF, which ships byte-for-byte unchanged
                 from PIL import ImageSequence

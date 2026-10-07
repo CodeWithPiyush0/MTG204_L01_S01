@@ -50,7 +50,7 @@ for i in range(3): js("drag(src('c1'), %s)" % T); time.sleep(1.0)
 check("G2 'आखिरी सिक्का।' before the last coin", "vo_g2_7" in said(), said())
 time.sleep(0.8)
 anim = js("const i=document.querySelector('.mn-target.mn-done .mn-placed.mn-glow img'); return i ? getComputedStyle(i).animationName : null")
-check("G2 solved currency has the strong breathing glow", anim == "mnSolvedGlow", anim)
+check("G2 solved currency: soft glow, no pulsing green (round 2p)", anim in ("none", ""), anim)
 check("G2 closing line ends at «₹14।» (struck tail gone)", js("return CARD.assets.audio_text.vo_g2_done").endswith("चौदह रुपये।"), js("return CARD.assets.audio_text.vo_g2_done"))
 check("G2 heading stays «₹14 बनाइए» (no equation in the panel)", js("return document.getElementById('promptText').textContent") == "₹14 बनाइए")
 
@@ -68,7 +68,7 @@ time.sleep(0.8)
 check("P1 heading stays «₹35 बनाइए।» after solving", js("return document.getElementById('promptText').textContent") == "₹35 बनाइए।")
 
 # ---- shop: inactivity ghost on the make screen, not the answer, capped
-js("mountSlide(arguments[0]); window.__said=[];", idx["M1"]); time.sleep(1.0)
+js("window.__sgDragInShown = true; mountSlide(arguments[0]); window.__said=[];", idx["M1"]); time.sleep(1.0)   # demo off: test the idle nudge alone
 js("document.querySelectorAll('.sg-cell2')[0].click()"); time.sleep(1.2)
 js("window.__ghosts=0")
 time.sleep(9.0); g0 = js("return window.__ghosts")

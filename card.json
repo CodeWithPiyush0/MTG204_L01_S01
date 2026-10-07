@@ -29,12 +29,119 @@
   "audio": "vo_pt_mastery"
  },
  "gate": {
-  "img": "assets/UI/gate_peek.webp",
-  "peek": "assets/UI/gate_peek.webp",
-  "talk": "assets/UI/gate_talk.webp",
-  "rest": "assets/UI/gate_rest.webp",
-  "peek_ms": 1520,
-  "hold_ms": 450
+  "img": "assets/UI/swifty_gate_seek.webp",
+  "talk_at_ms": 1960,
+  "title_cue_ms": {
+   "tutorial": 4030,
+   "guided": 3970,
+   "practice": 1260,
+   "mastery": 798
+  },
+  "title_dur_ms": {
+   "tutorial": 1230,
+   "guided": 1300,
+   "practice": 850,
+   "mastery": 946
+  },
+  "talk": {
+   "src": "assets/UI/swifty_gate_talk.webp",
+   "first": 37,
+   "cols": 8,
+   "fw": 505,
+   "fh": 440,
+   "rest": 37,
+   "blink": [
+    38,
+    39,
+    40
+   ],
+   "open": [
+    [
+     42,
+     43
+    ],
+    [
+     44,
+     45
+    ],
+    [
+     51,
+     52
+    ],
+    [
+     53,
+     54
+    ],
+    [
+     55,
+     56
+    ],
+    [
+     58,
+     59
+    ],
+    [
+     60,
+     61
+    ]
+   ]
+  },
+  "lips": {
+   "tutorial": {
+    "bits": "0000000000000000000111111111111100001110000110000000001110000000000000000011111001111000111111111001111000000000011110000000000011111111111100000000000000000000000111000000111000000000000000000001100000011001110000000000000",
+    "step_ms": 25
+   },
+   "guided": {
+    "bits": "000000000001110000111000001111000000110000001100000000000000000000000111000001110000000000111100000001110000011100001100000001100000110011000000000000000000000001100000011100000000000000011110000001110001100000000000000000000",
+    "step_ms": 25
+   },
+   "practice": {
+    "bits": "0000000000001100000111111111111111000000000000000001100111111000000000000111110000000000000000000000",
+    "step_ms": 25
+   },
+   "mastery": {
+    "bits": "0000000001111000011100000000001110000000011111000011100011000110000000110000000111000001100011000000000000",
+    "step_ms": 25
+   }
+  },
+  "title_voice_ms": {
+   "tutorial": [
+    [
+     4025,
+     4400
+    ],
+    [
+     4700,
+     5275
+    ]
+   ],
+   "guided": [
+    [
+     3975,
+     4325
+    ],
+    [
+     4650,
+     5275
+    ]
+   ],
+   "practice": [
+    [
+     1250,
+     2125
+    ]
+   ],
+   "mastery": [
+    [
+     725,
+     1950
+    ]
+   ]
+  }
+ },
+ "ui_sfx": {
+  "play": "sfx_play_button",
+  "next": "sfx_next_button"
  },
  "end_anim": {
   "cols": 6,
@@ -379,7 +486,21 @@
        "vo_g2_idle"
       ]
      }
-    ]
+    ],
+    "done_cues": {
+     "tens": [
+      606,
+      2333
+     ],
+     "ones": [
+      2516,
+      4533
+     ],
+     "total": [
+      4533,
+      6950
+     ]
+    }
    },
    "dev_label": "p9 · कॉपी ₹14 (teach)"
   },
@@ -426,7 +547,17 @@
        "vo_g3_idle2"
       ]
      }
-    ]
+    ],
+    "done_cues": {
+     "tens": [
+      800,
+      2425
+     ],
+     "total": [
+      2425,
+      4225
+     ]
+    }
    },
    "dev_label": "p11 · चिप्स ₹20 (teach)"
   },
@@ -485,7 +616,21 @@
     },
     "eq_in_band": false,
     "no_engine_idle": true,
-    "tag_fx": "pulse"
+    "tag_fx": "pulse",
+    "done_cues": {
+     "tens": [
+      585,
+      2425
+     ],
+     "ones": [
+      2609,
+      4657
+     ],
+     "total": [
+      4657,
+      7325
+     ]
+    }
    },
    "dev_label": "p12 · चॉकलेट ₹25"
   },
@@ -548,7 +693,21 @@
     },
     "eq_in_band": false,
     "no_engine_idle": true,
-    "tray_down": true
+    "tray_down": true,
+    "done_cues": {
+     "tens": [
+      504,
+      2143
+     ],
+     "ones": [
+      2305,
+      4042
+     ],
+     "total": [
+      4042,
+      6253
+     ]
+    }
    },
    "dev_label": "p13 · प्लेटें ₹35"
   },
@@ -597,7 +756,17 @@
      "ones": {}
     },
     "eq_in_band": false,
-    "no_engine_idle": true
+    "no_engine_idle": true,
+    "done_cues": {
+     "ones": [
+      511,
+      2615
+     ],
+     "total": [
+      2615,
+      4753
+     ]
+    }
    },
    "dev_label": "added · टॉफ़ी ₹5"
   },
@@ -660,7 +829,21 @@
     },
     "eq_in_band": false,
     "no_engine_idle": true,
-    "tag_fx": "glow"
+    "tag_fx": "glow",
+    "done_cues": {
+     "tens": [
+      655,
+      2297
+     ],
+     "ones": [
+      2500,
+      4321
+     ],
+     "total": [
+      4321,
+      6922
+     ]
+    }
    },
    "dev_label": "p16 · जूस ₹17 (हो गया)"
   },
@@ -1173,9 +1356,6 @@
    "assets/UI/cel_shabaash.webp",
    "assets/UI/cel_talk.webp",
    "assets/UI/end_screen.webp",
-   "assets/UI/gate_peek.webp",
-   "assets/UI/gate_rest.webp",
-   "assets/UI/gate_talk.webp",
    "assets/UI/loader.gif",
    "assets/UI/mascot.webp",
    "assets/UI/new_landing_swiftee_anim.webp",
@@ -1192,7 +1372,9 @@
    "assets/UI/sw_head_neutral.webp",
    "assets/UI/sw_head_talking.webp",
    "assets/UI/sw_head_tryagain.webp",
-   "assets/UI/sw_head_tryagain_anim.webp"
+   "assets/UI/sw_head_tryagain_anim.webp",
+   "assets/UI/swifty_gate_seek.webp",
+   "assets/UI/swifty_gate_talk.webp"
   ],
   "audio": [
    "assets/Audio/sfx_celebrate.ogg",

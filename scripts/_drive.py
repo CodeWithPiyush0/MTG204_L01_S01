@@ -10,7 +10,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 PAGE = "MTG2A04_L01_S01.html"
 if os.environ.get("DIST"): ROOT, PAGE = os.path.join(ROOT, "dist", "MTG2A04_L01_S01"), "index.html"
 OUT = sys.argv[1]; os.makedirs(OUT, exist_ok=True)
-class TS(socketserver.ThreadingMixIn, socketserver.TCPServer): daemon_threads = True; allow_reuse_address = True
+class TS(socketserver.ThreadingMixIn, socketserver.TCPServer): daemon_threads = True; allow_reuse_address = True; request_queue_size = 256
 MISSING = []
 class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, fmt, *a):
@@ -144,8 +144,7 @@ chk = "document.querySelector('.sg-checkpill')"
 check("M1 जाँचें in the arrow's place, disabled with nothing placed", js("return " + chk + ".disabled && document.getElementById('navBtn').style.display === 'none'"))
 TT = "document.querySelector('.sg-make2 .mn-target')"
 def dragk(k): js("drag(src('%s'), %s)" % (k, TT)); w(0.35)
-js("tap(src('c1'))"); w(0.5)
-check("M1 a TAP on currency does not add it", js("return document.querySelectorAll('.sg-make2 .mn-target .mn-placed').length") == 0)
+# (round 2p: tap now ADDS money — tested in _drive_r2p.py on a fresh screen)
 js("""window.__slow={vo_m_tip:2500}; const _p=window.play; window.play=function(src,cb){ const id=String(src||'').split('/').pop().split('.')[0]; window.__said.push(id); setTimeout(()=>{ if(cb) cb(); }, (window.__slow&&window.__slow[id])||60); };""")
 js("""window.__said=[]; window.__ghosts=0; new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{ if(n.classList && n.classList.contains('mn-ghost')) window.__ghosts++; }))).observe(document.getElementById('stage'),{childList:true});""")
 dragk("c1"); w(0.9); shot("M1_tip_ghost")

@@ -323,18 +323,90 @@ def guards(slides, src):
     if unk: sys.exit("X  clip ids not registered: %s" % unk)
     return m.group(1), sorted(need)
 
+def voiced_segments(path, thresh_db=-42, bridge_ms=150, lo=None, hi=None):
+    """25 ms RMS windows above `thresh_db` dBFS, gaps under `bridge_ms` bridged (the reference
+    lesson's r108 measure). Optional [lo, hi] ms window. -> [[start_ms, end_ms], ...]"""
+    import array
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", "16000", "-f", "s16le", "-"],
+                         capture_output=True, check=True).stdout
+    a = array.array("h"); a.frombytes(raw[: len(raw) // 2 * 2])
+    segs = []
+    for i in range(0, len(a) - 400, 400):
+        ms = i // 16
+        if lo is not None and not (lo <= ms <= hi): continue
+        r = (sum(x * x for x in a[i:i + 400]) / 400) ** 0.5
+        if r > 32768 * 10 ** (thresh_db / 20):
+            if segs and ms - segs[-1][1] < bridge_ms: segs[-1][1] = ms + 25
+            else: segs.append([ms, ms + 25])
+    return [x for x in segs if x[1] - x[0] >= 50]
+
+def phrase_window(path, spoken, c0, c1):
+    """Where characters [c0, c1) of `spoken` are voiced in the clip: the characters (spaces and
+    punctuation weightless) are laid over the clip's voiced time in order -> [start_ms, end_ms]."""
+    segs = voiced_segments(path)
+    if not segs: return None
+    w = [0 if (ch.isspace() or ch in "!,।?—-") else 1 for ch in spoken]
+    W = float(sum(w)) or 1.0
+    V = sum(e - s0 for s0, e in segs)
+    def at(ci):
+        v = sum(w[:ci]) / W * V
+        for s0, e in segs:
+            if v <= e - s0: return s0 + v
+            v -= e - s0
+        return segs[-1][1]
+    return [int(at(c0)), int(at(c1))]
+
 def gate_spec():
-    """round 2i: peek once -> talk loop while the VO sounds -> rest (scripts/make_gate_bird.py).
-    peek_ms is measured off the file so the talk starts on her last rising frame."""
-    ui = os.path.join(ROOT, "assets", "UI")
-    peek = os.path.join(ui, "gate_peek.webp")
-    if not os.path.isfile(peek):
-        return {"img": "assets/UI/swifty_gate.webp", "talk_at_ms": 3820}      # stock gate
-    from PIL import Image, ImageSequence
-    ms = sum((f.info.get("duration") or 40) for f in ImageSequence.Iterator(Image.open(peek)))
-    return {"img": "assets/UI/gate_peek.webp", "peek": "assets/UI/gate_peek.webp",
-            "talk": "assets/UI/gate_talk.webp", "rest": "assets/UI/gate_rest.webp",
-            "peek_ms": ms, "hold_ms": 450}
+    """round 2p: the reference lesson's finished transition (HI02H11 r103-r108): the bird rises on
+    swifty_gate_seek.webp, then from her first speaking frame (1.96 s) she is drawn from
+    swifty_gate_talk.webp, lip-synced to THIS transition's clip; the title types itself while its
+    phrase is voiced. The three stock clips are byte-identical to the reference's, so its measured
+    phrase cues are used; the shop transition's phrase is measured here. Every lip track and every
+    voiced stretch is measured from the clip on each build."""
+    sys.path.insert(0, os.path.join(ROOT, "celebration_kit"))
+    from make_lipsync import lipsync
+    g = {"img": "assets/UI/swifty_gate_seek.webp", "talk_at_ms": 1960,
+         "title_cue_ms": {"tutorial": 4030, "guided": 3970, "practice": 1260},
+         "title_dur_ms": {"tutorial": 1230, "guided": 1300, "practice": 850},
+         "talk": {"src": "assets/UI/swifty_gate_talk.webp", "first": 37, "cols": 8, "fw": 505, "fh": 440,
+                  "rest": 37, "blink": [38, 39, 40],
+                  "open": [[42, 43], [44, 45], [51, 52], [53, 54], [55, 56], [58, 59], [60, 61]]}}
+    clips = {"tutorial": "vo_pt_tutorial", "guided": "vo_pt_guided", "practice": "vo_pt_practice",
+             "mastery": MASTERY_GATE["audio"]}
+    mp = os.path.join(AUD, clips["mastery"] + ".ogg")
+    if os.path.isfile(mp):                                   # «खरीदारी का खेल!» inside «चलिए, अब खरीदारी का खेल खेलते हैं!»
+        sp = AUDIO[clips["mastery"]]
+        c0 = sp.index("खरीदारी"); c1 = sp.index("खेल", c0) + len("खेल")
+        w = phrase_window(mp, sp, c0, c1)
+        g["title_cue_ms"]["mastery"] = w[0]; g["title_dur_ms"]["mastery"] = max(400, w[1] - w[0])
+    lips, voice = {}, {}
+    for ph, vid in clips.items():
+        p = os.path.join(AUD, vid + ".ogg")
+        if not os.path.isfile(p): continue
+        bits, _ = lipsync(p)
+        if "1" not in bits: sys.exit("X  the %s transition VO measured silent" % ph)
+        lips[ph] = {"bits": bits, "step_ms": 25}
+        cue, dur = g["title_cue_ms"].get(ph), g["title_dur_ms"].get(ph)
+        if cue is not None:
+            v = voiced_segments(p, lo=cue - 150, hi=cue + dur + 200)
+            if v: voice[ph] = v
+    g["lips"] = lips; g["title_voice_ms"] = voice
+    return g
+
+def done_cues(slide):
+    """round 2p: where the closing line names the tens, the ones and the total (ms in the clip), so
+    the build screen lights each group as it is spoken."""
+    vid = (slide.get("audio") or {}).get("done")
+    p = os.path.join(AUD, (vid or "x") + ".ogg")
+    if not vid or not os.path.isfile(p): return None
+    sp = AUDIO[vid]
+    cues = {}
+    for key, pat in (("tens", r"\S+ दस रुपये (?:का|के) (?:नोट|सिक्का|सिक्के)"),
+                     ("ones", r"\S+ एक रुपये (?:का|के) (?:सिक्का|सिक्के)"),
+                     ("total", r"कुल मिलाकर बने \S+ रुपये")):
+        m = re.search(pat, sp)
+        if m: cues[key] = phrase_window(p, sp, m.start(), m.end())
+    return cues or None
 
 def cel_anim():
     """round 2l: lip-sync track for the celebration VO + the sprite facts (scripts/make_cel_sprite.py).
@@ -387,6 +459,10 @@ def main():
     gone = prune_stale()
 
     ms = {i: clip_ms(i) for i in AUDIO}
+    for sl in slides:                                         # round 2p: spoken-sync highlight
+        if sl["type"] == "MONEY_BUILD":
+            c = done_cues(sl)
+            if c: sl["data"]["done_cues"] = c
     ms = {k: v for k, v in ms.items() if v}
     # list rows pulse as the VO names them: position of each item word in the spoken line x its length
     lst = next(s for s in slides if s["type"] == "MONEY_LIST")
@@ -408,6 +484,8 @@ def main():
         "phase_distribution": dist,
         "mastery_gate": MASTERY_GATE,
         "gate": gate_spec(),
+        # round 2p: the engine's own button sounds (play on the press, next on a real click)
+        "ui_sfx": {"play": "sfx_play_button", "next": "sfx_next_button"},
         # round 2l: the jumping + speaking Swiftie, driven frame-by-frame from the VO (end_swiftee.gif,
         # round 2j, is kept on disk but no longer shown)
         "end_anim": cel_anim(),
@@ -441,9 +519,10 @@ def main():
     html = html.replace("__AUDIO_V_STAMP__", h.hexdigest()[:12])
     # round 2k: the celebration button exactly as HI02H11_L02_S02 ships it — arrow only (drawn by
     # .end-btn::after), the Hindi label moved to aria-label
-    html, n_eb = re.subn(r'<button class="end-btn" id="endBtn">[^<]*</button>',
-                         '<button class="end-btn" id="endBtn" aria-label="आगे बढ़ें"></button>', html)
-    if n_eb != 1: sys.exit("X  end button markup not found")
+    if 'id="endBtn" aria-label="आगे बढ़ें"></button>' not in html:      # older engines: make it arrow-only
+        html, n_eb = re.subn(r'<button class="end-btn" id="endBtn">[^<]*</button>',
+                             '<button class="end-btn" id="endBtn" aria-label="आगे बढ़ें"></button>', html)
+        if n_eb != 1: sys.exit("X  end button markup not found")
     open(os.path.join(ROOT, CODE + ".html"), "w", encoding="utf-8").write(html)
     open(os.path.join(ROOT, "card.json"), "w", encoding="utf-8").write(payload + "\n")
 

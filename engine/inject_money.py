@@ -71,6 +71,18 @@ if "[MTG2A04 r2n] ASSET GATE" not in src:
         sys.exit("X  boot-loader block not found — cannot install the asset gate")
     src = src.replace(LOADER_OLD, LOADER_NEW).replace(LOADER_TAIL_OLD, LOADER_TAIL_NEW)
     # the 2.5 s watchdog now only STARTS the wait; it can no longer dismiss early
+# round 2p: the reference engine (HI02H11 r100/r82) starts background music on the play tap and warms
+# a runner game's files 10 s after load - neither exists in this lesson (404s). Both now run only if
+# the card asks for them (CARD.bgm / CARD.runner).
+BGM_OLD = "      if(started) return;\n      make();"
+BGM_NEW = ("      if(started) return;\n      /* [MTG2A04 r2p] */ try{ if(!(CARD && CARD.bgm)) return; }catch(e){ return; }\n      make();")
+RUN_OLD = "  (function warmRunner(){\n    const D = \"assets/MatraRunner/\";"
+RUN_NEW = ("  (function warmRunner(){\n    /* [MTG2A04 r2p] */ try{ if(!(CARD && CARD.runner)) return; }catch(e){ return; }\n"
+           "    const D = \"assets/MatraRunner/\";")
+if "[MTG2A04 r2p]" not in src:
+    if src.count(BGM_OLD) != 1 or src.count(RUN_OLD) != 1:
+        sys.exit("X  bgm / runner blocks not found (%d / %d)" % (src.count(BGM_OLD), src.count(RUN_OLD)))
+    src = src.replace(BGM_OLD, BGM_NEW).replace(RUN_OLD, RUN_NEW)
 # round 2o: the dev bar's ▶ crosses into a new round the way the arrow does (shows the gate)
 DEV_OLD = "prev.onclick = ()=> go(cur() - 1); next.onclick = ()=> go(cur() + 1);"
 DEV_NEW = ("prev.onclick = ()=> go(cur() - 1); next.onclick = ()=>{ /* [MTG2A04 r2o] */ "
@@ -87,3 +99,4 @@ for m in mods:
 print("   injected once:", out.count(JS_BEGIN) == 1 and out.count(CSS_BEGIN) == 1)
 print("   asset gate on the loader:", out.count("[MTG2A04 r2n] ASSET GATE") == 1)
 print("   dev ▶ shows transitions:", out.count("[MTG2A04 r2o]") == 1)
+print("   bgm + runner warm-up off:", out.count("[MTG2A04 r2p]") == 2)
