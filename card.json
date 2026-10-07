@@ -143,6 +143,7 @@
   "play": "sfx_play_button",
   "next": "sfx_next_button"
  },
+ "bgm": true,
  "end_anim": {
   "cols": 6,
   "fw": 329,
@@ -321,7 +322,6 @@
     "reveal_faces": [
      "cur_note10"
     ],
-    "correct_text": "शाबाश! यह दस रुपये का नोट है।",
     "wrong_text": "यह दस रुपये का नोट है।",
     "idle_pulse_ms": 5000
    },
@@ -360,7 +360,6 @@
      "cur_coin1",
      "cur_coin1_back"
     ],
-    "correct_text": "शाबाश! यह एक रुपये का सिक्का है।",
     "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"
    },
    "dev_label": "p5–6 · ₹1 पर टैप"
@@ -1480,6 +1479,9 @@
    "assets/Audio/vo_tens_use_note_10.ogg",
    "assets/Audio/vo_tens_use_note_20.ogg",
    "assets/Audio/vo_tens_use_note_30.ogg"
+  ],
+  "fetch": [
+   "assets/Audio/bgm_lesson.ogg"
   ]
  }
 }

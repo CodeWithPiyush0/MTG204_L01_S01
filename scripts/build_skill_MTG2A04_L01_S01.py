@@ -74,7 +74,6 @@ def s_pick10():
             "data": {"options": [{"id": "note10", "faces": ["cur_note10"], "correct": True},
                                  {"id": "coin1", "faces": ["cur_coin1", "cur_coin1_back"]}],
                      "reveal_faces": ["cur_note10"],
-                     "correct_text": "शाबाश! यह दस रुपये का नोट है।",
                      "wrong_text": "यह दस रुपये का नोट है।",
                      "idle_pulse_ms": 5000}}
 
@@ -87,7 +86,6 @@ def s_pick1():
             "data": {"options": [{"id": "coin10", "faces": ["cur_coin10", "cur_coin10_back"]},
                                  {"id": "coin1", "faces": ["cur_coin1", "cur_coin1_back"], "correct": True}],
                      "reveal_faces": ["cur_coin1", "cur_coin1_back"],
-                     "correct_text": "शाबाश! यह एक रुपये का सिक्का है।",
                      "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"}}
 
 def s_market():
@@ -486,6 +484,9 @@ def main():
         "gate": gate_spec(),
         # round 2p: the engine's own button sounds (play on the press, next on a real click)
         "ui_sfx": {"play": "sfx_play_button", "next": "sfx_next_button"},
+        # round 2q: background music (assets/Audio/bgm_lesson.ogg, the reference lesson's track) — the
+        # engine starts it on the play tap and ducks it under every VO / sound effect (HI02H11 r100)
+        "bgm": True,
         # round 2l: the jumping + speaking Swiftie, driven frame-by-frame from the VO (end_swiftee.gif,
         # round 2j, is kept on disk but no longer shown)
         "end_anim": cel_anim(),
@@ -504,7 +505,9 @@ def main():
           if f.lower().endswith((".webp", ".png", ".svg", ".gif", ".jpg"))]
     imgs_all = sorted(set(card["assets"]["image"].values()) | set(ui) |
                       {"assets/Images/play_btn.svg", "assets/Images/play_btn_disabled.svg"})
-    card["preload"] = {"images": imgs_all, "audio": sorted(set(card["assets"]["audio"].values()))}
+    card["preload"] = {"images": imgs_all, "audio": sorted(set(card["assets"]["audio"].values())),
+                       # round 2q: the music is only DOWNLOADED before entry (decoding 4 minutes = ~80 MB)
+                       "fetch": ["assets/Audio/bgm_lesson.ogg"]}
     payload = json.dumps(card, ensure_ascii=False, indent=1)
     if not CARD_TAG.search(src): sys.exit("X  cardData tag not found")
     html = CARD_TAG.sub(lambda m: m.group(1) + payload + m.group(3), src, count=1)

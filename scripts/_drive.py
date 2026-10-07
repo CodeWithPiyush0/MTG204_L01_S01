@@ -63,7 +63,7 @@ check("T2 wrong VO", "vo_t2_wrong" in st()["said"], st())
 w(1.2)
 js(cards + "[0].click()"); w(0.6); shot("T2_right")
 check("T2 right -> green + nav on", js("return " + cards + "[0].classList.contains('mn-ok')") and st()["nav"], st())
-check("T2 correct text", js("return document.querySelector('.mn-pick-fb').textContent") == "शाबाश! यह दस रुपये का नोट है।")
+check("T2 correct: no on-screen praise text (round 2q, VO only)", js("return document.querySelector('.mn-pick-fb').textContent") == "")
 
 # ---------------- G2 copy teach
 mount(idx["G2"])
@@ -141,6 +141,7 @@ check("M1 make view for ₹14", st()["prompt"] == "₹14 बनाइए।", st
 check("M1 make view: no Pari, no undo, no running total", js("return !document.querySelector('.sg-make2 .sg-pari-sm') && !document.querySelector('.sg-undo') && !document.querySelector('.sg-make2 .mn-total')"))
 check("M1 tray has ₹10 note, ₹10 coin, ₹1 coin", js("return [...document.querySelectorAll('.sg-make2 .mn-bank .mn-src')].map(e=>e.dataset.kind).join(',')") == "n10,c10,c1")
 chk = "document.querySelector('.sg-checkpill')"
+js("window.__bands=[]; new MutationObserver(()=>window.__bands.push(document.getElementById('promptText').textContent)).observe(document.getElementById('promptText'),{childList:true,characterData:true,subtree:true});")
 check("M1 जाँचें in the arrow's place, disabled with nothing placed", js("return " + chk + ".disabled && document.getElementById('navBtn').style.display === 'none'"))
 TT = "document.querySelector('.sg-make2 .mn-target')"
 def dragk(k): js("drag(src('%s'), %s)" % (k, TT)); w(0.35)
@@ -175,7 +176,7 @@ js("drag(document.querySelectorAll('.sg-make2 .mn-row-o .mn-placed')[3], src('c1
 check("M1 drag-back returns the coin + re-activates ₹1", js("return document.querySelectorAll('.sg-make2 .mn-target .mn-placed').length") == 4
       and "c1" not in js("return [...document.querySelectorAll('.sg-make2 .mn-bank .mn-src.mn-off')].map(e=>e.dataset.kind)"))
 dragk("c1"); js(chk + ".click()"); w(0.4); shot("M1_win")
-check("M1 first purchase = short «बहुत बढ़िया!» (round 2o)", st()["prompt"] == "बहुत बढ़िया!", st()["prompt"])
+check("M1 first purchase = short «बहुत बढ़िया!» (round 2o)", "बहुत बढ़िया!" in js("return window.__bands || []"), js("return window.__bands"))
 check("M1 first purchase VO = the short clip", js("return window.__said").count("vo_m_ok_oranges") >= 1 and not any(x.startswith("vo_m_det") for x in js("return window.__said")), js("return window.__said"))
 w(1.6)
 check("M1 back to stall, apple green + ticked + disabled", js("return !!document.querySelector('.sg-choose') && document.querySelectorAll('.sg-cell2')[0].classList.contains('sg-sold')"))

@@ -16,6 +16,48 @@ CODE = "MTG2A04_L01_S01"
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DIST = os.path.join(ROOT, "dist", CODE)
 
+
+# round 2q: animated / large UI art re-encoded for dist only. Frame timings and the loop count are read
+# straight from the WebP container (scripts/webp_frames.py) — Pillow does not report them for these
+# files, and a lost loop count made the landing Swiftie loop forever in dist (it waves ONCE).
+# max_side = 2x the size the game draws it at.
+ANIM_PLAN = {
+    "new_landing_swiftee_anim.webp": {"q": 72, "max_side": 416},          # drawn 208 px wide
+    "sw_head_hint_anim.webp":        {"q": 75, "max_side": 264},          # 132 px header avatar
+    "sw_head_tryagain_anim.webp":    {"q": 75, "max_side": 264},
+    "sw_head_celebrate_anim.webp":   {"q": 75, "max_side": 264},
+    "swifty_gate_seek.webp":         {"q": 70, "trim_to_talk": True},     # rise only (see below)
+    "swifty_gate_talk.webp":         {"q": 70},
+    "cel_shabaash.webp":             {"q": 70},                           # celebration sheets: no visible
+    "cel_talk.webp":                 {"q": 70},                           # difference at 2x vs q80 (checked)
+    "cel_idle.webp":                 {"q": 70},
+}
+def reencode_anim(src, dst, html, q=75, max_side=None, trim_to_talk=False):
+    from PIL import Image, ImageSequence
+    from webp_frames import durations
+    im = Image.open(src)
+    n = getattr(im, "n_frames", 1)
+    if n <= 1:
+        fr = im.convert("RGBA")
+        if max_side and max(fr.size) > max_side: fr.thumbnail((max_side, max_side), Image.LANCZOS)
+        fr.save(dst, "WEBP", quality=q, method=6); return
+    ds, loop = durations(src)
+    fr = [x.convert("RGBA").copy() for x in ImageSequence.Iterator(im)]
+    assert len(ds) == len(fr), (src, len(ds), len(fr))
+    if trim_to_talk:
+        # the transition bird: only the rise up to her first speaking frame (+0.25 s) is ever shown —
+        # from then on the engine draws her from the talking sheet (CARD.gate.talk); hold the last frame
+        import json as _j
+        m = re.search(r'<script type="application/json" id="cardData">(.*?)</script>', html, re.S)
+        keep = _j.loads(m.group(1)).get("gate", {}).get("talk_at_ms", 1960) + 250
+        t = k = 0
+        while k < len(ds) and t < keep: t += ds[k]; k += 1
+        fr, ds, loop = fr[:k], ds[:k], 1
+    if max_side and max(fr[0].size) > max_side:
+        sc = max_side / float(max(fr[0].size))
+        fr = [x.resize((round(x.width * sc), round(x.height * sc)), Image.LANCZOS) for x in fr]
+    fr[0].save(dst, "WEBP", save_all=True, append_images=fr[1:], duration=ds, loop=loop, quality=q, method=4)
+
 def main():
     html = open(os.path.join(ROOT, CODE + ".html"), encoding="utf-8").read()
     if os.path.isdir(DIST):              # empty it rather than rmtree the folder: a shell or an
@@ -48,38 +90,8 @@ def main():
         # Swiftie's head poses are chosen at runtime ("sw_head_" + expr + "_anim.webp"), so their
         # names never appear literally in the HTML - a literal-name prune dropped all of them.
         if (f in html or f.startswith("sw_head_")) and f not in SKIP:
-            if f in ("swifty_gate_seek.webp", "swifty_gate_talk.webp"):
-                # round 2p: the reference lesson's transition art, re-encoded for dist only (q70). The rise
-                # animation keeps only its frames up to her first speaking frame (+0.25 s) and holds there:
-                # from that moment the engine draws her from the talking sheet (CARD.gate.talk), so the
-                # animation's later frames are never on screen. Keeps the delivery under 10 MB.
-                from PIL import ImageSequence
-                an = Image.open(os.path.join(ui, f))
-                if getattr(an, "n_frames", 1) > 1:
-                    fr, ds = [], []
-                    for fx in ImageSequence.Iterator(an):
-                        fr.append(fx.convert("RGBA").copy()); ds.append(fx.info.get("duration") or 40)
-                    if f == "swifty_gate_seek.webp":
-                        import json as _j
-                        _m = re.search(r'<script type="application/json" id="cardData">(.*?)</script>', html, re.S)
-                        keep_ms = _j.loads(_m.group(1)).get("gate", {}).get("talk_at_ms", 1960) + 250
-                        t, n = 0, 0
-                        while n < len(ds) and t < keep_ms: t += ds[n]; n += 1
-                        fr, ds = fr[:n], ds[:n]
-                    fr[0].save(os.path.join(DIST, "assets", "UI", f), "WEBP", save_all=True, append_images=fr[1:],
-                               duration=ds, loop=(1 if f == "swifty_gate_seek.webp" else an.info.get("loop", 0)),
-                               quality=70, method=4)
-                else:
-                    an.convert("RGBA").save(os.path.join(DIST, "assets", "UI", f), "WEBP", quality=70, method=4)
-            elif f == "new_landing_swiftee_anim.webp":
-                # round 2j: the 1.7 MB landing Swiftie re-encoded at q72 (no visible difference, -0.66 MB)
-                # to make room for the team's celebration GIF, which ships byte-for-byte unchanged
-                from PIL import ImageSequence
-                an = Image.open(os.path.join(ui, f)); fr, ds = [], []
-                for fx in ImageSequence.Iterator(an):
-                    fr.append(fx.convert("RGBA").copy()); ds.append(fx.info.get("duration") or 40)
-                fr[0].save(os.path.join(DIST, "assets", "UI", f), "WEBP", save_all=True, append_images=fr[1:],
-                           duration=ds, loop=0, quality=72, method=4)
+            if f in ANIM_PLAN:
+                reencode_anim(os.path.join(ui, f), os.path.join(DIST, "assets", "UI", f), html, **ANIM_PLAN[f])
             else:
                 shutil.copy2(os.path.join(ui, f), os.path.join(DIST, "assets", "UI", f))
             kept_ui.append(f)
@@ -110,6 +122,7 @@ def main():
         if ext != ".ogg" or stem not in html: continue
         out = os.path.join(DIST, "assets", "Audio", f)
         br = "64k" if stem.startswith("sfx_") else "16k"      # sfx are music-like; 16k is for speech
+        if stem == "bgm_lesson": br = "24k"                     # round 2q: background music, mono 24k (quiet bed)
         r = subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(au, f), "-c:a", "libopus",
                             "-b:a", br, "-ac", "1", out], capture_output=True, text=True)
         if r.returncode: sys.exit("X  ffmpeg failed on %s: %s" % (f, r.stderr[:200]))
@@ -120,7 +133,7 @@ def main():
     import json as _json
     m = re.search(r'<script type="application/json" id="cardData">(.*?)</script>', html, re.S)
     pre = _json.loads(m.group(1)).get("preload", {})
-    missing = [u for u in pre.get("images", []) + pre.get("audio", []) if not os.path.isfile(os.path.join(DIST, u))]
+    missing = [u for u in pre.get("images", []) + pre.get("audio", []) + pre.get("fetch", []) if not os.path.isfile(os.path.join(DIST, u))]
     if missing: sys.exit("X  preload lists files dist does not ship: %s" % missing[:10])
     print("  OK  loader preload: %d images + %d sounds, all present" % (len(pre.get("images", [])), len(pre.get("audio", []))))
     open(os.path.join(DIST, "index.html"), "w", encoding="utf-8").write(html)

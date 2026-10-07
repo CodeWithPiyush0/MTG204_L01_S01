@@ -16575,7 +16575,12 @@ if(document.fonts && document.fonts.load){
        playSfx() at the PLAIN URL — each is warmed under exactly the key it is played with */
     const aurls = [];
     (P.audio || []).forEach(u => { aurls.push(/\/sfx_/.test(u) ? u : av(u)); });
-    const aud = aurls.map(u => (typeof _loadVoiceBuffer === "function"
+    /* round 2q: files that are only DOWNLOADED, never decoded (the 4-minute music) — same URL as the
+       engine's <audio> element asks for, so it plays from the cache */
+    (P.fetch || []).forEach(u => aurls.push("__fetch__" + av(u)));
+    const aud = aurls.map(u => u.indexOf("__fetch__") === 0
+        ? fetch(u.slice(9), { cache:"force-cache" }).then(r => r.blob()).catch(()=>{ console.warn("[preload] fetch failed:", u); })
+        : (typeof _loadVoiceBuffer === "function"
         ? _loadVoiceBuffer(u) : fetch(u, { cache:"force-cache" })).catch(()=>{ console.warn("[preload] audio failed:", u); }));
     let total = imgs.length + aud.length, done = 0;
     const tick = (p)=> p.then(()=>{ done++; window.__preloadProgress = done / Math.max(1, total); });
@@ -16887,7 +16892,8 @@ if(document.fonts && document.fonts.load){
             cards.forEach(x => { if(x !== c) x.classList.add("mn-out"); });
             fbCorrect(); mood("celebrate");
             if(typeof confettiCannon === "function") confettiCannon();
-            fb.textContent = d.correct_text || ""; fb.classList.add("show", "ok");
+            /* round 2q: no on-screen praise — the VO «शाबाश! यह … है।» alone */
+            if(d.correct_text){ fb.textContent = d.correct_text; fb.classList.add("show", "ok"); }
             SwiftPAL.emit("money_pick_first_try", { slide_id:slide.id, phase:slide.phase, value:state.attempts === 0,
               attempts:state.attempts + 1, latency_ms:Date.now() - state.slideStart });
             say(A(slide, "correct"), ()=>{
