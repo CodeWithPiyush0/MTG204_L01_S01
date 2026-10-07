@@ -154,7 +154,7 @@ check("shop complete list = page 12 list size", abs(w1 - w2) <= 2, (w1, w2))
 js("window.play = function(src, cb){ window.__said.push(String(src||'').split('/').pop().split('.')[0]); setPlaying(true); setTimeout(()=>{ setPlaying(false); if(cb) cb(); }, 1500); }")
 mount("CEL", 0.5)
 e1 = js("const b=document.getElementById('endBtn'); return [b.classList.contains('cel-wait'), getComputedStyle(b).pointerEvents]")
-time.sleep(2.0)
+time.sleep(3.6)        # round 2r: the line starts after the 1.62 s jump + landing, then runs 1.5 s here
 e2 = js("const b=document.getElementById('endBtn'), s=getComputedStyle(b); return [b.classList.contains('cel-ready'), s.animationName, b.classList.contains('hint-glow')]")
 check("celebration arrow not pressable while the line plays", e1[0] and e1[1] == "none", e1)
 check("celebration arrow pulses after the line (no glow)", e2[0] and e2[1] == "celArrowPulse" and not e2[2], e2)

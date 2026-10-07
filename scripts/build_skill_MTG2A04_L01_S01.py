@@ -251,8 +251,10 @@ def s_shop():
 
 def s_cel():
     return {"id": "CEL", "phase": "mastery", "eis": "iconic", "type": "CELEBRATION",
-            "prompt_hi": "शाबाश! आज आपने ₹10 और ₹1 से राशि बनाना सीखा।",
-            "audio": {"prompt": vo("vo_cel_prompt", "शाबाश! आज आपने ₹10 और ₹1 से राशि बनाना सीखा।")}, "data": {}}
+            # round 2r (user): the closing line is the reference lesson's (HI02H11 r105) — same words, same
+            # Leda recording (copied from its build). «तुम» here by request, as there.
+            "prompt_hi": "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!",
+            "audio": {"prompt": vo("vo_cel_prompt", "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!")}, "data": {}}
 
 MASTERY_GATE = {"title": "खरीदारी का खेल!", "audio": vo("vo_pt_mastery", "चलिए, अब खरीदारी का खेल खेलते हैं!")}
 

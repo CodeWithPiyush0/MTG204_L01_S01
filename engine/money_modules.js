@@ -135,22 +135,17 @@
     C.mount = function(host, slide){
       const r = _mount.apply(this, arguments);
       try { celArrowAfterVO(); } catch(e){}
-      try { runCelSprite(); } catch(e){}
+      try { runCelSprite(slide); } catch(e){}
       return r;
     };
   })(0), 0);
   let _celGen = 0;
-  /* round 2m — THREE SHEETS, ONE CLOCK. The clock is the celebration VO itself (from the moment the
-     engine's clip is actually sounding):
-       [0, first sound)            «शाबाश» sheet 0-5   standing, mouth shut
-       first word «शाबाश!»        «शाबाश» sheet 6-29  the jump, mouth open — stretched to that word
-       the pause after it          «शाबाश» sheet 30-35 lands, mouth shut
-       rest of the line            talk sheet: the cursor walks the sheet forward (so the body keeps
-                                   moving naturally) but only ever lands on a frame whose mouth matches
-                                   the VO at that instant — open on each syllable, shut in every dip
-       after the VO                idle sheet, mouth-shut frames only, looping
+  /* round 2m — THREE SHEETS, ONE CLOCK (timeline re-ordered in round 2r — see inside: jump first, then
+     the line). While she talks the clock is the celebration VO itself, from the moment it is sounding:
+     the cursor walks the talk sheet forward (so the body keeps moving naturally) but only ever lands on
+     a frame whose mouth matches the VO at that instant — open on each syllable, shut in every dip.
      All three sheets share frame size and alignment (make_cel_sprite.py), so switching never jumps. */
-  function runCelSprite(){
+  function runCelSprite(slide){
     const A = CARD && CARD.end_anim;
     const im = document.querySelector("#endScreen .end-mascot");
     if(!A || !im || !A.bits || !A.shabaash) return;
@@ -182,20 +177,24 @@
     };
     const S = A.shabaash, T = A.talk, I = A.idle;
     const OPEN = new Set(T.open);
-    show(S, S.pre[0]);
     const bits = A.bits || "";
     const step = A.step_ms || 25;
     const loud = (t)=> bits.charAt(Math.floor(t / step)) === "1";
-    /* first word = first loud run, a 200 ms silence ends it */
-    const GAP = Math.round(200 / step);
-    let s0 = bits.indexOf("1"), e0 = s0, gap = 0;
-    for(let k = s0; k >= 0 && k < bits.length; k++){ if(bits[k] === "1"){ e0 = k; gap = 0; } else if(++gap >= GAP) break; }
-    const speechStart = Math.max(0, s0) * step, wordEnd = (e0 + 1) * step;
-    let ns = bits.indexOf("1", e0 + GAP); const nextStart = ns < 0 ? wordEnd : ns * step;
     const lenMs = bits.length * step;
-    const seg = (list, t, a, b)=> list[Math.min(list.length - 1, Math.max(0, Math.floor((t - a) / Math.max(1, b - a) * list.length)))];
-    let t0 = 0, started = false, done = false, cursor = 0, curOpen = null, lastStep = 0;
-    const waitStart = performance.now();
+    /* round 2r (user + reference HI02H11 r106): SHE JUMPS AND CELEBRATES FIRST, THEN SPEAKS. The line
+       («बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!») has no «शाबाश» to hang the jump on, so the page owns
+       the audio (ownsAudio: the engine's auto-play is skipped) and runs:
+         jump     «शाबाश» sheet 0-29 at 45 ms/frame (1.35 s) — silent but for the engine's celebration sfx
+         landing  «शाबाश» sheet 30-35 (mouth shut, 0.27 s)
+         the VO   starts here; the WHOLE line lip-syncs on the talk sheet (the clip speaks from 0 ms)
+         after    idle sheet, mouth-shut frames only, looping */
+    const JUMP = S.pre.concat(S.word), LAND = S.post, FMS = 45;
+    const src = (typeof audioFor === "function") ? audioFor(slide, "prompt") : null;
+    if(!src) return;                                   /* no clip: let the engine's own auto-play run */
+    state.ownsAudio = true;
+    show(S, JUMP[0]);
+    let m0 = 0, lastF = 0, smooth = 0, vclock = null;
+    let phase = "jump", tj = 0, t0 = 0, waitStart = 0, done = false, cursor = 0, curOpen = null, lastStep = 0;
     const idle = ()=>{
       let j = 0;
       (function tick(){
@@ -206,27 +205,44 @@
     };
     (function frame(){
       if(gen !== _celGen || !sp.isConnected || done) return;
+      if(CARD.slides[state.idx] !== slide){ done = true; return; }
       const now = performance.now();
-      if(!started){
-        if(isPlaying){ started = true; t0 = now; }
+      /* the jump's clock starts once the screen's opening work has settled — three smooth paints in a
+         row (sunburst, stars, sfx and the sheets' first decode stall the first ~0.2-0.5 s; a jump timed
+         from the mount skipped half its frames). Capped at 0.7 s, so she never stands still longer. */
+      if(!tj){
+        if(!m0){ m0 = now; lastF = now; }
+        smooth = (now - lastF < 40) ? smooth + 1 : 0; lastF = now;
+        if(smooth >= 3 || now - m0 > 700) tj = now;
+        else { requestAnimationFrame(frame); return; }
+      }
+      if(phase === "jump" || phase === "land"){
+        const list = phase === "jump" ? JUMP : LAND, k = Math.floor((now - tj) / FMS);
+        if(k < list.length){ show(S, list[k]); requestAnimationFrame(frame); return; }
+        if(phase === "jump"){ phase = "land"; tj = now; show(S, LAND[0]); requestAnimationFrame(frame); return; }
+        phase = "wait"; waitStart = now;
+        play(src, ()=>{});                             /* the line starts as she lands */
+        /* the clip's OWN clock (engine: when the source really started + output latency) — a paint
+           that runs late after play() no longer shifts the whole track (measured: 52 ms) */
+        vclock = (typeof _voiceClock === "function") ? _voiceClock() : null;
+      }
+      if(phase === "wait"){
+        if(isPlaying){ phase = "talk"; t0 = now; }
         else if(now - waitStart > 1800){ done = true; idle(); return; }     /* the VO never started */
         else { requestAnimationFrame(frame); return; }
       }
-      const t = now - t0;
+      const vt = vclock ? vclock().t : null;
+      const t = vt != null ? vt : now - t0;
       if(!isPlaying || t > lenMs + 400){ done = true; idle(); return; }
-      if(t < speechStart) show(S, seg(S.pre, t, 0, speechStart));
-      else if(t < wordEnd) show(S, seg(S.word, t, speechStart, wordEnd));
-      else if(t < nextStart) show(S, seg(S.post, t, wordEnd, nextStart));
-      else {
-        const want = loud(t + 16);                     /* one paint ahead: the frame shows on the NEXT paint */
-        /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
-        if(want !== curOpen || now - lastStep > 80){
-          let k = 1;
-          while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
-          cursor = (cursor + k) % 36;
-          show(T, cursor); curOpen = want; lastStep = now;
-        }
+      const want = loud(t + 16);                       /* one paint ahead: the frame shows on the NEXT paint */
+      /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
+      if(want !== curOpen || now - lastStep > 80){
+        let k = 1;
+        while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
+        cursor = (cursor + k) % 36;
+        show(T, cursor); curOpen = want; lastStep = now;
       }
+      sp.dataset.t = Math.round(t); sp.dataset.w = want ? 1 : 0;   /* the sprite's own clock + choice (tests) */
       requestAnimationFrame(frame);
     })();
   }

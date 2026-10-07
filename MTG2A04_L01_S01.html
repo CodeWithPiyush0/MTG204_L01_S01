@@ -4352,6 +4352,12 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .sg-complete .mn-fin-list .mn-li-ic{width:52px;height:52px;flex-basis:52px;}
 .sg-complete .mn-fin-list .mn-li-ic img{width:44px;height:44px;}
 
+/* round 2r: the ₹ sign ONLY comes from Noto Sans (Baloo 2's own ₹ is cramped: its top bar merges into the bowl).
+   Same family name + unicode-range U+20B9, declared after the Baloo faces, so it wins for ₹ alone; every other
+   character keeps Baloo 2. Metrics overridden to Baloo's so no line height moves. (Noto Sans: SIL OFL 1.1) */
+@font-face{font-family:'Baloo 2';font-style:normal;font-weight:700;font-display:block;unicode-range:U+20B9;ascent-override:107.8%;descent-override:52.4%;line-gap-override:0%;src:url(data:font/woff2;base64,d09GMgABAAAAAAIsAA4AAAAABBgAAAHYAAID1wAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcQgZgP1NUQVRaADQRCApccAE2AiQDCAsGAAQgBYFGByAbLwMAjpTunpp4+P+19L6/E5otQ1glZQJX3QpHx7MDAEmsWNc2+T/LabnTDwJ/rK2DIAAqiyIuoFifs0BahgkGpG3pDXl8q0Vmh60CuW56iAmTZixQLoMmgEBulDFKNVL9+qP7duizYeOhfqC1vHnfxu28Y+2BXT2HOcjS+nRLCel4WoLp+Gas0i+mkIolKSvJUsoACWDy7NmT3au8Xnk9a/z/iWxDnEBAqk4vUKlUCOUKaKeABunw5i0HAoc3HNgSIbYeWLsjRktKtdFDQAxMtxBCilE2oCBJMQYESLjnSD9TiawNKq83qYd/myJAiCZaIiSQIdADtYAMED2Ky6J44uXdrnkUT166kefRXH72Yuei/PXrBUv/PXTaiNoNk7c/nPZg6dMfVbOnPZx2Jm0funfa7oqpK+dNbfGwDxgjkArvvo/NHq1uOeJfeaHwC74ce/UTfvx9f9lYUpZeoFQCwX9LmqmgIenyDgBIaaalaYSxAkkPAQKNym1SEFmF0IbZJS20CYJmKhFyDRio3CCM0swoNVpPWz9GbpFZdjtgt0rzrbXLfvNstNlBO6y1z2IbbbXZFgfCbrXBATPObjuig7TPTmvtMNWBvt5qvXl2bw7tUgCa0g8BAA==) format('woff2');}
+@font-face{font-family:'Baloo 2';font-style:normal;font-weight:800;font-display:block;unicode-range:U+20B9;ascent-override:107.8%;descent-override:52.4%;line-gap-override:0%;src:url(data:font/woff2;base64,d09GMgABAAAAAAI0AA4AAAAABCAAAAHhAAID1wAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcQgZgP1NUQVRaADQRCApccAE2AiQDCAsGAAQgBYFQByAbOQOgHoNty7lmVE1UXeYCcf0pHv5/v2/7nHdHNSkmWUXrVDITChC61VlkryKaqXz72k/3QqiBVBxLILw4xvcDViclELKyRndanP9mO91g4DvfQxCAZVHEBRTrOAsswAQTDEi7y22MTk9wFYmOlgo0GzAkVqWLTSgUqAUQaLbEMjLZc5y8HlbwnBqffKC+nj2Ml3qpT5ueeQ5KXhGPqCOvZQewEd+MI/DFBiBb6rLUlcwCSIC1WysZfI+Mj7wU5/+3lFNsDATklHyCEfVCaFShV4XZcnQ6I4bRUzRjIc5Tf8WWSvW6DQmIudUIQshY4hSopIxlAAIkwTkqLEZQ2mBkvLYf/jGLgRC19AgJCgJDmAwogBhqOcBaxu59mVTRcvP2q0oVbZpv3DKoNT971tz/Pz43HbH+ZfbGH9K3m6XAf/j17/45AhdUy5rVmP7+TLAMQ1Yv737esKurX/SvUVz9gvdXn/4Efvz9feYnm/MJ6iUIXltyg0jzkukOAMjcAJ4r4BdIQwIEjhqdIRalSehmtdSuOwpajSA0m425us3BEq3W8VLZtdcyqBxTtkW27Hbq2ziqG5sSrPQdcGNzUzOEmxshMykX5KAvbmtlFOMdrPWt5NCo54bqtsdDG2Kghg8B) format('woff2');}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
@@ -4615,7 +4621,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   "fw": 329,
   "fh": 440,
   "step_ms": 25,
-  "bits": "00000000001111111111000001111111111000011111000000000000001111111100011111000001110000000001110000000011100011110000000000011100000000011111000000110000111110000011111000111100011111110011000011111111100001100000001110000000000",
+  "bits": "000000001110000011000001110000111100011111100000000000000000001111111111110000001111111001111100011100000111110000000",
   "vo": "vo_cel_prompt",
   "shabaash": {
    "src": "assets/UI/cel_shabaash.webp",
@@ -5451,7 +5457,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "phase": "mastery",
    "eis": "iconic",
    "type": "CELEBRATION",
-   "prompt_hi": "शाबाश! आज आपने ₹10 और ₹1 से राशि बनाना सीखा।",
+   "prompt_hi": "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!",
    "audio": {
     "prompt": "vo_cel_prompt"
    },
@@ -5654,7 +5660,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
    "vo_m_tip": "कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।",
    "vo_m_done": "शाबाश! परी की सारी खरीदारी हो गई।",
-   "vo_cel_prompt": "शाबाश! आज आपने दस रुपये और एक रुपये से राशि बनाना सीखा।"
+   "vo_cel_prompt": "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!"
   },
   "audio_ms": {
    "vo_landing": 9730,
@@ -5745,7 +5751,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "vo_m_more": 2610,
    "vo_m_tip": 3650,
    "vo_m_done": 3930,
-   "vo_cel_prompt": 5690
+   "vo_cel_prompt": 2942
   },
   "image": {
    "cur_coin1": "assets/Images/cur_coin1.png",
@@ -6363,7 +6369,7 @@ function _chainMs(srcs, gapMs){
    no reason to fetch it again and the reviewer keeps hearing the previous take. __AUDIO_V is
    stamped by the builder from the CONTENT of the audio folder, so it changes exactly when a clip
    changes and not otherwise - a fresh URL on every build would defeat caching for no reason. */
-var __AUDIO_V = "cdee5da7f65c";
+var __AUDIO_V = "4dacaca0f37b";
 function _av(src){
   if(typeof src !== "string" || src.indexOf("assets/Audio/") < 0) return src;
   return src.indexOf("?") >= 0 ? src : src + "?v=" + __AUDIO_V;
@@ -17932,22 +17938,17 @@ if(document.fonts && document.fonts.load){
     C.mount = function(host, slide){
       const r = _mount.apply(this, arguments);
       try { celArrowAfterVO(); } catch(e){}
-      try { runCelSprite(); } catch(e){}
+      try { runCelSprite(slide); } catch(e){}
       return r;
     };
   })(0), 0);
   let _celGen = 0;
-  /* round 2m — THREE SHEETS, ONE CLOCK. The clock is the celebration VO itself (from the moment the
-     engine's clip is actually sounding):
-       [0, first sound)            «शाबाश» sheet 0-5   standing, mouth shut
-       first word «शाबाश!»        «शाबाश» sheet 6-29  the jump, mouth open — stretched to that word
-       the pause after it          «शाबाश» sheet 30-35 lands, mouth shut
-       rest of the line            talk sheet: the cursor walks the sheet forward (so the body keeps
-                                   moving naturally) but only ever lands on a frame whose mouth matches
-                                   the VO at that instant — open on each syllable, shut in every dip
-       after the VO                idle sheet, mouth-shut frames only, looping
+  /* round 2m — THREE SHEETS, ONE CLOCK (timeline re-ordered in round 2r — see inside: jump first, then
+     the line). While she talks the clock is the celebration VO itself, from the moment it is sounding:
+     the cursor walks the talk sheet forward (so the body keeps moving naturally) but only ever lands on
+     a frame whose mouth matches the VO at that instant — open on each syllable, shut in every dip.
      All three sheets share frame size and alignment (make_cel_sprite.py), so switching never jumps. */
-  function runCelSprite(){
+  function runCelSprite(slide){
     const A = CARD && CARD.end_anim;
     const im = document.querySelector("#endScreen .end-mascot");
     if(!A || !im || !A.bits || !A.shabaash) return;
@@ -17979,20 +17980,24 @@ if(document.fonts && document.fonts.load){
     };
     const S = A.shabaash, T = A.talk, I = A.idle;
     const OPEN = new Set(T.open);
-    show(S, S.pre[0]);
     const bits = A.bits || "";
     const step = A.step_ms || 25;
     const loud = (t)=> bits.charAt(Math.floor(t / step)) === "1";
-    /* first word = first loud run, a 200 ms silence ends it */
-    const GAP = Math.round(200 / step);
-    let s0 = bits.indexOf("1"), e0 = s0, gap = 0;
-    for(let k = s0; k >= 0 && k < bits.length; k++){ if(bits[k] === "1"){ e0 = k; gap = 0; } else if(++gap >= GAP) break; }
-    const speechStart = Math.max(0, s0) * step, wordEnd = (e0 + 1) * step;
-    let ns = bits.indexOf("1", e0 + GAP); const nextStart = ns < 0 ? wordEnd : ns * step;
     const lenMs = bits.length * step;
-    const seg = (list, t, a, b)=> list[Math.min(list.length - 1, Math.max(0, Math.floor((t - a) / Math.max(1, b - a) * list.length)))];
-    let t0 = 0, started = false, done = false, cursor = 0, curOpen = null, lastStep = 0;
-    const waitStart = performance.now();
+    /* round 2r (user + reference HI02H11 r106): SHE JUMPS AND CELEBRATES FIRST, THEN SPEAKS. The line
+       («बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!») has no «शाबाश» to hang the jump on, so the page owns
+       the audio (ownsAudio: the engine's auto-play is skipped) and runs:
+         jump     «शाबाश» sheet 0-29 at 45 ms/frame (1.35 s) — silent but for the engine's celebration sfx
+         landing  «शाबाश» sheet 30-35 (mouth shut, 0.27 s)
+         the VO   starts here; the WHOLE line lip-syncs on the talk sheet (the clip speaks from 0 ms)
+         after    idle sheet, mouth-shut frames only, looping */
+    const JUMP = S.pre.concat(S.word), LAND = S.post, FMS = 45;
+    const src = (typeof audioFor === "function") ? audioFor(slide, "prompt") : null;
+    if(!src) return;                                   /* no clip: let the engine's own auto-play run */
+    state.ownsAudio = true;
+    show(S, JUMP[0]);
+    let m0 = 0, lastF = 0, smooth = 0, vclock = null;
+    let phase = "jump", tj = 0, t0 = 0, waitStart = 0, done = false, cursor = 0, curOpen = null, lastStep = 0;
     const idle = ()=>{
       let j = 0;
       (function tick(){
@@ -18003,27 +18008,44 @@ if(document.fonts && document.fonts.load){
     };
     (function frame(){
       if(gen !== _celGen || !sp.isConnected || done) return;
+      if(CARD.slides[state.idx] !== slide){ done = true; return; }
       const now = performance.now();
-      if(!started){
-        if(isPlaying){ started = true; t0 = now; }
+      /* the jump's clock starts once the screen's opening work has settled — three smooth paints in a
+         row (sunburst, stars, sfx and the sheets' first decode stall the first ~0.2-0.5 s; a jump timed
+         from the mount skipped half its frames). Capped at 0.7 s, so she never stands still longer. */
+      if(!tj){
+        if(!m0){ m0 = now; lastF = now; }
+        smooth = (now - lastF < 40) ? smooth + 1 : 0; lastF = now;
+        if(smooth >= 3 || now - m0 > 700) tj = now;
+        else { requestAnimationFrame(frame); return; }
+      }
+      if(phase === "jump" || phase === "land"){
+        const list = phase === "jump" ? JUMP : LAND, k = Math.floor((now - tj) / FMS);
+        if(k < list.length){ show(S, list[k]); requestAnimationFrame(frame); return; }
+        if(phase === "jump"){ phase = "land"; tj = now; show(S, LAND[0]); requestAnimationFrame(frame); return; }
+        phase = "wait"; waitStart = now;
+        play(src, ()=>{});                             /* the line starts as she lands */
+        /* the clip's OWN clock (engine: when the source really started + output latency) — a paint
+           that runs late after play() no longer shifts the whole track (measured: 52 ms) */
+        vclock = (typeof _voiceClock === "function") ? _voiceClock() : null;
+      }
+      if(phase === "wait"){
+        if(isPlaying){ phase = "talk"; t0 = now; }
         else if(now - waitStart > 1800){ done = true; idle(); return; }     /* the VO never started */
         else { requestAnimationFrame(frame); return; }
       }
-      const t = now - t0;
+      const vt = vclock ? vclock().t : null;
+      const t = vt != null ? vt : now - t0;
       if(!isPlaying || t > lenMs + 400){ done = true; idle(); return; }
-      if(t < speechStart) show(S, seg(S.pre, t, 0, speechStart));
-      else if(t < wordEnd) show(S, seg(S.word, t, speechStart, wordEnd));
-      else if(t < nextStart) show(S, seg(S.post, t, wordEnd, nextStart));
-      else {
-        const want = loud(t + 16);                     /* one paint ahead: the frame shows on the NEXT paint */
-        /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
-        if(want !== curOpen || now - lastStep > 80){
-          let k = 1;
-          while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
-          cursor = (cursor + k) % 36;
-          show(T, cursor); curOpen = want; lastStep = now;
-        }
+      const want = loud(t + 16);                       /* one paint ahead: the frame shows on the NEXT paint */
+      /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
+      if(want !== curOpen || now - lastStep > 80){
+        let k = 1;
+        while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
+        cursor = (cursor + k) % 36;
+        show(T, cursor); curOpen = want; lastStep = now;
       }
+      sp.dataset.t = Math.round(t); sp.dataset.w = want ? 1 : 0;   /* the sprite's own clock + choice (tests) */
       requestAnimationFrame(frame);
     })();
   }
