@@ -40,6 +40,96 @@
       return _arm.apply(this, arguments);
     };
   } catch(e){}
+
+  /* ============ CONFETTI, round 2s (user, 2026-10-08) ============
+     "extract the same confetti effect (animation)" from MTG2A04_L02_S01: the FLN animation kit's
+     recipe 7, copied verbatim (kit core: still + guard; the confetti module) — stars 40 %, rectangles,
+     lines, squares, two-faced, fluttering / tumbling at terminal velocity, VIBGYOR pairs. Called as
+     that lesson calls it: body-level #fxLayer (falls over the whole window), 100 pieces, fall
+     [1.6, 2.6] s, every phase (phases: []), pieces 1.5x and sized with the stage (money_styles.css).
+     The engine's old .conf-shot cannon is replaced at the one name every call site uses; it had no
+     sound and none is added here (that lesson's sfx_confetti is a separate call). */
+  (function(){ "use strict";
+    var M = window.FLNMotion = window.FLNMotion || {};
+    M.still = M.still || function(){
+      try{ return document.documentElement.classList.contains("no-anim") ||
+        (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+      catch(_){ return false; }
+    };
+    M.guard = M.guard || function(fn){
+      try{ fn(); }catch(e){ try{ console.warn("[animation-kit]", e && e.message); }catch(_){} }
+    };
+    function rnd(a, b){ return a + Math.random() * (b - a); }
+    M.confetti = {
+      defaults: {
+        host:".stage-inner", count:80, stagger:0.35,
+        fall:[1.1,1.8], drift:45, sway:[10,34], bob:[3,7],
+        rockT:[0.6,1.2], tumbleT:[0.75,1.5], tumbleShare:0.22,
+        amp:[28,52], yaw:30, depth:[0.75,1.15], tilt:25,
+        shapes:["st","st","st","st","rc","rc","ln","ln","sq","sq"],
+        colors:[["#8B2FC9","#5E1C8C"],["#3F51B5","#27358A"],["#1E88E5","#135FA6"],["#22B24C","#157A34"],
+                ["#FFD21E","#D9A800"],["#FF8A1E","#C75F00"],["#E5322D","#A81F1B"]],
+        phases:["guided","practice","mastery"]
+      },
+      burst: function(opts){
+        var o = Object.assign({}, this.defaults, opts || {});
+        M.guard(function(){
+          if(M.still()) return;
+          if(o.phases.length && o.phase && o.phases.indexOf(o.phase) < 0) return;
+          var host = document.querySelector(o.host); if(!host) return;
+          var dist = host.clientHeight + 60, maxLife = 0;
+          var wrap = document.createElement("div");
+          wrap.className = "fx-confetti";
+          for(var i = 0; i < o.count; i++){
+            var z     = rnd(o.depth[0], o.depth[1]);
+            var fall  = rnd(o.fall[0], o.fall[1]) / z;
+            var delay = rnd(0, o.stagger);
+            if(fall + delay > maxLife) maxLife = fall + delay;
+            var pair = o.colors[i % o.colors.length];
+            var flutter = Math.random() > o.tumbleShare;
+            var rockT   = flutter ? rnd(o.rockT[0], o.rockT[1]) : rnd(o.tumbleT[0], o.tumbleT[1]);
+            var sway    = flutter ? rnd(o.sway[0], o.sway[1]) : rnd(2, 8);
+            var drift   = flutter ? rnd(-o.drift/2.5, o.drift/2.5) : rnd(-o.drift, o.drift);
+            var bob     = flutter ? rnd(o.bob[0], o.bob[1]) : rnd(2, 4);
+            var p = document.createElement("i"); p.className = "p";
+            p.style.cssText =
+              "--x:"     + rnd(-2, 98).toFixed(1) + "%;" +
+              "--dist:"  + dist + "px;" +
+              "--fall:"  + fall.toFixed(2) + "s;" +
+              "--delay:" + delay.toFixed(2) + "s;" +
+              "--drift:" + drift.toFixed(0) + "px;" +
+              "--sway:"  + sway.toFixed(0) + "px;" +
+              "--bob:"   + bob.toFixed(1) + "px;" +
+              "--rockT:" + rockT.toFixed(2) + "s;" +
+              "--amp:"   + Math.round(rnd(o.amp[0], o.amp[1])) + "deg;" +
+              "--yaw:"   + Math.round(rnd(-o.yaw, o.yaw)) + "deg;" +
+              "--tilt:"  + Math.round(rnd(-o.tilt, o.tilt)) + "deg;" +
+              "--z:"     + z.toFixed(2) + ";" +
+              "--dim:"   + (0.72 + (z - o.depth[0]) / (o.depth[1] - o.depth[0]) * 0.28).toFixed(2) + ";" +
+              "--c:"     + pair[0] + ";--c2:" + pair[1] + ";";
+            var w = document.createElement("i"); w.className = "w";
+            var f = document.createElement("i");
+            f.className = "f " + o.shapes[Math.floor(Math.random() * o.shapes.length)] + (flutter ? "" : " tum");
+            w.appendChild(f); p.appendChild(w); wrap.appendChild(p);
+          }
+          host.appendChild(wrap);
+          setTimeout(function(){ wrap.remove(); }, (maxLife + 0.3) * 1000);
+        });
+      }
+    };
+    var layer = function(){
+      var L = document.getElementById("fxLayer");
+      if(!L){ L = document.createElement("div"); L.className = "fx-layer"; L.id = "fxLayer";
+              L.setAttribute("aria-hidden", "true"); document.body.appendChild(L); }
+      return L;
+    };
+    if(document.body) layer(); else document.addEventListener("DOMContentLoaded", layer);
+    confettiCannon = function(){
+      var sl = (CARD && CARD.slides && CARD.slides[state.idx]) || {};
+      layer();
+      M.confetti.burst({ host: "#fxLayer", phase: sl.phase, phases: [], count: 100, fall: [1.6, 2.6] });
+    };
+  })();
   /* CARD is parsed AFTER this script runs (the engine polls for it the same way in _warmSoon), so
      the gate is registered once CARD exists — registering it at load time silently did nothing and
      the shop opened with no transition. */

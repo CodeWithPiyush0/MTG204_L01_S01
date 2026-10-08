@@ -4358,6 +4358,92 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 @font-face{font-family:'Baloo 2';font-style:normal;font-weight:700;font-display:block;unicode-range:U+20B9;ascent-override:107.8%;descent-override:52.4%;line-gap-override:0%;src:url(data:font/woff2;base64,d09GMgABAAAAAAIsAA4AAAAABBgAAAHYAAID1wAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcQgZgP1NUQVRaADQRCApccAE2AiQDCAsGAAQgBYFGByAbLwMAjpTunpp4+P+19L6/E5otQ1glZQJX3QpHx7MDAEmsWNc2+T/LabnTDwJ/rK2DIAAqiyIuoFifs0BahgkGpG3pDXl8q0Vmh60CuW56iAmTZixQLoMmgEBulDFKNVL9+qP7duizYeOhfqC1vHnfxu28Y+2BXT2HOcjS+nRLCel4WoLp+Gas0i+mkIolKSvJUsoACWDy7NmT3au8Xnk9a/z/iWxDnEBAqk4vUKlUCOUKaKeABunw5i0HAoc3HNgSIbYeWLsjRktKtdFDQAxMtxBCilE2oCBJMQYESLjnSD9TiawNKq83qYd/myJAiCZaIiSQIdADtYAMED2Ky6J44uXdrnkUT166kefRXH72Yuei/PXrBUv/PXTaiNoNk7c/nPZg6dMfVbOnPZx2Jm0funfa7oqpK+dNbfGwDxgjkArvvo/NHq1uOeJfeaHwC74ce/UTfvx9f9lYUpZeoFQCwX9LmqmgIenyDgBIaaalaYSxAkkPAQKNym1SEFmF0IbZJS20CYJmKhFyDRio3CCM0swoNVpPWz9GbpFZdjtgt0rzrbXLfvNstNlBO6y1z2IbbbXZFgfCbrXBATPObjuig7TPTmvtMNWBvt5qvXl2bw7tUgCa0g8BAA==) format('woff2');}
 @font-face{font-family:'Baloo 2';font-style:normal;font-weight:800;font-display:block;unicode-range:U+20B9;ascent-override:107.8%;descent-override:52.4%;line-gap-override:0%;src:url(data:font/woff2;base64,d09GMgABAAAAAAI0AA4AAAAABCAAAAHhAAID1wAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcQgZgP1NUQVRaADQRCApccAE2AiQDCAsGAAQgBYFQByAbOQOgHoNty7lmVE1UXeYCcf0pHv5/v2/7nHdHNSkmWUXrVDITChC61VlkryKaqXz72k/3QqiBVBxLILw4xvcDViclELKyRndanP9mO91g4DvfQxCAZVHEBRTrOAsswAQTDEi7y22MTk9wFYmOlgo0GzAkVqWLTSgUqAUQaLbEMjLZc5y8HlbwnBqffKC+nj2Ml3qpT5ueeQ5KXhGPqCOvZQewEd+MI/DFBiBb6rLUlcwCSIC1WysZfI+Mj7wU5/+3lFNsDATklHyCEfVCaFShV4XZcnQ6I4bRUzRjIc5Tf8WWSvW6DQmIudUIQshY4hSopIxlAAIkwTkqLEZQ2mBkvLYf/jGLgRC19AgJCgJDmAwogBhqOcBaxu59mVTRcvP2q0oVbZpv3DKoNT971tz/Pz43HbH+ZfbGH9K3m6XAf/j17/45AhdUy5rVmP7+TLAMQ1Yv737esKurX/SvUVz9gvdXn/4Efvz9feYnm/MJ6iUIXltyg0jzkukOAMjcAJ4r4BdIQwIEjhqdIRalSehmtdSuOwpajSA0m425us3BEq3W8VLZtdcyqBxTtkW27Hbq2ziqG5sSrPQdcGNzUzOEmxshMykX5KAvbmtlFOMdrPWt5NCo54bqtsdDG2Kghg8B) format('woff2');}
 
+
+/* ============ CONFETTI, round 2s (user, 2026-10-08): copied verbatim from MTG2A04_L02_S01 style.css —
+   the FLN animation kit confetti block + that lesson's [13] body-level layer (whole window, pieces 1.5x,
+   sized with the stage --scale). Used by confettiCannon (money_modules.js). ============ */
+/* ===== FLN ANIMATION KIT: confetti BEGIN ===== */
+.fx-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:60;}
+.fx-confetti .p{position:absolute;top:0;left:var(--x);
+  animation:cfFall var(--fall) linear var(--delay) both;}
+/* Sway shares the rock's PERIOD and lags it by a quarter cycle. A fluttering plate
+   slides in the direction it is tilted - the swing and the rock are one motion, not
+   two independent ones. The negative delay is what creates the quarter-cycle lag. */
+.fx-confetti .w{display:block;perspective:600px;
+  animation:cfGlide var(--rockT) linear var(--delay) infinite both;}
+.fx-confetti .f{display:block;position:relative;transform-style:preserve-3d;
+  width:calc(var(--w) * var(--z));height:calc(var(--h) * var(--z));
+  opacity:var(--dim,1);
+  animation:cfRock var(--rockT) linear var(--delay) infinite both;}
+/* the minority that actually goes end-over-end */
+.fx-confetti .f.tum{animation:cfTumble var(--rockT) linear var(--delay) infinite both;}
+/* two real faces: front bright, back the same hue darkened */
+.fx-confetti .f::before,.fx-confetti .f::after{content:"";position:absolute;inset:0;
+  border-radius:inherit;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.fx-confetti .f::before{background:var(--c);}
+.fx-confetti .f::after{background:var(--c2);transform:rotateY(180deg);}
+/* Shape mix. Sizes are deliberately far apart - at 7-11px a rectangle and a square are
+   indistinguishable while tumbling, which makes the whole field read as "all squares". */
+.fx-confetti .sq{--w:8px;  --h:8px;  border-radius:1px;}   /* square    1:1   */
+.fx-confetti .rc{--w:6px;  --h:13px; border-radius:1px;}   /* rectangle 1:2.2 */
+.fx-confetti .ln{--w:2.5px;--h:16px; border-radius:2px;}   /* line      1:6.4 */
+.fx-confetti .st{--w:11px; --h:11px;}                      /* star - needs a few
+                                 more px than the rest for its points to read */
+/* clip-path goes on the FACES, not on .f - clip-path on .f would force
+   transform-style to flat and kill the two-sided tumble */
+.fx-confetti .st::before,.fx-confetti .st::after{
+  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,
+                    50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+
+/* LINEAR - terminal velocity. `both` is load-bearing: without it delayed pieces
+   sit in a visible row on the top edge until their delay elapses.
+   --drift gives each piece a gentle lean, as if in a faint air current. */
+@keyframes cfFall{
+  0%{transform:translate(0,-40px);opacity:0;}
+  5%{opacity:1;}
+  86%{opacity:1;}
+  100%{transform:translate(var(--drift,0px),var(--dist,820px));opacity:0;}
+}
+/* GLIDE + BOB. Real flutter is NOT sinusoidal: the plate glides at near-constant
+   attitude, then turns sharply. Long glide, quick reversal, linear timing - the
+   keyframe percentages do the shaping.
+   The Y term is vertical speed modulation: the plate falls SLOWER broadside during
+   the glide (max drag) and quicker through the flip (edge-on, min drag). That
+   hesitate-then-drop is what the eye reads as paper. */
+@keyframes cfGlide{
+  0%  {transform:translate(calc(var(--sway) * -1), 0);}
+  45% {transform:translate(var(--sway), calc(var(--bob) * -1));}
+  50% {transform:translate(var(--sway), 0);}
+  95% {transform:translate(calc(var(--sway) * -1), calc(var(--bob) * -1));}
+  100%{transform:translate(calc(var(--sway) * -1), 0);}
+}
+/* FLUTTER - the default, ~78% of pieces. Rocks about ONE axis, capped well short of
+   edge-on, so the face stays toward the viewer. ease-in-out because a turning point
+   is a turning point: it decelerates at max tilt, like any pendulum. */
+/* FLIP. Holds attitude through the glide, then snaps over in 5% of the cycle.
+   Phase-locked to cfGlide by construction - both start at the beginning of a glide,
+   so no offset delay: the flip lands exactly on the direction reversal. */
+@keyframes cfRock{
+  0%  {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(var(--amp));}
+  45% {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(calc(var(--amp) * 0.86));}
+  50% {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(calc(var(--amp) * -1));}
+  95% {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(calc(var(--amp) * -0.86));}
+  100%{transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(var(--amp));}
+}
+/* TUMBLE - the other ~22%. One half revolution, face to face. The keyframes dwell
+   near the faces and sweep through edge-on in 16% of the cycle, because a real plate
+   hangs broadside where drag is highest and flips fast through the low-drag edge. */
+@keyframes cfTumble{
+  0%  {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(0deg);}
+  42% {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(72deg);}
+  58% {transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(108deg);}
+  100%{transform:rotateZ(var(--tilt)) rotateY(var(--yaw)) rotateX(180deg);}
+}
+/* ===== FLN ANIMATION KIT: confetti END ===== */
+.fx-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5000;--fx-size:1.5;}
+.fx-layer .fx-confetti .f{width:calc(var(--w) * var(--z) * var(--scale, 1) * var(--fx-size, 1));
+  height:calc(var(--h) * var(--z) * var(--scale, 1) * var(--fx-size, 1));}
+
 /* == MONEY STYLES :: END == */
 </style>
 <link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.png"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.png"></head>
@@ -17843,6 +17929,96 @@ if(document.fonts && document.fonts.load){
       return _arm.apply(this, arguments);
     };
   } catch(e){}
+
+  /* ============ CONFETTI, round 2s (user, 2026-10-08) ============
+     "extract the same confetti effect (animation)" from MTG2A04_L02_S01: the FLN animation kit's
+     recipe 7, copied verbatim (kit core: still + guard; the confetti module) — stars 40 %, rectangles,
+     lines, squares, two-faced, fluttering / tumbling at terminal velocity, VIBGYOR pairs. Called as
+     that lesson calls it: body-level #fxLayer (falls over the whole window), 100 pieces, fall
+     [1.6, 2.6] s, every phase (phases: []), pieces 1.5x and sized with the stage (money_styles.css).
+     The engine's old .conf-shot cannon is replaced at the one name every call site uses; it had no
+     sound and none is added here (that lesson's sfx_confetti is a separate call). */
+  (function(){ "use strict";
+    var M = window.FLNMotion = window.FLNMotion || {};
+    M.still = M.still || function(){
+      try{ return document.documentElement.classList.contains("no-anim") ||
+        (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+      catch(_){ return false; }
+    };
+    M.guard = M.guard || function(fn){
+      try{ fn(); }catch(e){ try{ console.warn("[animation-kit]", e && e.message); }catch(_){} }
+    };
+    function rnd(a, b){ return a + Math.random() * (b - a); }
+    M.confetti = {
+      defaults: {
+        host:".stage-inner", count:80, stagger:0.35,
+        fall:[1.1,1.8], drift:45, sway:[10,34], bob:[3,7],
+        rockT:[0.6,1.2], tumbleT:[0.75,1.5], tumbleShare:0.22,
+        amp:[28,52], yaw:30, depth:[0.75,1.15], tilt:25,
+        shapes:["st","st","st","st","rc","rc","ln","ln","sq","sq"],
+        colors:[["#8B2FC9","#5E1C8C"],["#3F51B5","#27358A"],["#1E88E5","#135FA6"],["#22B24C","#157A34"],
+                ["#FFD21E","#D9A800"],["#FF8A1E","#C75F00"],["#E5322D","#A81F1B"]],
+        phases:["guided","practice","mastery"]
+      },
+      burst: function(opts){
+        var o = Object.assign({}, this.defaults, opts || {});
+        M.guard(function(){
+          if(M.still()) return;
+          if(o.phases.length && o.phase && o.phases.indexOf(o.phase) < 0) return;
+          var host = document.querySelector(o.host); if(!host) return;
+          var dist = host.clientHeight + 60, maxLife = 0;
+          var wrap = document.createElement("div");
+          wrap.className = "fx-confetti";
+          for(var i = 0; i < o.count; i++){
+            var z     = rnd(o.depth[0], o.depth[1]);
+            var fall  = rnd(o.fall[0], o.fall[1]) / z;
+            var delay = rnd(0, o.stagger);
+            if(fall + delay > maxLife) maxLife = fall + delay;
+            var pair = o.colors[i % o.colors.length];
+            var flutter = Math.random() > o.tumbleShare;
+            var rockT   = flutter ? rnd(o.rockT[0], o.rockT[1]) : rnd(o.tumbleT[0], o.tumbleT[1]);
+            var sway    = flutter ? rnd(o.sway[0], o.sway[1]) : rnd(2, 8);
+            var drift   = flutter ? rnd(-o.drift/2.5, o.drift/2.5) : rnd(-o.drift, o.drift);
+            var bob     = flutter ? rnd(o.bob[0], o.bob[1]) : rnd(2, 4);
+            var p = document.createElement("i"); p.className = "p";
+            p.style.cssText =
+              "--x:"     + rnd(-2, 98).toFixed(1) + "%;" +
+              "--dist:"  + dist + "px;" +
+              "--fall:"  + fall.toFixed(2) + "s;" +
+              "--delay:" + delay.toFixed(2) + "s;" +
+              "--drift:" + drift.toFixed(0) + "px;" +
+              "--sway:"  + sway.toFixed(0) + "px;" +
+              "--bob:"   + bob.toFixed(1) + "px;" +
+              "--rockT:" + rockT.toFixed(2) + "s;" +
+              "--amp:"   + Math.round(rnd(o.amp[0], o.amp[1])) + "deg;" +
+              "--yaw:"   + Math.round(rnd(-o.yaw, o.yaw)) + "deg;" +
+              "--tilt:"  + Math.round(rnd(-o.tilt, o.tilt)) + "deg;" +
+              "--z:"     + z.toFixed(2) + ";" +
+              "--dim:"   + (0.72 + (z - o.depth[0]) / (o.depth[1] - o.depth[0]) * 0.28).toFixed(2) + ";" +
+              "--c:"     + pair[0] + ";--c2:" + pair[1] + ";";
+            var w = document.createElement("i"); w.className = "w";
+            var f = document.createElement("i");
+            f.className = "f " + o.shapes[Math.floor(Math.random() * o.shapes.length)] + (flutter ? "" : " tum");
+            w.appendChild(f); p.appendChild(w); wrap.appendChild(p);
+          }
+          host.appendChild(wrap);
+          setTimeout(function(){ wrap.remove(); }, (maxLife + 0.3) * 1000);
+        });
+      }
+    };
+    var layer = function(){
+      var L = document.getElementById("fxLayer");
+      if(!L){ L = document.createElement("div"); L.className = "fx-layer"; L.id = "fxLayer";
+              L.setAttribute("aria-hidden", "true"); document.body.appendChild(L); }
+      return L;
+    };
+    if(document.body) layer(); else document.addEventListener("DOMContentLoaded", layer);
+    confettiCannon = function(){
+      var sl = (CARD && CARD.slides && CARD.slides[state.idx]) || {};
+      layer();
+      M.confetti.burst({ host: "#fxLayer", phase: sl.phase, phases: [], count: 100, fall: [1.6, 2.6] });
+    };
+  })();
   /* CARD is parsed AFTER this script runs (the engine polls for it the same way in _warmSoon), so
      the gate is registered once CARD exists — registering it at load time silently did nothing and
      the shop opened with no transition. */
