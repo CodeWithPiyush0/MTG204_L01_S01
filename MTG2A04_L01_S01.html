@@ -18113,6 +18113,7 @@ if(document.fonts && document.fonts.load){
     const _mount = C.mount;
     C.mount = function(host, slide){
       const r = _mount.apply(this, arguments);
+      try { releaseShop(); } catch(e){}            /* round 2t: the shop's held pictures are no longer needed */
       try { celArrowAfterVO(); } catch(e){}
       try { runCelSprite(slide); } catch(e){}
       return r;
@@ -18413,7 +18414,7 @@ if(document.fonts && document.fonts.load){
   function piece(kind, extra){
     const d = el("div", "mn-piece " + KIND[kind].cls + (extra ? " " + extra : ""));
     d.dataset.kind = kind;
-    d.innerHTML = '<img src="' + img(KIND[kind].img) + '" alt="' + KIND[kind].label + '" draggable="false">';
+    d.innerHTML = '<img src="' + img(KIND[kind].img) + '" alt="' + KIND[kind].label + '" draggable="false" decoding="sync">';   /* round 2t */
     return d;
   }
   function floatAt(kind, b, extra){
@@ -18430,7 +18431,12 @@ if(document.fonts && document.fonts.load){
         { left:a.x + "px", top:a.y + "px", width:a.w + "px", height:a.h + "px" },
         { left:b.x + "px", top:b.y + "px", width:b.w + "px", height:b.h + "px" }],
         { duration:ms || 800, easing:ease || "cubic-bezier(.45,.05,.3,1)", fill:"forwards" });
-      an.onfinish = ()=> res();
+      /* round 2v (user: "the bounce back is not visible, it disappears in the drop zone"): COMMIT the
+         end position to the element's style. A move reads its start from the style, so without this a
+         second move (a tapped wrong piece: into the tray, THEN back) started from where the piece had
+         been BEFORE the first move — it jumped home in one frame instead of bouncing back. */
+      const commit = ()=>{ f.style.left = b.x + "px"; f.style.top = b.y + "px"; f.style.width = b.w + "px"; f.style.height = b.h + "px"; };
+      an.onfinish = ()=>{ commit(); res(); };
       an.oncancel = ()=> res();
     });
   }
@@ -18445,10 +18451,24 @@ if(document.fonts && document.fonts.load){
                                 an.onfinish = ()=>{ f.remove(); r(); }; });
     });
   }
-  function bounceBack(f, src){
+  function bounceBack(f, src, ms){
     if(!f) return Promise.resolve();
-    return animTo(f, box(src), 440, "cubic-bezier(.3,1.35,.5,1)").then(()=>{ f.remove(); restart(src, "mn-bump"); });
+    return animTo(f, box(src), ms || 440, "cubic-bezier(.3,1.35,.5,1)").then(()=>{ f.remove(); restart(src, "mn-bump"); });
   }
+  /* round 2t (SME): ONE error mechanic for an extra / incorrect note or coin — BOUNCE BACK, never a
+     tray shake, the same for a drag and a tap. A dragged piece is already over the tray, so it
+     bounces straight home; a TAPPED piece starts on its own source, so it first travels into the
+     tray (as a correct tap does) and then bounces back — otherwise the child would see nothing move. */
+  /* round 2v: the error bounce takes 0.62 s (the plain return keeps 0.44 s) so the child SEES the
+     piece travel home — at 0.44 s with this overshoot curve it covered the distance in ~0.17 s. */
+  function rejectPiece(f, src, zone){
+    if(!f) return Promise.resolve();
+    if(f.dataset.tap !== "1" || !zone) return bounceBack(f, src, 620);
+    const z = box(zone), w = parseFloat(f.style.width), h = parseFloat(f.style.height);
+    return animTo(f, { x:z.x + z.w / 2 - w / 2, y:z.y + z.h / 2 - h / 2, w, h }, 320)
+      .then(()=> bounceBack(f, src, 620));
+  }
+  function tapFloat(kind, src){ const f = floatAt(kind, box(src)); f.dataset.tap = "1"; return f; }
 
   /* DRAG from an endless source. A press that does not travel is a TAP (the shop allows tap-to-add).
      Drags are refused while a voice clip is sounding — the engine-wide drag VO gate. */
@@ -18791,8 +18811,7 @@ if(document.fonts && document.fonts.load){
 
       /* ---- the ladder (practice) ---- */
       const wrong = (type, kind, f, src)=>{
-        bounceBack(f, src);
-        restart(tgt, "mn-shake");
+        rejectPiece(f, src, tgt);                                 /* round 2t: bounce back, no tray shake */
         state.attempts++;
         SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, attempts:state.attempts, kind:type, total:total() });
         mood("tryagain");
@@ -18832,7 +18851,7 @@ if(document.fonts && document.fonts.load){
         zone: ()=> tgt,
         canStart: (kind)=> armed && !done && !reached && !off.has(kind) && !isPlaying,
         /* round 2p: a TAP on a note / coin works like dragging it into the tray (same rules) */
-        onTap: (kind, src)=> handleDrop(kind, floatAt(kind, box(src)), src),
+        onTap: (kind, src)=> handleDrop(kind, tapFloat(kind, src), src),
         onDrop: (kind, f, src)=> handleDrop(kind, f, src)
       }));
       function handleDrop(kind, f, src){
@@ -18858,7 +18877,7 @@ if(document.fonts && document.fonts.load){
         touch();
         if(total() === T){ finish(); return; }
         state.attempts++;
-        fbWrong(); mood("tryagain"); restart(tgt, "mn-shake");
+        fbWrong(); mood("tryagain");                              /* round 2t: no tray shake */
         SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, attempts:state.attempts, kind:"under", total:total() });
         say((d.under || {})[String(total())]);
       };
@@ -18915,6 +18934,7 @@ if(document.fonts && document.fonts.load){
   SlideModules.MONEY_DONE = {
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
+      warmShop();                                  /* round 2t: the shop's pictures, decoded before it opens */
       const d = slide.data;
       /* "mn-fin", NOT "mn-done": .mn-done is the build screens' solved-target state, and sharing the
          name collapsed every solved drop zone to 8 px */
@@ -18953,6 +18973,31 @@ if(document.fonts && document.fonts.load){
                  playful line.
        basket  — the item jumps, flies to Pari's basket, the counter ticks, the item goes inactive.
      After all items: Pari with a full basket, the ticked list, the total. */
+  /* round 2t (SME): "the vegetable/food item icons sometimes disappear while moving into or playing
+     the game". The stall is rebuilt on every return from a purchase (and the make screen / list on
+     every step), so each visit creates FRESH <img>s. The loader downloaded and decoded these files
+     once, but a browser may drop decoded pictures it no longer holds — then every new <img> waits
+     for a re-decode (and on a busy tablet, a reload from cache) before it paints: a cell, its price
+     and its tick appear with no picture. Measured in Chrome at 4-6x CPU throttle: up to ~0.4 s blank.
+     Two fixes: (a) from the screen before the shop until the celebration, the shop's pictures are
+     HELD decoded (Image objects kept referenced); (b) every shop <img> paints with decoding="sync",
+     so a cell is never shown before its picture — the picture is drawn in the same frame. */
+  let _shopKeep = null;
+  function warmShop(){
+    if(_shopKeep) return;
+    try {
+      const S = CARD && CARD.slides && CARD.slides.find(s => s.type === "SHOP_GAME"); if(!S) return;
+      const d = S.data || {};
+      const keys = (d.items || []).map(it => it.img).concat([d.pari_img, d.pari_full_img, d.stall_img]).filter(Boolean)
+        /* the notes / coins too, in all three states (Default / Glow / Lock) */
+        .concat(...Object.keys(KIND).map(kd => ["", "_glow", "_lock"].map(sfx => KIND[kd].img + sfx)));
+      _shopKeep = keys.map(k0 => { const im = new Image(); im.decoding = "sync"; im.src = img(k0);
+                                   if(im.decode) im.decode().catch(()=>{}); return im; });
+    } catch(e){}
+  }
+  function releaseShop(){ _shopKeep = null; }
+  const syncImgs = (node)=>{ try { node.querySelectorAll("img").forEach(i => { i.decoding = "sync"; }); } catch(e){} };
+
   SlideModules.SHOP_GAME = {
     /* round 2f (user, 2026-09-30):
          stall  — the team's 6-panel stall art; one item per panel, prices ascending. No basket counter:
@@ -18964,6 +19009,7 @@ if(document.fonts && document.fonts.load){
     mount(host, slide){
       epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data, items = d.items;
+      warmShop();                                  /* round 2t: no-op if P4 already warmed them */
       $("navBtn").style.display = "none";
       const bought = new Set();
       let first = true, busy = false, view = null, idleT = 0, justSold = -1;
@@ -19000,7 +19046,7 @@ if(document.fonts && document.fonts.load){
         });
         justSold = -1;
         v.appendChild(stall);
-        root.appendChild(v); view = v;
+        syncImgs(v); root.appendChild(v); view = v;
         let nags = 0;
         const arm = ()=>{
           clearTimeout(idleT);
@@ -19047,7 +19093,7 @@ if(document.fonts && document.fonts.load){
         ["n10", "c10", "c1"].forEach(kd => { const s = piece(kd, "mn-src"); srcs[kd] = s; bank.appendChild(s); });
         bottom.appendChild(bank);
         v.append(top, bottom);
-        root.appendChild(v); view = v;
+        syncImgs(v); root.appendChild(v); view = v;
         /* «जाँचें» takes the arrow button's place (same pill, same spot) */
         const chk = el("button", "sg-checkpill", d.text.check);
         /* sits next to the arrow button (same container, same spot); taken away with the screen */
@@ -19145,10 +19191,10 @@ if(document.fonts && document.fonts.load){
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
           canStart: (kind)=> !working && !solved && !tipping && !srcs[kind].classList.contains("mn-off"),
-          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ bounceBack(f, src); restart(amt, "mn-shake"); return; } put(kind, f); },
+          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ rejectPiece(f, src, amt); return; } put(kind, f); },
           /* round 2p: tap works too (user: "giving the user both interactions") — same rules as a drop */
           onTap: (kind, src)=>{
-            if(!allowed(kind)){ restart(src, "mn-bump"); restart(amt, "mn-shake"); return; }
+            if(!allowed(kind)){ rejectPiece(tapFloat(kind, src), src, amt); return; }   /* round 2t */
             put(kind, floatAt(kind, box(src)));
           }
         }));
@@ -19159,7 +19205,7 @@ if(document.fonts && document.fonts.load){
           working = true; attempts++;
           state.attempts++;
           SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, item:it.id, attempts, kind: s < T ? "less" : "more" });
-          fbWrong(); mood("tryagain"); restart(amt, "mn-shake");
+          fbWrong(); mood("tryagain");                       /* round 2t: no tray shake — the money bounces back */
           band(s < T ? d.text.less : d.text.more);
           setTimeout(()=>{
             placed.slice().reverse().forEach((rec, j)=> setTimeout(()=> giveBack(rec), j * 70));
@@ -19273,7 +19319,7 @@ if(document.fonts && document.fonts.load){
           setTimeout(()=>{ if(!r.isConnected) return; r.classList.remove("mn-li-wait"); sfxPop(); }, 450 + j * 380);
         });
         v.append(list);
-        root.appendChild(v); view = v;
+        syncImgs(v); root.appendChild(v); view = v;
         if(typeof confettiCannon === "function") confettiCannon();
         mood("celebrate");
         $("navBtn").style.display = "";

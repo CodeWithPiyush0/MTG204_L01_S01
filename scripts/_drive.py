@@ -83,8 +83,11 @@ check("G2 equation strip in tray colours (not green)", js("return getComputedSty
 mount(idx["G3"]); w(0.15)
 check("G3 heading shows at once", st()["prompt"] == "₹20 बनाइए।", st())
 w(4.3)
+js("window.__fl = 0; new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{ if(n.classList && n.classList.contains('mn-float')) window.__fl++; }))).observe(document.getElementById('stage'),{childList:true})")
 js("drag(src('c1'), document.querySelector('.mn-target'))"); w(0.1)
-check("G3 wrong drop shakes the drop zone", js("return document.querySelector('.mn-target').classList.contains('mn-shake')")); w(0.7)
+# round 2t (SME): one error mechanic — the wrong piece BOUNCES BACK, the drop zone never shakes
+check("G3 wrong drop bounces back (the drop zone does not shake)", not js("return document.querySelector('.mn-target').classList.contains('mn-shake')")
+      and js("return !!document.querySelector('#stage > .mn-float')")); w(0.7)
 s = st(); check("G3 ₹1 rejected + VO6", s["total"] == "₹10" and "vo_g3_wrong" in s["said"], s)
 js("drag(src('c10'), document.querySelector('.mn-target'))"); w(1)
 s = st(); check("G3 ₹10 coin -> ₹20 finished", s["total"] == "₹20" and s["finished"], s)
