@@ -761,6 +761,9 @@
     mount(host, slide){
       const gen = epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data, T = d.target;
+      /* round 3d (SME: "All text … must be synchronised with the VO"): the instruction is shown when
+         Swiftee starts saying it — after the pieces have arrived — not when the screen opens */
+      $("promptText").textContent = "";
       const root = el("div", "mn-sort-card");
       const field = el("div", "mn-sort-field");
       const wallet = el("div", "mn-wallet",
@@ -868,7 +871,9 @@
         if(e){ restart(e, "mn-sp-hint"); sfxNudge(); }
       }, 500);
       state.replayAudio = ()=> say(A(slide, "prompt"));
-      setTimeout(()=>{ if(gen !== _gen) return; say(A(slide, "prompt"), ()=>{ armed = true; touch(); }); }, ready);
+      setTimeout(()=>{ if(gen !== _gen) return;
+        $("promptText").textContent = slide.prompt_hi || "";
+        say(A(slide, "prompt"), ()=>{ armed = true; touch(); }); }, ready);
     }
   };
 
@@ -1077,7 +1082,9 @@
         if(seqMode){                                   /* round 3: ₹14 / ₹32 / ₹45 — every 7 s, up to 3 */
           if(idleN >= 3) return;
           idleN++;
-          const kd = needKind(); pulse(kd); ghost(kd); sfxNudge();
+          /* round 3d (SME: "Only the ₹14 amount-making screen will have ghost animations"): ₹32 / ₹45
+             nudge with the glow + chime alone; the ghost is ₹14's (mode "ghost") only */
+          const kd = needKind(); pulse(kd); if(ghostMode) ghost(kd); sfxNudge();
           return;
         }
         if(teach){

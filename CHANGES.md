@@ -364,3 +364,10 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 | 3c-2 | Use the new title image; give the new assets relevant names | ✅ | Title `title_pari_chali_bazaar.png` (the badge «परी चली बाज़ार», transparent margin trimmed) laid over the cover at the top centre — a separate layer, so either picture can be swapped alone. Renamed: `Sunny Market Path Adventure.png` → `scn_landing.png` (it was already that picture), `Glossy Golden Wallet Icon.png` → `obj_wallet_src.png` (the source of `obj_wallet` / `obj_wallet_front`). The card title and the browser-tab title are now «परी चली बाज़ार». |
 - Dist 9.19 MB; `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` 0 FAIL on dist.
 - ⚑ The title-screen VO still introduces «परी के स्कूल में पिकनिक…» — with the new title «परी चली बाज़ार» it may need a new line (checklist: the VO introduces the title).
+
+## Round 3d — last two mismatches with the SME pointers (2026-10-14)
+| # | Pointer | Status | Proof |
+|---|---|---|---|
+| 3d-1 | "Only the ₹14 amount-making screen will have ghost animations" — ₹32 / ₹45 showed a ghost in their 7 s idle nudge | ✅ | ₹32 / ₹45 nudge = glow + chime only; ₹14 keeps its ghost. Real audio on dist: 0 ghosts on ₹32 / ₹45 after 8.5 s idle; `_drive_r3`: ₹32 / ₹45 glow + chime, no ghost; ₹14 ghost + chime. |
+| 3d-2 | "All text … must be synchronised with the VO" — the sorting instruction showed 2 s before Swiftee said it | ✅ | The band is empty while the pieces arrive and the instruction appears as the line starts. Real audio on dist: empty at open, «चलिए, ₹10 छाँटते हैं।» / «चलिए, ₹1 के सिक्के छांटिए।» shown at 2.0 s, when the VO starts. |
+- Dist 9.19 MB; `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` 0 FAIL on dist.

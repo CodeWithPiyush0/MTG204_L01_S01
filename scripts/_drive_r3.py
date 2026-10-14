@@ -74,8 +74,13 @@ check("T1 arrow enabled after the VO", nav_on())
 
 # ---- sorting
 def sort_screen(sid, target, ncorrect):
-    js("mountSlide(arguments[0]); window.__said=[]; window.__sfx=[]", idx[sid]); time.sleep(0.25)
+    js("window.__said=[]; window.__sfx=[]; mountSlide(arguments[0])", idx[sid]); time.sleep(0.25)
     hidden0 = js("return document.querySelectorAll('.mn-sp.mn-sp-wait').length")
+    txt0 = js("return document.getElementById('promptText').textContent")
+    t_w = time.time()
+    while time.time() - t_w < 6 and "vo_%s_prompt" % sid.lower() not in said(): time.sleep(0.03)
+    txt1 = js("return document.getElementById('promptText').textContent")
+    check("%s instruction appears with Swiftee's line, not before" % sid, txt0 == "" and txt1 == js("return CARD.slides[arguments[0]].prompt_hi", idx[sid]), (txt0, txt1))
     time.sleep(2.4)
     info = js("return [document.querySelectorAll('.mn-sp').length, [...document.querySelectorAll('.mn-sp')].filter(e=>+e.dataset.value===arguments[0]).length, !!document.querySelector('.mn-wallet img'), document.getElementById('promptText').textContent]", target)
     check("%s pieces arrive one by one (hidden at first)" % sid, hidden0 >= 7, hidden0)
@@ -152,6 +157,15 @@ def make(sid, Tv, ghost):
 make("G3", 14, True)
 make("G4", 32, False)
 make("G5", 45, False)
+# idle on ₹32 / ₹45: the nudge glows + chimes, no ghost (only ₹14 has ghosts); ₹14's idle nudge does ghost
+for sid, want_ghost in (("G4", False), ("G5", False), ("G3", True)):
+    js("window.__said=[]; window.__sfx=[]; window.__ghosts=0; mountSlide(arguments[0])", idx[sid]); time.sleep(1.0)
+    js("window.__ghosts=0")
+    time.sleep(8.3)
+    g, sfx = js("return window.__ghosts"), js("return window.__sfx")
+    glow = js("return !!document.querySelector('.mn-src.mn-hintglow, .mn-src.mn-hintglow-on')")
+    if want_ghost: check("%s idle 7 s: ghost + chime" % sid, g >= 1 and "sfx_nudge" in sfx, (g, sfx))
+    else: check("%s idle 7 s: glow + chime, NO ghost" % sid, g == 0 and glow and "sfx_nudge" in sfx, (g, glow, sfx))
 
 # ---- shop
 js("window.__sgDragInShown = true; window.__said=[]; mountSlide(arguments[0])", idx["M1"]); time.sleep(2.5)
