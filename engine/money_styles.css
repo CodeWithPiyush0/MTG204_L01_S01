@@ -432,6 +432,71 @@
 @font-face{font-family:'Baloo 2';font-style:normal;font-weight:800;font-display:block;unicode-range:U+20B9;ascent-override:107.8%;descent-override:52.4%;line-gap-override:0%;src:url(data:font/woff2;base64,d09GMgABAAAAAAI0AA4AAAAABCAAAAHhAAID1wAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcQgZgP1NUQVRaADQRCApccAE2AiQDCAsGAAQgBYFQByAbOQOgHoNty7lmVE1UXeYCcf0pHv5/v2/7nHdHNSkmWUXrVDITChC61VlkryKaqXz72k/3QqiBVBxLILw4xvcDViclELKyRndanP9mO91g4DvfQxCAZVHEBRTrOAsswAQTDEi7y22MTk9wFYmOlgo0GzAkVqWLTSgUqAUQaLbEMjLZc5y8HlbwnBqffKC+nj2Ml3qpT5ueeQ5KXhGPqCOvZQewEd+MI/DFBiBb6rLUlcwCSIC1WysZfI+Mj7wU5/+3lFNsDATklHyCEfVCaFShV4XZcnQ6I4bRUzRjIc5Tf8WWSvW6DQmIudUIQshY4hSopIxlAAIkwTkqLEZQ2mBkvLYf/jGLgRC19AgJCgJDmAwogBhqOcBaxu59mVTRcvP2q0oVbZpv3DKoNT971tz/Pz43HbH+ZfbGH9K3m6XAf/j17/45AhdUy5rVmP7+TLAMQ1Yv737esKurX/SvUVz9gvdXn/4Efvz9feYnm/MJ6iUIXltyg0jzkukOAMjcAJ4r4BdIQwIEjhqdIRalSehmtdSuOwpajSA0m425us3BEq3W8VLZtdcyqBxTtkW27Hbq2ziqG5sSrPQdcGNzUzOEmxshMykX5KAvbmtlFOMdrPWt5NCo54bqtsdDG2Kghg8B) format('woff2');}
 
 
+/* ======================= round 3 (SME restructure + checklist, 2026-10-14) ======================= */
+/* teaching (MONEY_INTRO): the ₹10 note, then the ₹1 coin — each with its label ABOVE it, front view,
+   nothing else on the screen; a piece is invisible until its line starts */
+.mn-intro{flex:1;display:flex;align-items:center;justify-content:center;gap:120px;padding-bottom:20px;}
+.mn-intro-it{display:flex;flex-direction:column;align-items:center;gap:22px;}
+.mn-intro-it.mn-intro-wait{visibility:hidden;}
+.mn-intro-lbl{font-family:var(--font-hi);font-weight:800;font-size:64px;line-height:1;color:var(--navy);
+  background:#FDE39A;border:4px solid #F4B63F;border-radius:22px;padding:12px 30px;}
+.mn-intro-it.is-note img{width:430px;height:auto;filter:drop-shadow(0 12px 18px rgba(11,61,140,.18));}
+.mn-intro-it.is-coin img{width:220px;height:auto;filter:drop-shadow(0 12px 18px rgba(11,61,140,.18));}
+
+/* sorting (MONEY_SORT): notes and coins scattered over the field, each with a small tilt (on the
+   picture, so the pop / wiggle animations on the piece never fight it); the wallet sits bottom-right */
+.mn-sort{flex:1;position:relative;width:100%;}
+.mn-sp{position:absolute;transform-origin:50% 50%;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.mn-sp img{display:block;width:100%;height:auto;transform:rotate(var(--tilt,0deg));pointer-events:none;
+  filter:drop-shadow(0 8px 10px rgba(11,61,140,.18));}
+.mn-sp.is-note{width:210px;}
+.mn-sp.is-coin{width:112px;}
+.mn-sp.mn-sp-wait{visibility:hidden;}
+.mn-sp.mn-sp-gone{visibility:hidden;pointer-events:none;}
+@keyframes mnWiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-10deg)}40%{transform:rotate(9deg)}
+  60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+.mn-sp.mn-wiggle{animation:mnWiggle .5s ease-in-out 1;}
+.mn-sp.mn-sp-hint img{animation:mnHintGlow 1s ease-in-out 3;}
+.mn-wallet{position:absolute;right:3%;bottom:2%;width:190px;pointer-events:none;}
+.mn-wallet img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 14px rgba(84,46,12,.22));}
+.mn-wallet.mn-bump{animation:mnBump .35s ease-out 1;}
+.mn-float.mn-sortfly img{display:block;width:100%;height:100%;object-fit:contain;}
+
+/* make ₹14 / ₹32 / ₹45: no item picture — only the amount, prominently, in the same card */
+.mn-item.mn-item-amt{justify-content:center;}
+.mn-item.mn-item-amt .mn-tag.mn-tag-big{font-size:72px;width:180px;padding:18px 0;}
+
+/* checklist: the title screen's speaker button is 70 px (was 58), centred where it was */
+.sg-vo{width:70px;height:70px;left:90px;bottom:-22px;}
+
+/* ======================= round 3b (user, 2026-10-14) ======================= */
+/* sorting: the teaching screen's grid-paper card (blue border), the instruction panel kept above it,
+   no Swiftee inside; the card stops short of the arrow */
+.mn-sort-card{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;margin:4px 0 26px;
+  border:10px solid #50AAF2;border-radius:34px;background-color:#F2F7FA;
+  background-image:linear-gradient(to right,rgba(111,150,216,.16) 1.5px,transparent 1.5px),
+                   linear-gradient(to bottom,rgba(111,150,216,.16) 1.5px,transparent 1.5px);
+  background-size:46px 46px;box-shadow:0 6px 18px rgba(11,61,140,.10);}
+.mn-sort-field{flex:1;min-height:0;position:relative;}
+.mn-sp.is-note{width:180px;}
+.mn-sp.is-coin{width:100px;}
+/* the team's wallet in two layers: the whole wallet behind, its front pocket in front; a collected
+   piece is drawn between them (.mn-wfly) so it slides INTO the wallet */
+.mn-wallet{position:absolute;right:24px;bottom:14px;width:210px;aspect-ratio:1383/997;z-index:5;pointer-events:none;}
+.mn-wallet .mn-wb,.mn-wallet .mn-wf{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.mn-wallet .mn-wb{z-index:1;}
+.mn-wallet .mn-wfly{position:absolute;inset:0;z-index:2;}
+.mn-wallet .mn-wf{z-index:3;}
+.mn-wpiece{position:absolute;}
+.mn-wpiece img{display:block;width:100%;height:100%;object-fit:contain;}
+
+/* make ₹14 / ₹32 / ₹45: no container around the amount — the amount card alone, with the «कुल»
+   counter under it (out of the drop zone, where it hid the third / fourth note) */
+.mn-item.mn-item-amt{width:auto;height:auto;background:none;border:none;box-shadow:none;padding:0;gap:18px;}
+/* round 3c (user): the cover's title is a separate picture, centred at the top of the cover */
+.start-gate .sg-card.sg-scene .sg-title-img{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:470px;height:auto;
+  z-index:2;pointer-events:none;filter:drop-shadow(0 8px 12px rgba(80,40,0,.22));}
+
 /* ============ CONFETTI, round 2s (user, 2026-10-08): copied verbatim from MTG2A04_L02_S01 style.css —
    the FLN animation kit confetti block + that lesson's [13] body-level layer (whole window, pieces 1.5x,
    sized with the stage --scale). Used by confettiCannon (money_modules.js). ============ */

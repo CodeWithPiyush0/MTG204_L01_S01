@@ -60,14 +60,15 @@ js("try{stopAudio()}catch(e){}")
 js("document.getElementById('sgBtn').disabled=false; document.getElementById('sgBtn').classList.add('lt-play-shown')")
 run_gate("tutorial", "document.getElementById('sgBtn').click()", 9.5)
 idx = {s: i for i, s in enumerate(js("return CARD.slides.map(s=>s.id)"))}
-for phase, frm in (("guided", "T4"), ("practice", "G4"), ("mastery", "P4")):
+# round 3: teaching -> guided (from T1), the ₹45 screen -> «अब आपकी बारी।» before the shop (from G5)
+for phase, frm in (("guided", "T1"), ("practice", "G5")):
     js("mountSlide(arguments[0])", idx[frm]); time.sleep(0.4)
     js("try{stopAudio()}catch(e){}")
-    run_gate(phase, "completeSlide(true)", 9.5 if phase != "mastery" else 6.5)
-    if OUT and phase == "mastery": d.save_screenshot(OUT + "_mastery_gate.png")
+    run_gate(phase, "completeSlide(true)", 9.5)
 
-# ₹14 closing line with real audio: tens → ones → total, in that order, then off
-js("mountSlide(arguments[0])", idx["G2"]); time.sleep(16)
+# ₹14 closing line with real audio: tens → ones → total, in that order, then off  (round 3: G3, the
+# ghost-guided ₹14 — the child places the ₹10, then the four ₹1)
+js("mountSlide(arguments[0])", idx["G3"]); time.sleep(6)
 js(r"""window.__h=[]; window.__h0=performance.now();
   (function rec(){ const t=document.querySelector('.mn-row-t'), o=document.querySelector('.mn-row-o'), tt=document.querySelector('.mn-total');
     window.__h.push([Math.round(performance.now()-window.__h0), t.classList.contains('mn-say-hi')?1:0, o.classList.contains('mn-say-hi')?1:0, tt.classList.contains('mn-say-hi')?1:0, isPlaying?1:0]);
@@ -75,12 +76,12 @@ js(r"""window.__h=[]; window.__h0=performance.now();
   const C=(el)=>{ const r=el.getBoundingClientRect(); return [r.left+r.width/2, r.top+r.height/2]; };
   const PE=(type,x,y,tgt)=>(tgt||document).dispatchEvent(new PointerEvent(type,{clientX:x,clientY:y,bubbles:true,button:0,pointerId:1,isPrimary:true}));
   window.__tap=(el)=>{ const [x,y]=C(el); PE('pointerdown',x,y,el); PE('pointerup',x,y); };""")
-for i in range(4):
+for k in ["note", "c1", "c1", "c1", "c1"]:
     t_w = time.time()      # a tap only counts when no line is playing (as for a child)
     while time.time() - t_w < 15 and js("return isPlaying"): time.sleep(0.1)
-    time.sleep(0.3); js("__tap(document.querySelector('.mn-src.mn-c1'))"); time.sleep(1.0)
+    time.sleep(0.3); js("__tap(document.querySelector('.mn-src.mn-%s'))" % k); time.sleep(1.2)
 time.sleep(10)
-print("  ₹14 screen finished:", js("return !!document.querySelector('.mn-finished')"), "| placed:", js("return document.querySelectorAll('.mn-target .mn-placed').length"))
+print("  ₹14 screen finished:", js("return !!document.querySelector('.mn-finished')"), "| placed:", js("return document.querySelectorAll('.mn-target .mn-placed:not(.mn-slot)').length"))
 h = js("return window.__h")
 order = []
 for x in h:

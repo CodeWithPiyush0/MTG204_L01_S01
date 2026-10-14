@@ -28,11 +28,13 @@ AUD = os.path.join(ROOT, "assets", "Audio")
 IMG = os.path.join(ROOT, "assets", "Images")
 CARD_TAG = re.compile(r'(<script type="application/json" id="cardData">)(.*?)(</script>)', re.S)
 VER_RE = re.compile(r'ENGINE_VERSION\s*=\s*["\']([^"\']+)["\']')
-MODULES = ["MONEY_SHOW", "MONEY_PICK", "MONEY_SCENE", "MONEY_LIST", "MONEY_BUILD", "MONEY_DONE", "SHOP_GAME", "CELEBRATION"]
-COPY_AUDIO = ["vo_pt_tutorial", "vo_pt_guided", "vo_pt_practice", "sfx_celebrate", "sfx_correct", "sfx_wrong",
+MODULES = ["MONEY_INTRO", "MONEY_SORT", "MONEY_BUILD", "SHOP_GAME", "CELEBRATION"]
+# round 3: vo_pt_tutorial is RE-RECORDED (registered below) for the checklist's «चलिए, शुरू करते हैं।»
+COPY_AUDIO = ["vo_pt_guided", "vo_pt_practice", "sfx_celebrate", "sfx_correct", "sfx_wrong",
               "sfx_tap", "sfx_pop", "sfx_fb_correct", "sfx_fb_incorrect",
               "sfx_play_button", "sfx_next_button",      # round 2k: the team's button sounds
-              "sfx_drop_coin", "sfx_drop_note"]          # round 2o: the team's coin / note drop sounds
+              "sfx_drop_coin", "sfx_drop_note",          # round 2o: the team's coin / note drop sounds
+              "sfx_confetti", "sfx_nudge"]               # round 3: the team's Standard SFX pack (checklist)
 
 NUM = ("शून्य एक दो तीन चार पाँच छह सात आठ नौ दस ग्यारह बारह तेरह चौदह पंद्रह सोलह सत्रह अठारह उन्नीस "
        "बीस इक्कीस बाईस तेईस चौबीस पच्चीस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस तैंतीस चौंतीस "
@@ -56,157 +58,68 @@ def vo(id_, shown):
     AUDIO[id_] = sp; SHOWN[id_] = shown; _BY_TEXT[sp] = id_
     return id_
 
-# ============================================================== content (deck wording)
+# ============================================================== content
 LANDING = vo("vo_landing", "नमस्ते दोस्त! मैं हूँ स्विफ्टी। परी के स्कूल में पिकनिक होने वाली है। उसे पिकनिक के लिए कुछ सामान खरीदना है। चलिए, उसकी मदद करते हैं!")
 
-def s_show():
-    return {"id": "T1", "phase": "tutorial", "eis": "iconic", "type": "MONEY_SHOW",
-            "prompt_hi": "क्या आप ₹10 और ₹1 को पहचानते हैं?",
-            "audio": {"prompt": vo("vo_t1_prompt", "बाज़ार जाने से पहले, आइए पहचानते हैं कि ₹10 और ₹1 कैसे दिखते हैं।")},
-            "data": {"groups": [{"faces": ["cur_note10"]}, {"faces": ["cur_coin1", "cur_coin1_back"]}]}}
+# round 3 (checklist): the transitions' on-screen titles, exactly as the checklist words them. The
+# tutorial line is re-recorded so Swiftee SAYS that title; the guided / practice clips already end in
+# «चलिए, साथ में करें» / «अब आपकी बारी».
+GATE_TITLES = {"tutorial": "चलिए, शुरू करते हैं।", "guided": "चलिए, साथ में करें।",
+               "practice": "अब आपकी बारी।", "independent": "अब आपकी बारी।"}
+PT_TUTORIAL = vo("vo_pt_tutorial", "ध्यान से देखिए और मेरे साथ जानिए। चलिए, शुरू करते हैं।")
 
-def s_pick10():
-    return {"id": "T2", "phase": "tutorial", "eis": "iconic", "type": "MONEY_PICK",
-            "prompt_hi": "₹10 पर टैप कीजिए।",
-            "audio": {"prompt": vo("vo_t2_prompt", "इनमें से दस रुपये का नोट पहचानिए।"),
-                      "correct": vo("vo_t2_correct", "शाबाश! यह दस रुपये का नोट है।"),
-                      "wrong": vo("vo_t2_wrong", "यह दस रुपये का नोट है।")},
-            "data": {"options": [{"id": "note10", "faces": ["cur_note10"], "correct": True},
-                                 {"id": "coin1", "faces": ["cur_coin1", "cur_coin1_back"]}],
-                     "reveal_faces": ["cur_note10"],
-                     "wrong_text": "यह दस रुपये का नोट है।",
-                     "idle_pulse_ms": 5000}}
+def s_intro():
+    """round 3 (SME): the teaching screen — the ₹10 note, then the ₹1 coin, each with its label above
+    it, appearing as its line is spoken. No heading. VO drafted here; the SME will revise it."""
+    return {"id": "T1", "phase": "tutorial", "eis": "iconic", "type": "MONEY_INTRO",
+            "prompt_hi": "",
+            "audio": {"prompt": vo("vo_t1_note", "यह ₹10 का नोट है।")},
+            "data": {"no_heading": True,
+                     "items": [{"img": "cur_note10", "label": "₹10", "note": True, "say": "vo_t1_note"},
+                               {"img": "cur_coin1", "label": "₹1", "say": vo("vo_t1_coin", "और यह ₹1 का सिक्का है।")}]}}
 
-def s_pick1():
-    return {"id": "T3", "phase": "tutorial", "eis": "iconic", "type": "MONEY_PICK",
-            "prompt_hi": "₹1 पर टैप कीजिए।",
-            "audio": {"prompt": vo("vo_t3_prompt", "इनमें से एक रुपये का सिक्का कौन सा है?"),
-                      "correct": vo("vo_t3_correct", "शाबाश! यह एक रुपये का सिक्का है।"),
-                      "wrong": vo("vo_t3_wrong", "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।")},
-            "data": {"options": [{"id": "coin10", "faces": ["cur_coin10", "cur_coin10_back"]},
-                                 {"id": "coin1", "faces": ["cur_coin1", "cur_coin1_back"], "correct": True}],
-                     "reveal_faces": ["cur_coin1", "cur_coin1_back"],
-                     "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"}}
+# sorting pieces — the Game-Zone currency set (front views); value decides right / wrong
+P = {"n10": {"img": "cur_note10", "value": 10, "note": True}, "c10": {"img": "cur_coin10", "value": 10},
+     "n20": {"img": "cur_note20", "value": 20, "note": True}, "n50": {"img": "cur_note50", "value": 50, "note": True},
+     "c1": {"img": "cur_coin1", "value": 1}, "c2": {"img": "cur_coin2", "value": 2},
+     "c5": {"img": "cur_coin5", "value": 5}, "c20": {"img": "cur_coin20", "value": 20}}
+SORT_DONE = vo("vo_sort_done", "शाबाश!")
 
-def s_market():
-    return {"id": "T4", "phase": "tutorial", "eis": "iconic", "type": "MONEY_SCENE",
-            "prompt_hi": "अब परी के साथ बाज़ार चलिए।",
-            "audio": {"prompt": vo("vo_t4_prompt", "परी अपनी खरीदारी की सूची लेकर बाज़ार पहुँच गई है। आइए देखें, उसे क्या-क्या खरीदना है।")},
-            "data": {"img": "scn_market", "scene": True}}
+def s_sort(id_, target, kinds, shown):
+    return {"id": id_, "phase": "guided", "eis": "iconic", "type": "MONEY_SORT",
+            "prompt_hi": shown,
+            "audio": {"prompt": vo("vo_%s_prompt" % id_.lower(), shown), "done": SORT_DONE},
+            "data": {"target": target, "wallet_img": "obj_wallet", "wallet_front_img": "obj_wallet_front",   # round 3b: two layers
+                     "no_engine_idle": True, "idle_ms": 7000,
+                     "pieces": [dict(P[k]) for k in kinds]}}
 
-LIST = [("कॉपी", 14, "obj_copy"), ("चिप्स", 20, "obj_chips"), ("चॉकलेट", 25, "obj_chocolate"),
-        ("प्लेटों का पैकेट", 35, "obj_plates"), ("टॉफ़ी", 5, "obj_toffee")]
-LIST_VO_SHOWN = "परी को कॉपी, चिप्स, चॉकलेट, प्लेटें और टॉफ़ी खरीदनी हैं। चलो, ₹10 और ₹1 से हर चीज़ की राशि बनाते हैं।"
-LIST_CUE_WORDS = ["कॉपी", "चिप्स", "चॉकलेट", "प्लेटें", "टॉफ़ी"]
+def s_sort10():   # «चलिए, दस रुपये छाँटते हैं।» — ₹10 notes AND ₹10 coins (the user: recognise both)
+    return s_sort("G1", 10, ["n10", "n10", "c10", "c10", "n20", "n50", "c20", "c5", "c2"], "चलिए, ₹10 छाँटते हैं।")
 
-def s_list():
-    return {"id": "G1", "phase": "guided", "eis": "symbolic", "type": "MONEY_LIST",
-            "prompt_hi": "परी की सूची",
-            "audio": {"prompt": vo("vo_g1_prompt", LIST_VO_SHOWN)},
-            "data": {"rows": [{"name": n, "price": p, "img": im} for n, p, im in LIST]}}
+def s_sort1():    # «चलिए, एक रुपये के सिक्के छांटिए।» — ₹1 among ₹2 / ₹5 / ₹10
+    return s_sort("G2", 1, ["c1", "c1", "c1", "c1", "c2", "c2", "c5", "c5", "c10"], "चलिए, ₹1 के सिक्के छांटिए।")
 
-def s_copy():
-    return {"id": "G2", "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
-            "prompt_hi": "₹14 बनाइए",
-            "audio": {"prompt": "vo_g2_1", "done": vo("vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14।")},
-            "data": {"mode": "teach", "target": 14, "item_img": "obj_copy", "item_name": "कॉपी", "sources": ["n10", "c1"], "no_engine_idle": True,
-                     "script": [
-                         {"say": vo("vo_g2_1", "सबसे पहले परी को ₹14 की कॉपी लेनी है। आइए, ₹10 और ₹1 से ₹14 बनाते हैं।"), "tag": True},
-                         {"say": vo("vo_g2_2", "पहले ₹10 का एक नोट रखते हैं।"), "auto": "n10"},
-                         {"say": vo("vo_g2_3", "अभी कुल ₹10 हुए। ₹14 बनाने के लिए अभी ₹4 और चाहिए।"), "pulse_total": True},
-                         # user 2026-09-29: only the NOTE is placed by Swiftie; the child places all four ₹1
-                         # round 2o (updated deck): VO4 «अब एक-एक रुपए के सिक्के रखेंगे।» and VO6 «अब एक रुपए
-                         # का और सिक्का रखो» are struck — coins 2 and 3 are placed without a line
-                         {"say": vo("vo_g2_5", "चलो, अब तुम रखो।"), "child": "c1",
-                          "idle": [vo("vo_g2_idle", "सिक्के को ऊपर वाली ट्रे में रखिए।")]},
-                         {"say": None, "child": "c1", "idle": ["vo_g2_idle"]},
-                         {"say": None, "child": "c1", "idle": ["vo_g2_idle"]},
-                         {"say": vo("vo_g2_7", "आखिरी सिक्का।"), "child": "c1", "idle": ["vo_g2_idle"]}]}}
-
-def s_chips():
-    return {"id": "G3", "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
-            "prompt_hi": "₹20 बनाइए।",
-            "audio": {"prompt": "vo_g3_1a", "done": vo("vo_g3_done", "बहुत अच्छे! दो ₹10 के सिक्के — कुल मिलाकर बने ₹20।")},
-            "data": {"mode": "teach", "target": 20, "item_img": "obj_chips", "item_name": "चिप्स", "sources": ["c10", "c1"],
-                     "no_engine_idle": True,
-                     "teach_wrong": {"c1": vo("vo_g3_wrong", "₹20 बनाने के लिए ₹10 के सिक्के लगेंगे।")},
-                     "script": [
-                         {"say": vo("vo_g3_1a", "अब परी को ₹20 के चिप्स लेने हैं।"), "tag": True},
-                         {"say": vo("vo_g3_1b", "आइए, ₹10 के सिक्कों से ₹20 बनाते हैं।")},
-                         {"say": vo("vo_g3_2", "पहले ₹10 का सिक्का रखते हैं।"), "auto": "c10"},
-                         {"say": vo("vo_g3_3", "कुल ₹10 हुए। ₹20 के लिए ₹10 और रखिए।"),     # round 2o: deck rewording
-                          "pulse_total": True, "child": "c10",
-                          "idle": [vo("vo_g3_idle2", "₹10 का सिक्का ट्रे में रखिए।")]}]}}   # round 2o: VO4 struck
-
-def ladder(tag, T, tens_note, tens_totals, ones_totals, ten_word, zero_line=None):
-    """per-total A2/A3 lines. tens = a ₹10 dropped when fewer than ₹10 remain (S11–S13 wording);
-    ones = a ₹1 dropped past the ones-part tolerance (S15 wording)."""
-    L = {"tens": {}, "ones": {}}
-    for X in tens_totals:
-        R = T - X
-        if X == 0 and zero_line:
-            a2 = vo("vo_%s_t0" % tag, zero_line)
-        else:
-            a2 = vo("vo_%s_t%d" % (tag, X), ("कुल ₹%d हुए। ₹%d बनाने के लिए ₹%d और चाहिए।" if tens_note else
-                                                "कुल ₹%d हुए। ₹%d के लिए ₹%d और चाहिए।") % (X, T, R))
-        a3 = vo("vo_ones_use_%d" % R, "₹%d बनाने के लिए ₹1 के सिक्कों का इस्तेमाल कीजिए।" % R)
-        L["tens"][str(X)] = [a2, a3]
-    for X in ones_totals:
-        R = T - X
-        a2 = vo("vo_%s_o%d" % (tag, X), "कुल ₹%d हैं। ₹%d के लिए ₹%d और बनाओ।" % (X, T, R))
-        a3 = vo("vo_tens_use_%s_%d" % (ten_word[0], R), "₹%d बनाने के लिए ₹10 का %s इस्तेमाल कीजिए।" % (R, ten_word[1]))
-        L["ones"][str(X)] = [a2, a3]
-    return L
-
-NAMES = {"obj_chocolate": "चॉकलेट", "obj_plates": "प्लेटों का पैकेट", "obj_toffee": "टॉफ़ी", "obj_juice": "जूस"}
-
-def s_practice(id_, phase, T, img, sources, vo_prompt, done_line, lad, **extra):
-    d = {"mode": "practice", "target": T, "item_img": img, "item_name": NAMES[img], "sources": sources, "ladder": lad,
-         "eq_in_band": False, "no_engine_idle": True}
-    d.update(extra)
-    return {"id": id_, "phase": phase, "eis": "enactive", "type": "MONEY_BUILD",
+def s_make(id_, T, mode, done_id, done_line):
+    """round 3 (SME): make ₹T on the existing build layout — no item picture, only the amount; the ₹10
+    note + the ₹1 coin below; ₹10 first, then ₹1 (strict). mode "ghost" = ₹14 (a ghost before every
+    move), "seq" = ₹32 / ₹45 (no ghost)."""
+    return {"id": id_, "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
             "prompt_hi": "₹%d बनाइए।" % T,
-            "audio": {"prompt": vo_prompt, "done": done_line}, "data": d}
+            "audio": {"prompt": vo("vo_b%d_prompt" % T, "₹10 और ₹1 से ₹%d बनाइए।" % T),
+                      "done": vo(done_id, done_line)},
+            # round 3c: the «कुल» counter stays in the drop zone; the money starts below it (tray_down)
+            "data": {"mode": mode, "target": T, "no_item": True, "tray_down": True, "sources": ["n10", "c1"], "pop_sources": True,
+                     "no_engine_idle": True, "idle_ms": 7000, "eq_in_band": False}}
 
-def s_choc():
-    T = 25
-    return s_practice("G4", "guided", T, "obj_chocolate", ["c10", "c1"],
-        vo("vo_g4_prompt", "परी को ₹25 की चॉकलेट लेनी है। ₹10 और ₹1 के सिक्कों से ₹25 बनाइए।"),
-        vo("vo_g4_done", "शाबाश! दो ₹10 के सिक्के और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹25।"),
-        ladder("g4", T, True, range(20, 25), [5, 15], ("coin", "सिक्का")), tag_fx="pulse")
+def s_b14():
+    return s_make("G3", 14, "ghost", "vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14।")
+def s_b32():
+    return s_make("G4", 32, "seq", "vo_b32_done", "शाबाश! तीन ₹10 के नोट और दो ₹1 के सिक्के — कुल मिलाकर बने ₹32।")
+def s_b45():
+    return s_make("G5", 45, "seq", "vo_b45_done", "शाबाश! चार ₹10 के नोट और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹45।")
 
-def s_plates():
-    T = 35
-    return s_practice("P1", "practice", T, "obj_plates", ["n10", "c1"],
-        vo("vo_p1_prompt", "अब परी को ₹35 का प्लेटों का पैकेट लेना है।"),          # round 2o: updated deck
-        vo("vo_p1_done", "शाबाश! तीन ₹10 के नोट और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹35। अब परी प्लेटों का पैकेट खरीद सकती है।"),
-        ladder("p1", T, False, range(30, 35), [5, 15, 25], ("note", "नोट")), tray_down=True)
-
-def s_toffee():   # D5 — added; the deck lists toffee but gives it no screen
-    T = 5
-    return s_practice("P2", "practice", T, "obj_toffee", ["n10", "c1"],
-        vo("vo_p2_prompt", "परी को ₹5 की टॉफ़ी लेनी है।"),                          # round 2o: same cut as p13/p16
-        vo("vo_p2_done", "शाबाश! पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹5। अब परी टॉफ़ी खरीद सकती है।"),
-        ladder("p2", T, False, range(0, 5), [], ("note", "नोट"), zero_line="₹10 का नोट ₹5 से ज़्यादा है।"))
-
-def s_juice():
-    # round 2d (user): no «हो गया» — juice completes at ₹17 like every other build screen
-    T = 17
-    return s_practice("P3", "practice", T, "obj_juice", ["n10", "c1"],
-        vo("vo_p3_prompt", "परी को ₹17 का जूस पैकेट लेना है।"),                      # round 2o: updated deck
-        vo("vo_p3_done", "शाबाश! एक ₹10 का नोट और सात ₹1 के सिक्के — कुल मिलाकर बने ₹17। अब परी जूस पैकेट खरीद सकती है।"),
-        ladder("p3", T, False, range(10, 17), [7], ("note", "नोट")),
-        tag_fx="glow")
-
-def s_done():
-    return {"id": "P4", "phase": "practice", "eis": "iconic", "type": "MONEY_DONE",
-            "prompt_hi": "परी की पिकनिक की खरीदारी पूरी हुई!",
-            "audio": {"prompt": vo("vo_p4_prompt", "शाबाश! आपने ₹10 और ₹1 का उपयोग करके सभी धनराशियाँ बनाईं। परी की पिकनिक की खरीदारी पूरी हुई!")},
-            "data": {"items": [{"name": n, "price": p, "img": im} for n, p, im in LIST],
-                     "pari_img": "pari_celebrate"}}
-
-# mastery shop (D3: all 8 from the mockup). The SME wrote the praise line for सेब/केले/अंगूर/आम;
-# the other four are written in the same pattern (flagged in CHANGES.md).
+# the shop (unchanged items / sequence / mechanics). Round 3: preceded by «अब आपकी बारी।» (phase
+# practice), opened by Swiftee's line, wooden basket, keep-and-correct retry with ghost hints.
 SHOP = [   # round 2f (user): 6 items, one per stall panel, prices 14 / 25 / 35 / 42 / 60 / 65 ascending
         # round 2o (updated deck + user): success is short only — «शाबाश!» / «बहुत बढ़िया!»
         ("apple", "सेब", "obj_apple", 14, "शाबाश!"),
@@ -216,13 +129,11 @@ SHOP = [   # round 2f (user): 6 items, one per stall panel, prices 14 / 25 / 35 
         ("bananas", "केले", "obj_bananas", 60, "बहुत बढ़िया!"),     # round 2k: replaces खीरे
         ("carrots", "गाजर", "obj_carrots", 65, "बहुत बढ़िया!")]      # round 2k: replaces आम
 
-def detail_spoken(n, c, o, T):
-    parts = []
-    if n: parts.append("दस रुपये " + ("का एक नोट" if n == 1 else "के %s नोट" % NUM[n]))
-    if c: parts.append("दस रुपये " + ("का एक सिक्का" if c == 1 else "के %s सिक्के" % NUM[c]))
-    if o: parts.append("एक रुपये " + ("का एक सिक्का" if o == 1 else "के %s सिक्के" % NUM[o]))
-    j = (", ".join(parts[:-1]) + " और " + parts[-1]) if len(parts) > 1 else parts[0]
-    return "बहुत बढ़िया! %s मिलाकर %s रुपये बने।" % (j, NUM[T])
+SHOP_TEXT = {"intro": "परी पहुँच गई है बाज़ार। आओ, चलो खरीदारी शुरू करें।",
+             "more1": "ओहो! रुपये ज़्यादा हैं। कुछ कम करिए।", "less1": "ओहो! रुपये कम हैं। कुछ और डालिए।",
+             "more2": "ओहो! अभी भी रुपये ज़्यादा हैं। कुछ कम करिए।", "less2": "ओहो! अभी भी रुपये कम हैं। कुछ और डालिए।",
+             # round 3b (user): the 3rd wrong check empties the tray -> «फिर से कोशिश करें।»
+             "retry": "फिर से कोशिश करें।"}
 
 def s_shop():
     items = []
@@ -230,24 +141,24 @@ def s_shop():
         items.append({"id": key, "name": name, "img": im, "price": price, "praise": praise,
                       "vo_select": vo("vo_m_sel_%s" % key, "%s की कीमत %s रुपये है। %s रुपये बनाइए।" % (name, NUM[price], NUM[price])),
                       "vo_praise": vo("vo_m_ok_%s" % key, praise)})     # identical lines share one clip
-    detail = {}    # round 2o: the detailed decomposition line is struck — first purchase = «बहुत बढ़िया!»
-    return {"id": "M1", "phase": "mastery", "eis": "enactive", "type": "SHOP_GAME",
+    return {"id": "M1", "phase": "practice", "eis": "enactive", "type": "SHOP_GAME",
             "prompt_hi": "कोई वस्तु चुनिए।",
-            "audio": {"prompt": vo("vo_m_prompt", "कोई वस्तु चुनिए और उसकी राशि बनाइए।"),
+            "audio": {"intro": vo("vo_m_intro", SHOP_TEXT["intro"]),
+                      "prompt": vo("vo_m_prompt", "कोई वस्तु चुनिए और उसकी राशि बनाइए।"),
                       "idle": vo("vo_m_idle", "कोई वस्तु चुनिए।"),
-                      "less": vo("vo_m_less", "ओह! रुपये कम हैं। फिर से बनाइए।"),
-                      "more": vo("vo_m_more", "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।"),
+                      "more1": vo("vo_m_more1", SHOP_TEXT["more1"]), "less1": vo("vo_m_less1", SHOP_TEXT["less1"]),
+                      "more2": vo("vo_m_more2", SHOP_TEXT["more2"]), "less2": vo("vo_m_less2", SHOP_TEXT["less2"]),
+                      "retry": vo("vo_m_retry", SHOP_TEXT["retry"]),
                       "first_ok": vo("vo_m_ok_first", "बहुत बढ़िया!"),
                       # round 2g: one-time drag-back tip (no Undo button)
                       "tip": vo("vo_m_tip", "कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।"),
                       "done": vo("vo_m_done", "शाबाश! परी की सारी खरीदारी हो गई।")},
-            "data": {"items": items, "detail": detail, "no_engine_idle": True, "idle_ms": 5500,
+            "data": {"items": items, "detail": {}, "no_engine_idle": True, "idle_ms": 7000, "make_idle_ms": 7000,
                      "pari_img": "pari_basket", "pari_full_img": "pari_basket_full", "stall_img": "shop_stall",
-                     "text": {"choose": "कोई वस्तु चुनिए।", "make": "₹{T} बनाइए।",
-                              "less": "ओह! रुपये कम हैं। फिर से बनाइए।", "more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
+                     "text": dict(SHOP_TEXT, **{"choose": "कोई वस्तु चुनिए।", "make": "₹{T} बनाइए।",
                               "check": "जाँचें", "detail_tpl": "बहुत बढ़िया! {parts} मिलाकर ₹{T} बने।",
                               "done": "शाबाश! परी की सारी खरीदारी हो गई।", "list_title": "खरीदारी की सूची",
-                              "total": "कुल", "great": "बहुत बढ़िया खरीदारी!"}}}
+                              "total": "कुल", "great": "बहुत बढ़िया खरीदारी!"})}}
 
 def s_cel():
     return {"id": "CEL", "phase": "mastery", "eis": "iconic", "type": "CELEBRATION",
@@ -255,8 +166,6 @@ def s_cel():
             # Leda recording (copied from its build). «तुम» here by request, as there.
             "prompt_hi": "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!",
             "audio": {"prompt": vo("vo_cel_prompt", "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!")}, "data": {}}
-
-MASTERY_GATE = {"title": "खरीदारी का खेल!", "audio": vo("vo_pt_mastery", "चलिए, अब खरीदारी का खेल खेलते हैं!")}
 
 # ============================================================== helpers
 def clip_ms(id_):
@@ -291,7 +200,7 @@ def guards(slides, src):
     ids = [s["id"] for s in slides]
     if len(ids) != len(set(ids)): sys.exit("X  duplicate slide ids")
     for s in slides:
-        if s["type"] != "CELEBRATION" and not s.get("prompt_hi"):
+        if s["type"] != "CELEBRATION" and not s.get("prompt_hi") and not s.get("data", {}).get("no_heading"):
             sys.exit("X  %s has no heading" % s["id"])
     order = ["tutorial", "guided", "practice", "mastery"]
     ph = [order.index(s["phase"]) for s in slides]
@@ -302,13 +211,13 @@ def guards(slides, src):
     def walk(o):
         if isinstance(o, dict):
             for k, v in o.items():
-                if k in ("img", "item_img", "pari_img", "pari_full_img", "stall_img") and isinstance(v, str): need.add(v)
+                if k in ("img", "item_img", "pari_img", "pari_full_img", "stall_img", "wallet_img", "wallet_front_img") and isinstance(v, str): need.add(v)
                 elif k in ("faces", "reveal_faces"): need.update(v)
                 else: walk(v)
         elif isinstance(o, list):
             for v in o: walk(v)
     walk(slides)
-    need.add("scn_landing")
+    need.update(["scn_landing", "title_pari_chali_bazaar"])
     need.update(k + s for k in ("cur_note10", "cur_coin10", "cur_coin1") for s in ("", "_glow", "_lock"))
     miss = [k for k in sorted(need) if not os.path.isfile(os.path.join(IMG, k + ".png"))]
     if miss: sys.exit("X  missing art: %s" % miss)
@@ -371,14 +280,13 @@ def gate_spec():
          "talk": {"src": "assets/UI/swifty_gate_talk.webp", "first": 37, "cols": 8, "fw": 505, "fh": 440,
                   "rest": 37, "blink": [38, 39, 40],
                   "open": [[42, 43], [44, 45], [51, 52], [53, 54], [55, 56], [58, 59], [60, 61]]}}
-    clips = {"tutorial": "vo_pt_tutorial", "guided": "vo_pt_guided", "practice": "vo_pt_practice",
-             "mastery": MASTERY_GATE["audio"]}
-    mp = os.path.join(AUD, clips["mastery"] + ".ogg")
-    if os.path.isfile(mp):                                   # «खरीदारी का खेल!» inside «चलिए, अब खरीदारी का खेल खेलते हैं!»
-        sp = AUDIO[clips["mastery"]]
-        c0 = sp.index("खरीदारी"); c1 = sp.index("खेल", c0) + len("खेल")
-        w = phrase_window(mp, sp, c0, c1)
-        g["title_cue_ms"]["mastery"] = w[0]; g["title_dur_ms"]["mastery"] = max(400, w[1] - w[0])
+    clips = {"tutorial": "vo_pt_tutorial", "guided": "vo_pt_guided", "practice": "vo_pt_practice"}
+    tp = os.path.join(AUD, clips["tutorial"] + ".ogg")
+    if os.path.isfile(tp):                                   # round 3: «चलिए, शुरू करते हैं» inside the re-recorded line
+        sp = AUDIO[clips["tutorial"]]
+        c0 = sp.index("चलिए, शुरू"); c1 = sp.index("हैं", c0) + len("हैं")
+        w = phrase_window(tp, sp, c0, c1)
+        g["title_cue_ms"]["tutorial"] = w[0]; g["title_dur_ms"]["tutorial"] = max(400, w[1] - w[0])
     lips, voice = {}, {}
     for ph, vid in clips.items():
         p = os.path.join(AUD, vid + ".ogg")
@@ -447,13 +355,12 @@ def cel_anim():
 # ============================================================== main
 def main():
     src = open(ENGINE, encoding="utf-8").read()
-    slides = [s_show(), s_pick10(), s_pick1(), s_market(), s_list(), s_copy(), s_chips(), s_choc(),
-              s_plates(), s_toffee(), s_juice(), s_done(), s_shop(), s_cel()]
+    # round 3 (SME): teaching -> «चलिए, साथ में करें।» -> sort ₹10 -> sort ₹1 -> make ₹14 / ₹32 / ₹45 ->
+    # «अब आपकी बारी।» -> the shop -> the end
+    slides = [s_intro(), s_sort10(), s_sort1(), s_b14(), s_b32(), s_b45(), s_shop(), s_cel()]
     assert [x[3] for x in SHOP] == sorted(x[3] for x in SHOP), "shop prices must be ascending"
-    DEV = {"T1": "p2 · ₹10 और ₹1 पहचानें", "T2": "p3–4 · ₹10 पर टैप", "T3": "p5–6 · ₹1 पर टैप", "T4": "p7 · बाज़ार",
-           "G1": "p8 · परी की सूची", "G2": "p9 · कॉपी ₹14 (teach)", "G3": "p11 · चिप्स ₹20 (teach)",
-           "G4": "p12 · चॉकलेट ₹25", "P1": "p13 · प्लेटें ₹35", "P2": "added · टॉफ़ी ₹5", "P3": "p16 · जूस ₹17 (हो गया)",
-           "P4": "p18 · खरीदारी पूरी", "M1": "p17–21 · दुकान का खेल", "CEL": "celebration"}
+    DEV = {"T1": "पढ़ाना · ₹10 और ₹1", "G1": "छाँटना · ₹10", "G2": "छाँटना · ₹1", "G3": "₹14 (घोस्ट)",
+           "G4": "₹32 (क्रम से)", "G5": "₹45 (क्रम से)", "M1": "दुकान का खेल", "CEL": "celebration"}
     for s in slides: s["dev_label"] = DEV[s["id"]]
     ver, imgs = guards(slides, src)
     gone = prune_stale()
@@ -464,25 +371,20 @@ def main():
             c = done_cues(sl)
             if c: sl["data"]["done_cues"] = c
     ms = {k: v for k, v in ms.items() if v}
-    # list rows pulse as the VO names them: position of each item word in the spoken line x its length
-    lst = next(s for s in slides if s["type"] == "MONEY_LIST")
-    line = AUDIO[lst["audio"]["prompt"]]; dur = ms.get(lst["audio"]["prompt"]) or len(line) * 85
-    for r, w in zip(lst["data"]["rows"], LIST_CUE_WORDS):
-        r["cue_ms"] = int(dur * line.index(w) / len(line))
-
     dist = {}
     for s in slides: dist[s["phase"]] = dist.get(s["phase"], 0) + 1
     all_audio = {i: "assets/Audio/%s.ogg" % i for i in list(AUDIO) + COPY_AUDIO}
     card = {
         "version": "0.2", "skill_code": CODE, "lo_code": "MTG2A04_L01", "grade": "02", "attribute": "A04",
         "skill_type": "CORE", "part_label": "", "medium": "hi",
-        "title": {"hi": "परी की पिकनिक की खरीदारी", "en": "Pari's picnic shopping — making amounts with ₹10 and ₹1"},
+        "title": {"hi": "परी चली बाज़ार", "en": "Pari goes to the market — making amounts with ₹10 and ₹1"},   # round 3c: new title
         "subtitle_hi": "", "theme": "toybox",
         "skill_description_hi": "₹10 और ₹1 से 99 तक की राशि बनाता है।",
         "landing_audio": LANDING,
-        "landing_scene": {"img": "scn_landing"},
+        # round 3c (user): new cover with no title + the title as its own picture over it
+        "landing_scene": {"img": "scn_landing", "title_img": "title_pari_chali_bazaar"},
         "phase_distribution": dist,
-        "mastery_gate": MASTERY_GATE,
+        "gate_titles": GATE_TITLES,
         "gate": gate_spec(),
         # round 2p: the engine's own button sounds (play on the press, next on a real click)
         "ui_sfx": {"play": "sfx_play_button", "next": "sfx_next_button"},
@@ -493,7 +395,7 @@ def main():
         # round 2j, is kept on disk but no longer shown)
         "end_anim": cel_anim(),
         "scaffold_rules": {"max_attempts": 3, "hint_levels": 3},
-        "signals_expected": ["slide_entered", "slide_completed", "money_pick_first_try", "money_build_done",
+        "signals_expected": ["slide_entered", "slide_completed", "money_sort_done", "money_build_done",
                              "answer_wrong", "phase_transition", "shop_item_bought", "mastery_score", "lesson_completed"],
         "_emoji_fallback": {},
         "slides": slides,
@@ -516,7 +418,7 @@ def main():
     first = ["scn_landing", "cur_note10", "cur_coin1"]
     links = "".join('<link rel="preload" as="image" fetchpriority="high" href="assets/Images/%s.png">' % k for k in first)
     html, n_pre = re.subn(r'(?:<link rel="preload" as="image"[^>]*>)+', links, html, count=1)
-    html = re.sub(r"<title>.*?</title>", "<title>SwiftPAL · %s · परी की पिकनिक की खरीदारी</title>" % CODE, html, count=1)
+    html = re.sub(r"<title>.*?</title>", "<title>SwiftPAL · %s · परी चली बाज़ार</title>" % CODE, html, count=1)
     h = hashlib.sha1()
     for f in sorted(os.listdir(AUD)):
         if f.endswith(".ogg"):

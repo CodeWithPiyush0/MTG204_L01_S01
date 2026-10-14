@@ -41,17 +41,7 @@ print("  volume while a VO plays: min %.2f max %.2f | with no VO: max %.2f" % (m
 check("music ducks to ~0.16 under the voice-over", under_vo and min(under_vo) <= 0.18 and sorted(under_vo)[len(under_vo)//2] <= 0.2, under_vo[:10])
 check("music at ~0.68 when nothing else is speaking", free and max(free) >= 0.6, free[-10:])
 check("music is advancing (really playing)", playing and playing[-1][3] > 2, playing[-1] if playing else None)
-# the praise text on the tap screen
-idx = {s: i for i, s in enumerate(js("return CARD.slides.map(s=>s.id)"))}
-js("mountSlide(arguments[0])", idx["T2"]); time.sleep(4.5)
-js("document.querySelectorAll('.mn-card')[0].click()"); time.sleep(0.8)
-fb = js("const f=document.querySelector('.mn-pick-fb'); return [f.textContent, getComputedStyle(f).opacity]")
-said = js("return isPlaying")
-check("₹10 correct: no on-screen praise text", fb[0] == "", fb)
-check("₹10 correct: the praise VO plays", said is True)
-js("mountSlide(arguments[0])", idx["T3"]); time.sleep(4.5)
-js("[...document.querySelectorAll('.mn-card')].find(c=>c.dataset.ok).click()"); time.sleep(0.6)
-check("₹1 correct: no on-screen praise text", js("return document.querySelector('.mn-pick-fb').textContent") == "")
+# (round 3: the ₹10 / ₹1 tap screens are gone, and their praise-text checks with them)
 errs = [l["message"][:160] for l in d.get_log("browser") if l["level"] == "SEVERE" and "favicon" not in l["message"]]
 check("no console errors / 404s", not errs, errs[:5])
 print("\n%d FAIL" % len(fails), fails)

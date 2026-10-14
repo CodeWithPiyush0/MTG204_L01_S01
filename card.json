@@ -8,40 +8,41 @@
  "part_label": "",
  "medium": "hi",
  "title": {
-  "hi": "परी की पिकनिक की खरीदारी",
-  "en": "Pari's picnic shopping — making amounts with ₹10 and ₹1"
+  "hi": "परी चली बाज़ार",
+  "en": "Pari goes to the market — making amounts with ₹10 and ₹1"
  },
  "subtitle_hi": "",
  "theme": "toybox",
  "skill_description_hi": "₹10 और ₹1 से 99 तक की राशि बनाता है।",
  "landing_audio": "vo_landing",
  "landing_scene": {
-  "img": "scn_landing"
+  "img": "scn_landing",
+  "title_img": "title_pari_chali_bazaar"
  },
  "phase_distribution": {
-  "tutorial": 4,
-  "guided": 4,
-  "practice": 4,
-  "mastery": 2
+  "tutorial": 1,
+  "guided": 5,
+  "practice": 1,
+  "mastery": 1
  },
- "mastery_gate": {
-  "title": "खरीदारी का खेल!",
-  "audio": "vo_pt_mastery"
+ "gate_titles": {
+  "tutorial": "चलिए, शुरू करते हैं।",
+  "guided": "चलिए, साथ में करें।",
+  "practice": "अब आपकी बारी।",
+  "independent": "अब आपकी बारी।"
  },
  "gate": {
   "img": "assets/UI/swifty_gate_seek.webp",
   "talk_at_ms": 1960,
   "title_cue_ms": {
-   "tutorial": 4030,
+   "tutorial": 2259,
    "guided": 3970,
-   "practice": 1260,
-   "mastery": 798
+   "practice": 1260
   },
   "title_dur_ms": {
-   "tutorial": 1230,
+   "tutorial": 1616,
    "guided": 1300,
-   "practice": 850,
-   "mastery": 946
+   "practice": 850
   },
   "talk": {
    "src": "assets/UI/swifty_gate_talk.webp",
@@ -88,7 +89,7 @@
   },
   "lips": {
    "tutorial": {
-    "bits": "0000000000000000000111111111111100001110000110000000001110000000000000000011111001111000111111111001111000000000011110000000000011111111111100000000000000000000000111000000111000000000000000000001100000011001110000000000000",
+    "bits": "000000000000111111110001100001100000000111000000001111111111111100001110000111110001111110000000000000000111100001100000000000000110011000011000001100001100000000000",
     "step_ms": 25
    },
    "guided": {
@@ -98,21 +99,21 @@
    "practice": {
     "bits": "0000000000001100000111111111111111000000000000000001100111111000000000000111110000000000000000000000",
     "step_ms": 25
-   },
-   "mastery": {
-    "bits": "0000000001111000011100000000001110000000011111000011100011000110000000110000000111000001100011000000000000",
-    "step_ms": 25
    }
   },
   "title_voice_ms": {
    "tutorial": [
     [
-     4025,
-     4400
+     2125,
+     2275
     ],
     [
-     4700,
-     5275
+     2600,
+     2925
+    ],
+    [
+     3100,
+     3875
     ]
    ],
    "guided": [
@@ -129,12 +130,6 @@
     [
      1250,
      2125
-    ]
-   ],
-   "mastery": [
-    [
-     725,
-     1950
     ]
    ]
   }
@@ -255,7 +250,7 @@
  "signals_expected": [
   "slide_entered",
   "slide_completed",
-  "money_pick_first_try",
+  "money_sort_done",
   "money_build_done",
   "answer_wrong",
   "phase_transition",
@@ -269,223 +264,170 @@
    "id": "T1",
    "phase": "tutorial",
    "eis": "iconic",
-   "type": "MONEY_SHOW",
-   "prompt_hi": "क्या आप ₹10 और ₹1 को पहचानते हैं?",
+   "type": "MONEY_INTRO",
+   "prompt_hi": "",
    "audio": {
-    "prompt": "vo_t1_prompt"
+    "prompt": "vo_t1_note"
    },
    "data": {
-    "groups": [
+    "no_heading": true,
+    "items": [
      {
-      "faces": [
-       "cur_note10"
-      ]
+      "img": "cur_note10",
+      "label": "₹10",
+      "note": true,
+      "say": "vo_t1_note"
      },
      {
-      "faces": [
-       "cur_coin1",
-       "cur_coin1_back"
-      ]
+      "img": "cur_coin1",
+      "label": "₹1",
+      "say": "vo_t1_coin"
      }
     ]
    },
-   "dev_label": "p2 · ₹10 और ₹1 पहचानें"
-  },
-  {
-   "id": "T2",
-   "phase": "tutorial",
-   "eis": "iconic",
-   "type": "MONEY_PICK",
-   "prompt_hi": "₹10 पर टैप कीजिए।",
-   "audio": {
-    "prompt": "vo_t2_prompt",
-    "correct": "vo_t2_correct",
-    "wrong": "vo_t2_wrong"
-   },
-   "data": {
-    "options": [
-     {
-      "id": "note10",
-      "faces": [
-       "cur_note10"
-      ],
-      "correct": true
-     },
-     {
-      "id": "coin1",
-      "faces": [
-       "cur_coin1",
-       "cur_coin1_back"
-      ]
-     }
-    ],
-    "reveal_faces": [
-     "cur_note10"
-    ],
-    "wrong_text": "यह दस रुपये का नोट है।",
-    "idle_pulse_ms": 5000
-   },
-   "dev_label": "p3–4 · ₹10 पर टैप"
-  },
-  {
-   "id": "T3",
-   "phase": "tutorial",
-   "eis": "iconic",
-   "type": "MONEY_PICK",
-   "prompt_hi": "₹1 पर टैप कीजिए।",
-   "audio": {
-    "prompt": "vo_t3_prompt",
-    "correct": "vo_t3_correct",
-    "wrong": "vo_t3_wrong"
-   },
-   "data": {
-    "options": [
-     {
-      "id": "coin10",
-      "faces": [
-       "cur_coin10",
-       "cur_coin10_back"
-      ]
-     },
-     {
-      "id": "coin1",
-      "faces": [
-       "cur_coin1",
-       "cur_coin1_back"
-      ],
-      "correct": true
-     }
-    ],
-    "reveal_faces": [
-     "cur_coin1",
-     "cur_coin1_back"
-    ],
-    "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"
-   },
-   "dev_label": "p5–6 · ₹1 पर टैप"
-  },
-  {
-   "id": "T4",
-   "phase": "tutorial",
-   "eis": "iconic",
-   "type": "MONEY_SCENE",
-   "prompt_hi": "अब परी के साथ बाज़ार चलिए।",
-   "audio": {
-    "prompt": "vo_t4_prompt"
-   },
-   "data": {
-    "img": "scn_market",
-    "scene": true
-   },
-   "dev_label": "p7 · बाज़ार"
+   "dev_label": "पढ़ाना · ₹10 और ₹1"
   },
   {
    "id": "G1",
    "phase": "guided",
-   "eis": "symbolic",
-   "type": "MONEY_LIST",
-   "prompt_hi": "परी की सूची",
+   "eis": "iconic",
+   "type": "MONEY_SORT",
+   "prompt_hi": "चलिए, ₹10 छाँटते हैं।",
    "audio": {
-    "prompt": "vo_g1_prompt"
+    "prompt": "vo_g1_prompt",
+    "done": "vo_sort_done"
    },
    "data": {
-    "rows": [
+    "target": 10,
+    "wallet_img": "obj_wallet",
+    "wallet_front_img": "obj_wallet_front",
+    "no_engine_idle": true,
+    "idle_ms": 7000,
+    "pieces": [
      {
-      "name": "कॉपी",
-      "price": 14,
-      "img": "obj_copy",
-      "cue_ms": 550
+      "img": "cur_note10",
+      "value": 10,
+      "note": true
      },
      {
-      "name": "चिप्स",
-      "price": 20,
-      "img": "obj_chips",
-      "cue_ms": 1022
+      "img": "cur_note10",
+      "value": 10,
+      "note": true
      },
      {
-      "name": "चॉकलेट",
-      "price": 25,
-      "img": "obj_chocolate",
-      "cue_ms": 1573
+      "img": "cur_coin10",
+      "value": 10
      },
      {
-      "name": "प्लेटों का पैकेट",
-      "price": 35,
-      "img": "obj_plates",
-      "cue_ms": 2202
+      "img": "cur_coin10",
+      "value": 10
      },
      {
-      "name": "टॉफ़ी",
-      "price": 5,
-      "img": "obj_toffee",
-      "cue_ms": 3067
+      "img": "cur_note20",
+      "value": 20,
+      "note": true
+     },
+     {
+      "img": "cur_note50",
+      "value": 50,
+      "note": true
+     },
+     {
+      "img": "cur_coin20",
+      "value": 20
+     },
+     {
+      "img": "cur_coin5",
+      "value": 5
+     },
+     {
+      "img": "cur_coin2",
+      "value": 2
      }
     ]
    },
-   "dev_label": "p8 · परी की सूची"
+   "dev_label": "छाँटना · ₹10"
   },
   {
    "id": "G2",
    "phase": "guided",
+   "eis": "iconic",
+   "type": "MONEY_SORT",
+   "prompt_hi": "चलिए, ₹1 के सिक्के छांटिए।",
+   "audio": {
+    "prompt": "vo_g2_prompt",
+    "done": "vo_sort_done"
+   },
+   "data": {
+    "target": 1,
+    "wallet_img": "obj_wallet",
+    "wallet_front_img": "obj_wallet_front",
+    "no_engine_idle": true,
+    "idle_ms": 7000,
+    "pieces": [
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin2",
+      "value": 2
+     },
+     {
+      "img": "cur_coin2",
+      "value": 2
+     },
+     {
+      "img": "cur_coin5",
+      "value": 5
+     },
+     {
+      "img": "cur_coin5",
+      "value": 5
+     },
+     {
+      "img": "cur_coin10",
+      "value": 10
+     }
+    ]
+   },
+   "dev_label": "छाँटना · ₹1"
+  },
+  {
+   "id": "G3",
+   "phase": "guided",
    "eis": "enactive",
    "type": "MONEY_BUILD",
-   "prompt_hi": "₹14 बनाइए",
+   "prompt_hi": "₹14 बनाइए।",
    "audio": {
-    "prompt": "vo_g2_1",
+    "prompt": "vo_b14_prompt",
     "done": "vo_g2_done"
    },
    "data": {
-    "mode": "teach",
+    "mode": "ghost",
     "target": 14,
-    "item_img": "obj_copy",
-    "item_name": "कॉपी",
+    "no_item": true,
+    "tray_down": true,
     "sources": [
      "n10",
      "c1"
     ],
+    "pop_sources": true,
     "no_engine_idle": true,
-    "script": [
-     {
-      "say": "vo_g2_1",
-      "tag": true
-     },
-     {
-      "say": "vo_g2_2",
-      "auto": "n10"
-     },
-     {
-      "say": "vo_g2_3",
-      "pulse_total": true
-     },
-     {
-      "say": "vo_g2_5",
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     },
-     {
-      "say": null,
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     },
-     {
-      "say": null,
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     },
-     {
-      "say": "vo_g2_7",
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     }
-    ],
+    "idle_ms": 7000,
+    "eq_in_band": false,
     "done_cues": {
      "tens": [
       606,
@@ -501,403 +443,103 @@
      ]
     }
    },
-   "dev_label": "p9 · कॉपी ₹14 (teach)"
-  },
-  {
-   "id": "G3",
-   "phase": "guided",
-   "eis": "enactive",
-   "type": "MONEY_BUILD",
-   "prompt_hi": "₹20 बनाइए।",
-   "audio": {
-    "prompt": "vo_g3_1a",
-    "done": "vo_g3_done"
-   },
-   "data": {
-    "mode": "teach",
-    "target": 20,
-    "item_img": "obj_chips",
-    "item_name": "चिप्स",
-    "sources": [
-     "c10",
-     "c1"
-    ],
-    "no_engine_idle": true,
-    "teach_wrong": {
-     "c1": "vo_g3_wrong"
-    },
-    "script": [
-     {
-      "say": "vo_g3_1a",
-      "tag": true
-     },
-     {
-      "say": "vo_g3_1b"
-     },
-     {
-      "say": "vo_g3_2",
-      "auto": "c10"
-     },
-     {
-      "say": "vo_g3_3",
-      "pulse_total": true,
-      "child": "c10",
-      "idle": [
-       "vo_g3_idle2"
-      ]
-     }
-    ],
-    "done_cues": {
-     "tens": [
-      800,
-      2425
-     ],
-     "total": [
-      2425,
-      4225
-     ]
-    }
-   },
-   "dev_label": "p11 · चिप्स ₹20 (teach)"
+   "dev_label": "₹14 (घोस्ट)"
   },
   {
    "id": "G4",
    "phase": "guided",
    "eis": "enactive",
    "type": "MONEY_BUILD",
-   "prompt_hi": "₹25 बनाइए।",
+   "prompt_hi": "₹32 बनाइए।",
    "audio": {
-    "prompt": "vo_g4_prompt",
-    "done": "vo_g4_done"
+    "prompt": "vo_b32_prompt",
+    "done": "vo_b32_done"
    },
    "data": {
-    "mode": "practice",
-    "target": 25,
-    "item_img": "obj_chocolate",
-    "item_name": "चॉकलेट",
-    "sources": [
-     "c10",
-     "c1"
-    ],
-    "ladder": {
-     "tens": {
-      "20": [
-       "vo_g4_t20",
-       "vo_ones_use_5"
-      ],
-      "21": [
-       "vo_g4_t21",
-       "vo_ones_use_4"
-      ],
-      "22": [
-       "vo_g4_t22",
-       "vo_ones_use_3"
-      ],
-      "23": [
-       "vo_g4_t23",
-       "vo_ones_use_2"
-      ],
-      "24": [
-       "vo_g4_t24",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {
-      "5": [
-       "vo_g4_o5",
-       "vo_tens_use_coin_20"
-      ],
-      "15": [
-       "vo_g4_o15",
-       "vo_tens_use_coin_10"
-      ]
-     }
-    },
-    "eq_in_band": false,
-    "no_engine_idle": true,
-    "tag_fx": "pulse",
-    "done_cues": {
-     "tens": [
-      585,
-      2425
-     ],
-     "ones": [
-      2609,
-      4657
-     ],
-     "total": [
-      4657,
-      7325
-     ]
-    }
-   },
-   "dev_label": "p12 · चॉकलेट ₹25"
-  },
-  {
-   "id": "P1",
-   "phase": "practice",
-   "eis": "enactive",
-   "type": "MONEY_BUILD",
-   "prompt_hi": "₹35 बनाइए।",
-   "audio": {
-    "prompt": "vo_p1_prompt",
-    "done": "vo_p1_done"
-   },
-   "data": {
-    "mode": "practice",
-    "target": 35,
-    "item_img": "obj_plates",
-    "item_name": "प्लेटों का पैकेट",
-    "sources": [
-     "n10",
-     "c1"
-    ],
-    "ladder": {
-     "tens": {
-      "30": [
-       "vo_p1_t30",
-       "vo_ones_use_5"
-      ],
-      "31": [
-       "vo_p1_t31",
-       "vo_ones_use_4"
-      ],
-      "32": [
-       "vo_p1_t32",
-       "vo_ones_use_3"
-      ],
-      "33": [
-       "vo_p1_t33",
-       "vo_ones_use_2"
-      ],
-      "34": [
-       "vo_p1_t34",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {
-      "5": [
-       "vo_p1_o5",
-       "vo_tens_use_note_30"
-      ],
-      "15": [
-       "vo_p1_o15",
-       "vo_tens_use_note_20"
-      ],
-      "25": [
-       "vo_p1_o25",
-       "vo_tens_use_note_10"
-      ]
-     }
-    },
-    "eq_in_band": false,
-    "no_engine_idle": true,
+    "mode": "seq",
+    "target": 32,
+    "no_item": true,
     "tray_down": true,
-    "done_cues": {
-     "tens": [
-      504,
-      2143
-     ],
-     "ones": [
-      2305,
-      4042
-     ],
-     "total": [
-      4042,
-      6253
-     ]
-    }
-   },
-   "dev_label": "p13 · प्लेटें ₹35"
-  },
-  {
-   "id": "P2",
-   "phase": "practice",
-   "eis": "enactive",
-   "type": "MONEY_BUILD",
-   "prompt_hi": "₹5 बनाइए।",
-   "audio": {
-    "prompt": "vo_p2_prompt",
-    "done": "vo_p2_done"
-   },
-   "data": {
-    "mode": "practice",
-    "target": 5,
-    "item_img": "obj_toffee",
-    "item_name": "टॉफ़ी",
     "sources": [
      "n10",
      "c1"
     ],
-    "ladder": {
-     "tens": {
-      "0": [
-       "vo_p2_t0",
-       "vo_ones_use_5"
-      ],
-      "1": [
-       "vo_p2_t1",
-       "vo_ones_use_4"
-      ],
-      "2": [
-       "vo_p2_t2",
-       "vo_ones_use_3"
-      ],
-      "3": [
-       "vo_p2_t3",
-       "vo_ones_use_2"
-      ],
-      "4": [
-       "vo_p2_t4",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {}
-    },
-    "eq_in_band": false,
+    "pop_sources": true,
     "no_engine_idle": true,
+    "idle_ms": 7000,
+    "eq_in_band": false,
     "done_cues": {
+     "tens": [
+      656,
+      2275
+     ],
      "ones": [
-      511,
-      2615
+      2448,
+      4065
      ],
      "total": [
-      2615,
-      4753
+      4065,
+      6575
      ]
     }
    },
-   "dev_label": "added · टॉफ़ी ₹5"
+   "dev_label": "₹32 (क्रम से)"
   },
   {
-   "id": "P3",
-   "phase": "practice",
+   "id": "G5",
+   "phase": "guided",
    "eis": "enactive",
    "type": "MONEY_BUILD",
-   "prompt_hi": "₹17 बनाइए।",
+   "prompt_hi": "₹45 बनाइए।",
    "audio": {
-    "prompt": "vo_p3_prompt",
-    "done": "vo_p3_done"
+    "prompt": "vo_b45_prompt",
+    "done": "vo_b45_done"
    },
    "data": {
-    "mode": "practice",
-    "target": 17,
-    "item_img": "obj_juice",
-    "item_name": "जूस",
+    "mode": "seq",
+    "target": 45,
+    "no_item": true,
+    "tray_down": true,
     "sources": [
      "n10",
      "c1"
     ],
-    "ladder": {
-     "tens": {
-      "10": [
-       "vo_p3_t10",
-       "vo_ones_use_7"
-      ],
-      "11": [
-       "vo_p3_t11",
-       "vo_ones_use_6"
-      ],
-      "12": [
-       "vo_p3_t12",
-       "vo_ones_use_5"
-      ],
-      "13": [
-       "vo_p3_t13",
-       "vo_ones_use_4"
-      ],
-      "14": [
-       "vo_p3_t14",
-       "vo_ones_use_3"
-      ],
-      "15": [
-       "vo_p3_t15",
-       "vo_ones_use_2"
-      ],
-      "16": [
-       "vo_p3_t16",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {
-      "7": [
-       "vo_p3_o7",
-       "vo_tens_use_note_10"
-      ]
-     }
-    },
-    "eq_in_band": false,
+    "pop_sources": true,
     "no_engine_idle": true,
-    "tag_fx": "glow",
+    "idle_ms": 7000,
+    "eq_in_band": false,
     "done_cues": {
      "tens": [
-      655,
-      2297
+      616,
+      2165
      ],
      "ones": [
-      2500,
-      4321
+      2341,
+      4293
      ],
      "total": [
-      4321,
-      6922
+      4293,
+      6850
      ]
     }
    },
-   "dev_label": "p16 · जूस ₹17 (हो गया)"
-  },
-  {
-   "id": "P4",
-   "phase": "practice",
-   "eis": "iconic",
-   "type": "MONEY_DONE",
-   "prompt_hi": "परी की पिकनिक की खरीदारी पूरी हुई!",
-   "audio": {
-    "prompt": "vo_p4_prompt"
-   },
-   "data": {
-    "items": [
-     {
-      "name": "कॉपी",
-      "price": 14,
-      "img": "obj_copy"
-     },
-     {
-      "name": "चिप्स",
-      "price": 20,
-      "img": "obj_chips"
-     },
-     {
-      "name": "चॉकलेट",
-      "price": 25,
-      "img": "obj_chocolate"
-     },
-     {
-      "name": "प्लेटों का पैकेट",
-      "price": 35,
-      "img": "obj_plates"
-     },
-     {
-      "name": "टॉफ़ी",
-      "price": 5,
-      "img": "obj_toffee"
-     }
-    ],
-    "pari_img": "pari_celebrate"
-   },
-   "dev_label": "p18 · खरीदारी पूरी"
+   "dev_label": "₹45 (क्रम से)"
   },
   {
    "id": "M1",
-   "phase": "mastery",
+   "phase": "practice",
    "eis": "enactive",
    "type": "SHOP_GAME",
    "prompt_hi": "कोई वस्तु चुनिए।",
    "audio": {
+    "intro": "vo_m_intro",
     "prompt": "vo_m_prompt",
     "idle": "vo_m_idle",
-    "less": "vo_m_less",
-    "more": "vo_m_more",
+    "more1": "vo_m_more1",
+    "less1": "vo_m_less1",
+    "more2": "vo_m_more2",
+    "less2": "vo_m_less2",
+    "retry": "vo_m_retry",
     "first_ok": "vo_m_ok_oranges",
     "tip": "vo_m_tip",
     "done": "vo_m_done"
@@ -911,7 +553,7 @@
       "price": 14,
       "praise": "शाबाश!",
       "vo_select": "vo_m_sel_apple",
-      "vo_praise": "vo_m_ok_apple"
+      "vo_praise": "vo_sort_done"
      },
      {
       "id": "oranges",
@@ -929,7 +571,7 @@
       "price": 35,
       "praise": "शाबाश!",
       "vo_select": "vo_m_sel_tomatoes",
-      "vo_praise": "vo_m_ok_apple"
+      "vo_praise": "vo_sort_done"
      },
      {
       "id": "grapes",
@@ -938,7 +580,7 @@
       "price": 42,
       "praise": "शाबाश!",
       "vo_select": "vo_m_sel_grapes",
-      "vo_praise": "vo_m_ok_apple"
+      "vo_praise": "vo_sort_done"
      },
      {
       "id": "bananas",
@@ -961,15 +603,20 @@
     ],
     "detail": {},
     "no_engine_idle": true,
-    "idle_ms": 5500,
+    "idle_ms": 7000,
+    "make_idle_ms": 7000,
     "pari_img": "pari_basket",
     "pari_full_img": "pari_basket_full",
     "stall_img": "shop_stall",
     "text": {
+     "intro": "परी पहुँच गई है बाज़ार। आओ, चलो खरीदारी शुरू करें।",
+     "more1": "ओहो! रुपये ज़्यादा हैं। कुछ कम करिए।",
+     "less1": "ओहो! रुपये कम हैं। कुछ और डालिए।",
+     "more2": "ओहो! अभी भी रुपये ज़्यादा हैं। कुछ कम करिए।",
+     "less2": "ओहो! अभी भी रुपये कम हैं। कुछ और डालिए।",
+     "retry": "फिर से कोशिश करें।",
      "choose": "कोई वस्तु चुनिए।",
      "make": "₹{T} बनाइए।",
-     "less": "ओह! रुपये कम हैं। फिर से बनाइए।",
-     "more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
      "check": "जाँचें",
      "detail_tpl": "बहुत बढ़िया! {parts} मिलाकर ₹{T} बने।",
      "done": "शाबाश! परी की सारी खरीदारी हो गई।",
@@ -978,7 +625,7 @@
      "great": "बहुत बढ़िया खरीदारी!"
     }
    },
-   "dev_label": "p17–21 · दुकान का खेल"
+   "dev_label": "दुकान का खेल"
   },
   {
    "id": "CEL",
@@ -996,95 +643,36 @@
  "assets": {
   "audio": {
    "vo_landing": "assets/Audio/vo_landing.ogg",
-   "vo_pt_mastery": "assets/Audio/vo_pt_mastery.ogg",
-   "vo_t1_prompt": "assets/Audio/vo_t1_prompt.ogg",
-   "vo_t2_prompt": "assets/Audio/vo_t2_prompt.ogg",
-   "vo_t2_correct": "assets/Audio/vo_t2_correct.ogg",
-   "vo_t2_wrong": "assets/Audio/vo_t2_wrong.ogg",
-   "vo_t3_prompt": "assets/Audio/vo_t3_prompt.ogg",
-   "vo_t3_correct": "assets/Audio/vo_t3_correct.ogg",
-   "vo_t3_wrong": "assets/Audio/vo_t3_wrong.ogg",
-   "vo_t4_prompt": "assets/Audio/vo_t4_prompt.ogg",
+   "vo_pt_tutorial": "assets/Audio/vo_pt_tutorial.ogg",
+   "vo_sort_done": "assets/Audio/vo_sort_done.ogg",
+   "vo_t1_note": "assets/Audio/vo_t1_note.ogg",
+   "vo_t1_coin": "assets/Audio/vo_t1_coin.ogg",
    "vo_g1_prompt": "assets/Audio/vo_g1_prompt.ogg",
+   "vo_g2_prompt": "assets/Audio/vo_g2_prompt.ogg",
+   "vo_b14_prompt": "assets/Audio/vo_b14_prompt.ogg",
    "vo_g2_done": "assets/Audio/vo_g2_done.ogg",
-   "vo_g2_1": "assets/Audio/vo_g2_1.ogg",
-   "vo_g2_2": "assets/Audio/vo_g2_2.ogg",
-   "vo_g2_3": "assets/Audio/vo_g2_3.ogg",
-   "vo_g2_5": "assets/Audio/vo_g2_5.ogg",
-   "vo_g2_idle": "assets/Audio/vo_g2_idle.ogg",
-   "vo_g2_7": "assets/Audio/vo_g2_7.ogg",
-   "vo_g3_done": "assets/Audio/vo_g3_done.ogg",
-   "vo_g3_wrong": "assets/Audio/vo_g3_wrong.ogg",
-   "vo_g3_1a": "assets/Audio/vo_g3_1a.ogg",
-   "vo_g3_1b": "assets/Audio/vo_g3_1b.ogg",
-   "vo_g3_2": "assets/Audio/vo_g3_2.ogg",
-   "vo_g3_3": "assets/Audio/vo_g3_3.ogg",
-   "vo_g3_idle2": "assets/Audio/vo_g3_idle2.ogg",
-   "vo_g4_prompt": "assets/Audio/vo_g4_prompt.ogg",
-   "vo_g4_done": "assets/Audio/vo_g4_done.ogg",
-   "vo_g4_t20": "assets/Audio/vo_g4_t20.ogg",
-   "vo_ones_use_5": "assets/Audio/vo_ones_use_5.ogg",
-   "vo_g4_t21": "assets/Audio/vo_g4_t21.ogg",
-   "vo_ones_use_4": "assets/Audio/vo_ones_use_4.ogg",
-   "vo_g4_t22": "assets/Audio/vo_g4_t22.ogg",
-   "vo_ones_use_3": "assets/Audio/vo_ones_use_3.ogg",
-   "vo_g4_t23": "assets/Audio/vo_g4_t23.ogg",
-   "vo_ones_use_2": "assets/Audio/vo_ones_use_2.ogg",
-   "vo_g4_t24": "assets/Audio/vo_g4_t24.ogg",
-   "vo_ones_use_1": "assets/Audio/vo_ones_use_1.ogg",
-   "vo_g4_o5": "assets/Audio/vo_g4_o5.ogg",
-   "vo_tens_use_coin_20": "assets/Audio/vo_tens_use_coin_20.ogg",
-   "vo_g4_o15": "assets/Audio/vo_g4_o15.ogg",
-   "vo_tens_use_coin_10": "assets/Audio/vo_tens_use_coin_10.ogg",
-   "vo_p1_prompt": "assets/Audio/vo_p1_prompt.ogg",
-   "vo_p1_done": "assets/Audio/vo_p1_done.ogg",
-   "vo_p1_t30": "assets/Audio/vo_p1_t30.ogg",
-   "vo_p1_t31": "assets/Audio/vo_p1_t31.ogg",
-   "vo_p1_t32": "assets/Audio/vo_p1_t32.ogg",
-   "vo_p1_t33": "assets/Audio/vo_p1_t33.ogg",
-   "vo_p1_t34": "assets/Audio/vo_p1_t34.ogg",
-   "vo_p1_o5": "assets/Audio/vo_p1_o5.ogg",
-   "vo_tens_use_note_30": "assets/Audio/vo_tens_use_note_30.ogg",
-   "vo_p1_o15": "assets/Audio/vo_p1_o15.ogg",
-   "vo_tens_use_note_20": "assets/Audio/vo_tens_use_note_20.ogg",
-   "vo_p1_o25": "assets/Audio/vo_p1_o25.ogg",
-   "vo_tens_use_note_10": "assets/Audio/vo_tens_use_note_10.ogg",
-   "vo_p2_prompt": "assets/Audio/vo_p2_prompt.ogg",
-   "vo_p2_done": "assets/Audio/vo_p2_done.ogg",
-   "vo_p2_t0": "assets/Audio/vo_p2_t0.ogg",
-   "vo_p2_t1": "assets/Audio/vo_p2_t1.ogg",
-   "vo_p2_t2": "assets/Audio/vo_p2_t2.ogg",
-   "vo_p2_t3": "assets/Audio/vo_p2_t3.ogg",
-   "vo_p2_t4": "assets/Audio/vo_p2_t4.ogg",
-   "vo_p3_prompt": "assets/Audio/vo_p3_prompt.ogg",
-   "vo_p3_done": "assets/Audio/vo_p3_done.ogg",
-   "vo_p3_t10": "assets/Audio/vo_p3_t10.ogg",
-   "vo_ones_use_7": "assets/Audio/vo_ones_use_7.ogg",
-   "vo_p3_t11": "assets/Audio/vo_p3_t11.ogg",
-   "vo_ones_use_6": "assets/Audio/vo_ones_use_6.ogg",
-   "vo_p3_t12": "assets/Audio/vo_p3_t12.ogg",
-   "vo_p3_t13": "assets/Audio/vo_p3_t13.ogg",
-   "vo_p3_t14": "assets/Audio/vo_p3_t14.ogg",
-   "vo_p3_t15": "assets/Audio/vo_p3_t15.ogg",
-   "vo_p3_t16": "assets/Audio/vo_p3_t16.ogg",
-   "vo_p3_o7": "assets/Audio/vo_p3_o7.ogg",
-   "vo_p4_prompt": "assets/Audio/vo_p4_prompt.ogg",
+   "vo_b32_prompt": "assets/Audio/vo_b32_prompt.ogg",
+   "vo_b32_done": "assets/Audio/vo_b32_done.ogg",
+   "vo_b45_prompt": "assets/Audio/vo_b45_prompt.ogg",
+   "vo_b45_done": "assets/Audio/vo_b45_done.ogg",
    "vo_m_sel_apple": "assets/Audio/vo_m_sel_apple.ogg",
-   "vo_m_ok_apple": "assets/Audio/vo_m_ok_apple.ogg",
    "vo_m_sel_oranges": "assets/Audio/vo_m_sel_oranges.ogg",
    "vo_m_ok_oranges": "assets/Audio/vo_m_ok_oranges.ogg",
    "vo_m_sel_tomatoes": "assets/Audio/vo_m_sel_tomatoes.ogg",
    "vo_m_sel_grapes": "assets/Audio/vo_m_sel_grapes.ogg",
    "vo_m_sel_bananas": "assets/Audio/vo_m_sel_bananas.ogg",
    "vo_m_sel_carrots": "assets/Audio/vo_m_sel_carrots.ogg",
+   "vo_m_intro": "assets/Audio/vo_m_intro.ogg",
    "vo_m_prompt": "assets/Audio/vo_m_prompt.ogg",
    "vo_m_idle": "assets/Audio/vo_m_idle.ogg",
-   "vo_m_less": "assets/Audio/vo_m_less.ogg",
-   "vo_m_more": "assets/Audio/vo_m_more.ogg",
+   "vo_m_more1": "assets/Audio/vo_m_more1.ogg",
+   "vo_m_less1": "assets/Audio/vo_m_less1.ogg",
+   "vo_m_more2": "assets/Audio/vo_m_more2.ogg",
+   "vo_m_less2": "assets/Audio/vo_m_less2.ogg",
+   "vo_m_retry": "assets/Audio/vo_m_retry.ogg",
    "vo_m_tip": "assets/Audio/vo_m_tip.ogg",
    "vo_m_done": "assets/Audio/vo_m_done.ogg",
    "vo_cel_prompt": "assets/Audio/vo_cel_prompt.ogg",
-   "vo_pt_tutorial": "assets/Audio/vo_pt_tutorial.ogg",
    "vo_pt_guided": "assets/Audio/vo_pt_guided.ogg",
    "vo_pt_practice": "assets/Audio/vo_pt_practice.ogg",
    "sfx_celebrate": "assets/Audio/sfx_celebrate.ogg",
@@ -1097,186 +685,72 @@
    "sfx_play_button": "assets/Audio/sfx_play_button.ogg",
    "sfx_next_button": "assets/Audio/sfx_next_button.ogg",
    "sfx_drop_coin": "assets/Audio/sfx_drop_coin.ogg",
-   "sfx_drop_note": "assets/Audio/sfx_drop_note.ogg"
+   "sfx_drop_note": "assets/Audio/sfx_drop_note.ogg",
+   "sfx_confetti": "assets/Audio/sfx_confetti.ogg",
+   "sfx_nudge": "assets/Audio/sfx_nudge.ogg"
   },
   "audio_text": {
    "vo_landing": "नमस्ते दोस्त! मैं हूँ स्विफ्टी। परी के स्कूल में पिकनिक होने वाली है। उसे पिकनिक के लिए कुछ सामान खरीदना है। चलिए, उसकी मदद करते हैं!",
-   "vo_pt_mastery": "चलिए, अब खरीदारी का खेल खेलते हैं!",
-   "vo_t1_prompt": "बाज़ार जाने से पहले, आइए पहचानते हैं कि दस रुपये और एक रुपये कैसे दिखते हैं।",
-   "vo_t2_prompt": "इनमें से दस रुपये का नोट पहचानिए।",
-   "vo_t2_correct": "शाबाश! यह दस रुपये का नोट है।",
-   "vo_t2_wrong": "यह दस रुपये का नोट है।",
-   "vo_t3_prompt": "इनमें से एक रुपये का सिक्का कौन सा है?",
-   "vo_t3_correct": "शाबाश! यह एक रुपये का सिक्का है।",
-   "vo_t3_wrong": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।",
-   "vo_t4_prompt": "परी अपनी खरीदारी की सूची लेकर बाज़ार पहुँच गई है। आइए देखें, उसे क्या-क्या खरीदना है।",
-   "vo_g1_prompt": "परी को कॉपी, चिप्स, चॉकलेट, प्लेटें और टॉफ़ी खरीदनी हैं। चलो, दस रुपये और एक रुपये से हर चीज़ की राशि बनाते हैं।",
+   "vo_pt_tutorial": "ध्यान से देखिए और मेरे साथ जानिए। चलिए, शुरू करते हैं।",
+   "vo_sort_done": "शाबाश!",
+   "vo_t1_note": "यह दस रुपये का नोट है।",
+   "vo_t1_coin": "और यह एक रुपये का सिक्का है।",
+   "vo_g1_prompt": "चलिए, दस रुपये छाँटते हैं।",
+   "vo_g2_prompt": "चलिए, एक रुपये के सिक्के छांटिए।",
+   "vo_b14_prompt": "दस रुपये और एक रुपये से चौदह रुपये बनाइए।",
    "vo_g2_done": "शाबाश! एक दस रुपये का नोट और चार एक रुपये के सिक्के, कुल मिलाकर बने चौदह रुपये।",
-   "vo_g2_1": "सबसे पहले परी को चौदह रुपये की कॉपी लेनी है। आइए, दस रुपये और एक रुपये से चौदह रुपये बनाते हैं।",
-   "vo_g2_2": "पहले दस रुपये का एक नोट रखते हैं।",
-   "vo_g2_3": "अभी कुल दस रुपये हुए। चौदह रुपये बनाने के लिए अभी चार रुपये और चाहिए।",
-   "vo_g2_5": "चलो, अब तुम रखो।",
-   "vo_g2_idle": "सिक्के को ऊपर वाली ट्रे में रखिए।",
-   "vo_g2_7": "आखिरी सिक्का।",
-   "vo_g3_done": "बहुत अच्छे! दो दस रुपये के सिक्के, कुल मिलाकर बने बीस रुपये।",
-   "vo_g3_wrong": "बीस रुपये बनाने के लिए दस रुपये के सिक्के लगेंगे।",
-   "vo_g3_1a": "अब परी को बीस रुपये के चिप्स लेने हैं।",
-   "vo_g3_1b": "आइए, दस रुपये के सिक्कों से बीस रुपये बनाते हैं।",
-   "vo_g3_2": "पहले दस रुपये का सिक्का रखते हैं।",
-   "vo_g3_3": "कुल दस रुपये हुए। बीस रुपये के लिए दस रुपये और रखिए।",
-   "vo_g3_idle2": "दस रुपये का सिक्का ट्रे में रखिए।",
-   "vo_g4_prompt": "परी को पच्चीस रुपये की चॉकलेट लेनी है। दस रुपये और एक रुपये के सिक्कों से पच्चीस रुपये बनाइए।",
-   "vo_g4_done": "शाबाश! दो दस रुपये के सिक्के और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पच्चीस रुपये।",
-   "vo_g4_t20": "कुल बीस रुपये हुए। पच्चीस रुपये बनाने के लिए पाँच रुपये और चाहिए।",
-   "vo_ones_use_5": "पाँच रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t21": "कुल इक्कीस रुपये हुए। पच्चीस रुपये बनाने के लिए चार रुपये और चाहिए।",
-   "vo_ones_use_4": "चार रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t22": "कुल बाईस रुपये हुए। पच्चीस रुपये बनाने के लिए तीन रुपये और चाहिए।",
-   "vo_ones_use_3": "तीन रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t23": "कुल तेईस रुपये हुए। पच्चीस रुपये बनाने के लिए दो रुपये और चाहिए।",
-   "vo_ones_use_2": "दो रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t24": "कुल चौबीस रुपये हुए। पच्चीस रुपये बनाने के लिए एक रुपये और चाहिए।",
-   "vo_ones_use_1": "एक रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_o5": "कुल पाँच रुपये हैं। पच्चीस रुपये के लिए बीस रुपये और बनाओ।",
-   "vo_tens_use_coin_20": "बीस रुपये बनाने के लिए दस रुपये का सिक्का इस्तेमाल कीजिए।",
-   "vo_g4_o15": "कुल पंद्रह रुपये हैं। पच्चीस रुपये के लिए दस रुपये और बनाओ।",
-   "vo_tens_use_coin_10": "दस रुपये बनाने के लिए दस रुपये का सिक्का इस्तेमाल कीजिए।",
-   "vo_p1_prompt": "अब परी को पैंतीस रुपये का प्लेटों का पैकेट लेना है।",
-   "vo_p1_done": "शाबाश! तीन दस रुपये के नोट और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पैंतीस रुपये। अब परी प्लेटों का पैकेट खरीद सकती है।",
-   "vo_p1_t30": "कुल तीस रुपये हुए। पैंतीस रुपये के लिए पाँच रुपये और चाहिए।",
-   "vo_p1_t31": "कुल इकतीस रुपये हुए। पैंतीस रुपये के लिए चार रुपये और चाहिए।",
-   "vo_p1_t32": "कुल बत्तीस रुपये हुए। पैंतीस रुपये के लिए तीन रुपये और चाहिए।",
-   "vo_p1_t33": "कुल तैंतीस रुपये हुए। पैंतीस रुपये के लिए दो रुपये और चाहिए।",
-   "vo_p1_t34": "कुल चौंतीस रुपये हुए। पैंतीस रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p1_o5": "कुल पाँच रुपये हैं। पैंतीस रुपये के लिए तीस रुपये और बनाओ।",
-   "vo_tens_use_note_30": "तीस रुपये बनाने के लिए दस रुपये का नोट इस्तेमाल कीजिए।",
-   "vo_p1_o15": "कुल पंद्रह रुपये हैं। पैंतीस रुपये के लिए बीस रुपये और बनाओ।",
-   "vo_tens_use_note_20": "बीस रुपये बनाने के लिए दस रुपये का नोट इस्तेमाल कीजिए।",
-   "vo_p1_o25": "कुल पच्चीस रुपये हैं। पैंतीस रुपये के लिए दस रुपये और बनाओ।",
-   "vo_tens_use_note_10": "दस रुपये बनाने के लिए दस रुपये का नोट इस्तेमाल कीजिए।",
-   "vo_p2_prompt": "परी को पाँच रुपये की टॉफ़ी लेनी है।",
-   "vo_p2_done": "शाबाश! पाँच एक रुपये के सिक्के, कुल मिलाकर बने पाँच रुपये। अब परी टॉफ़ी खरीद सकती है।",
-   "vo_p2_t0": "दस रुपये का नोट पाँच रुपये से ज़्यादा है।",
-   "vo_p2_t1": "कुल एक रुपये हुए। पाँच रुपये के लिए चार रुपये और चाहिए।",
-   "vo_p2_t2": "कुल दो रुपये हुए। पाँच रुपये के लिए तीन रुपये और चाहिए।",
-   "vo_p2_t3": "कुल तीन रुपये हुए। पाँच रुपये के लिए दो रुपये और चाहिए।",
-   "vo_p2_t4": "कुल चार रुपये हुए। पाँच रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p3_prompt": "परी को सत्रह रुपये का जूस पैकेट लेना है।",
-   "vo_p3_done": "शाबाश! एक दस रुपये का नोट और सात एक रुपये के सिक्के, कुल मिलाकर बने सत्रह रुपये। अब परी जूस पैकेट खरीद सकती है।",
-   "vo_p3_t10": "कुल दस रुपये हुए। सत्रह रुपये के लिए सात रुपये और चाहिए।",
-   "vo_ones_use_7": "सात रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_p3_t11": "कुल ग्यारह रुपये हुए। सत्रह रुपये के लिए छह रुपये और चाहिए।",
-   "vo_ones_use_6": "छह रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_p3_t12": "कुल बारह रुपये हुए। सत्रह रुपये के लिए पाँच रुपये और चाहिए।",
-   "vo_p3_t13": "कुल तेरह रुपये हुए। सत्रह रुपये के लिए चार रुपये और चाहिए।",
-   "vo_p3_t14": "कुल चौदह रुपये हुए। सत्रह रुपये के लिए तीन रुपये और चाहिए।",
-   "vo_p3_t15": "कुल पंद्रह रुपये हुए। सत्रह रुपये के लिए दो रुपये और चाहिए।",
-   "vo_p3_t16": "कुल सोलह रुपये हुए। सत्रह रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p3_o7": "कुल सात रुपये हैं। सत्रह रुपये के लिए दस रुपये और बनाओ।",
-   "vo_p4_prompt": "शाबाश! आपने दस रुपये और एक रुपये का उपयोग करके सभी धनराशियाँ बनाईं। परी की पिकनिक की खरीदारी पूरी हुई!",
+   "vo_b32_prompt": "दस रुपये और एक रुपये से बत्तीस रुपये बनाइए।",
+   "vo_b32_done": "शाबाश! तीन दस रुपये के नोट और दो एक रुपये के सिक्के, कुल मिलाकर बने बत्तीस रुपये।",
+   "vo_b45_prompt": "दस रुपये और एक रुपये से पैंतालीस रुपये बनाइए।",
+   "vo_b45_done": "शाबाश! चार दस रुपये के नोट और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पैंतालीस रुपये।",
    "vo_m_sel_apple": "सेब की कीमत चौदह रुपये है। चौदह रुपये बनाइए।",
-   "vo_m_ok_apple": "शाबाश!",
    "vo_m_sel_oranges": "संतरे की कीमत पच्चीस रुपये है। पच्चीस रुपये बनाइए।",
    "vo_m_ok_oranges": "बहुत बढ़िया!",
    "vo_m_sel_tomatoes": "टमाटर की कीमत पैंतीस रुपये है। पैंतीस रुपये बनाइए।",
    "vo_m_sel_grapes": "अंगूर की कीमत बयालीस रुपये है। बयालीस रुपये बनाइए।",
    "vo_m_sel_bananas": "केले की कीमत साठ रुपये है। साठ रुपये बनाइए।",
    "vo_m_sel_carrots": "गाजर की कीमत पैंसठ रुपये है। पैंसठ रुपये बनाइए।",
+   "vo_m_intro": "परी पहुँच गई है बाज़ार। आओ, चलो खरीदारी शुरू करें।",
    "vo_m_prompt": "कोई वस्तु चुनिए और उसकी राशि बनाइए।",
    "vo_m_idle": "कोई वस्तु चुनिए।",
-   "vo_m_less": "ओह! रुपये कम हैं। फिर से बनाइए।",
-   "vo_m_more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
+   "vo_m_more1": "ओहो! रुपये ज़्यादा हैं। कुछ कम करिए।",
+   "vo_m_less1": "ओहो! रुपये कम हैं। कुछ और डालिए।",
+   "vo_m_more2": "ओहो! अभी भी रुपये ज़्यादा हैं। कुछ कम करिए।",
+   "vo_m_less2": "ओहो! अभी भी रुपये कम हैं। कुछ और डालिए।",
+   "vo_m_retry": "फिर से कोशिश करें।",
    "vo_m_tip": "कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।",
    "vo_m_done": "शाबाश! परी की सारी खरीदारी हो गई।",
    "vo_cel_prompt": "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!"
   },
   "audio_ms": {
    "vo_landing": 9730,
-   "vo_pt_mastery": 2650,
-   "vo_t1_prompt": 4890,
-   "vo_t2_prompt": 2930,
-   "vo_t2_correct": 2570,
-   "vo_t2_wrong": 1890,
-   "vo_t3_prompt": 2890,
-   "vo_t3_correct": 3250,
-   "vo_t3_wrong": 4410,
-   "vo_t4_prompt": 6170,
-   "vo_g1_prompt": 8810,
+   "vo_pt_tutorial": 4130,
+   "vo_sort_done": 1090,
+   "vo_t1_note": 2010,
+   "vo_t1_coin": 2010,
+   "vo_g1_prompt": 2330,
+   "vo_g2_prompt": 2370,
+   "vo_b14_prompt": 4290,
    "vo_g2_done": 7170,
-   "vo_g2_1": 7050,
-   "vo_g2_2": 2410,
-   "vo_g2_3": 5210,
-   "vo_g2_5": 1570,
-   "vo_g2_idle": 2650,
-   "vo_g2_7": 1530,
-   "vo_g3_done": 4370,
-   "vo_g3_wrong": 3930,
-   "vo_g3_1a": 3130,
-   "vo_g3_1b": 3170,
-   "vo_g3_2": 2210,
-   "vo_g3_3": 3810,
-   "vo_g3_idle2": 2450,
-   "vo_g4_prompt": 6610,
-   "vo_g4_done": 7610,
-   "vo_g4_t20": 5330,
-   "vo_ones_use_5": 4170,
-   "vo_g4_t21": 5410,
-   "vo_ones_use_4": 4130,
-   "vo_g4_t22": 4650,
-   "vo_ones_use_3": 4410,
-   "vo_g4_t23": 4170,
-   "vo_ones_use_2": 4770,
-   "vo_g4_t24": 4650,
-   "vo_ones_use_1": 4370,
-   "vo_g4_o5": 4690,
-   "vo_tens_use_coin_20": 4010,
-   "vo_g4_o15": 3970,
-   "vo_tens_use_coin_10": 3930,
-   "vo_p1_prompt": 3730,
-   "vo_p1_done": 9130,
-   "vo_p1_t30": 4570,
-   "vo_p1_t31": 4690,
-   "vo_p1_t32": 4490,
-   "vo_p1_t33": 4050,
-   "vo_p1_t34": 4490,
-   "vo_p1_o5": 4450,
-   "vo_tens_use_note_30": 4130,
-   "vo_p1_o15": 5010,
-   "vo_tens_use_note_20": 4330,
-   "vo_p1_o25": 4810,
-   "vo_tens_use_note_10": 3450,
-   "vo_p2_prompt": 2410,
-   "vo_p2_done": 7090,
-   "vo_p2_t0": 3210,
-   "vo_p2_t1": 4370,
-   "vo_p2_t2": 4530,
-   "vo_p2_t3": 4370,
-   "vo_p2_t4": 4210,
-   "vo_p3_prompt": 3170,
-   "vo_p3_done": 9770,
-   "vo_p3_t10": 4730,
-   "vo_ones_use_7": 3810,
-   "vo_p3_t11": 4090,
-   "vo_ones_use_6": 4410,
-   "vo_p3_t12": 4250,
-   "vo_p3_t13": 4210,
-   "vo_p3_t14": 4890,
-   "vo_p3_t15": 4570,
-   "vo_p3_t16": 4970,
-   "vo_p3_o7": 5370,
-   "vo_p4_prompt": 7650,
+   "vo_b32_prompt": 3770,
+   "vo_b32_done": 6810,
+   "vo_b45_prompt": 4050,
+   "vo_b45_done": 7010,
    "vo_m_sel_apple": 3530,
-   "vo_m_ok_apple": 1090,
    "vo_m_sel_oranges": 4210,
    "vo_m_ok_oranges": 1210,
    "vo_m_sel_tomatoes": 3810,
    "vo_m_sel_grapes": 4690,
    "vo_m_sel_bananas": 3690,
    "vo_m_sel_carrots": 4450,
+   "vo_m_intro": 3890,
    "vo_m_prompt": 2890,
    "vo_m_idle": 1450,
-   "vo_m_less": 2810,
-   "vo_m_more": 2610,
+   "vo_m_more1": 2970,
+   "vo_m_less1": 3170,
+   "vo_m_more2": 3850,
+   "vo_m_less2": 3210,
+   "vo_m_retry": 1250,
    "vo_m_tip": 3650,
    "vo_m_done": 3930,
    "vo_cel_prompt": 2942
@@ -1284,33 +758,31 @@
   "image": {
    "cur_coin1": "assets/Images/cur_coin1.png",
    "cur_coin10": "assets/Images/cur_coin10.png",
-   "cur_coin10_back": "assets/Images/cur_coin10_back.png",
    "cur_coin10_glow": "assets/Images/cur_coin10_glow.png",
    "cur_coin10_lock": "assets/Images/cur_coin10_lock.png",
-   "cur_coin1_back": "assets/Images/cur_coin1_back.png",
    "cur_coin1_glow": "assets/Images/cur_coin1_glow.png",
    "cur_coin1_lock": "assets/Images/cur_coin1_lock.png",
+   "cur_coin2": "assets/Images/cur_coin2.png",
+   "cur_coin20": "assets/Images/cur_coin20.png",
+   "cur_coin5": "assets/Images/cur_coin5.png",
    "cur_note10": "assets/Images/cur_note10.png",
    "cur_note10_glow": "assets/Images/cur_note10_glow.png",
    "cur_note10_lock": "assets/Images/cur_note10_lock.png",
+   "cur_note20": "assets/Images/cur_note20.png",
+   "cur_note50": "assets/Images/cur_note50.png",
    "obj_apple": "assets/Images/obj_apple.png",
    "obj_bananas": "assets/Images/obj_bananas.png",
    "obj_carrots": "assets/Images/obj_carrots.png",
-   "obj_chips": "assets/Images/obj_chips.png",
-   "obj_chocolate": "assets/Images/obj_chocolate.png",
-   "obj_copy": "assets/Images/obj_copy.png",
    "obj_grapes": "assets/Images/obj_grapes.png",
-   "obj_juice": "assets/Images/obj_juice.png",
    "obj_oranges": "assets/Images/obj_oranges.png",
-   "obj_plates": "assets/Images/obj_plates.png",
-   "obj_toffee": "assets/Images/obj_toffee.png",
    "obj_tomatoes": "assets/Images/obj_tomatoes.png",
+   "obj_wallet": "assets/Images/obj_wallet.png",
+   "obj_wallet_front": "assets/Images/obj_wallet_front.png",
    "pari_basket": "assets/Images/pari_basket.png",
    "pari_basket_full": "assets/Images/pari_basket_full.png",
-   "pari_celebrate": "assets/Images/pari_celebrate.png",
    "scn_landing": "assets/Images/scn_landing.png",
-   "scn_market": "assets/Images/scn_market.png",
-   "shop_stall": "assets/Images/shop_stall.png"
+   "shop_stall": "assets/Images/shop_stall.png",
+   "title_pari_chali_bazaar": "assets/Images/title_pari_chali_bazaar.png"
   },
   "audio_ext": "ogg",
   "img_ext": "png"
@@ -1319,35 +791,33 @@
   "images": [
    "assets/Images/cur_coin1.png",
    "assets/Images/cur_coin10.png",
-   "assets/Images/cur_coin10_back.png",
    "assets/Images/cur_coin10_glow.png",
    "assets/Images/cur_coin10_lock.png",
-   "assets/Images/cur_coin1_back.png",
    "assets/Images/cur_coin1_glow.png",
    "assets/Images/cur_coin1_lock.png",
+   "assets/Images/cur_coin2.png",
+   "assets/Images/cur_coin20.png",
+   "assets/Images/cur_coin5.png",
    "assets/Images/cur_note10.png",
    "assets/Images/cur_note10_glow.png",
    "assets/Images/cur_note10_lock.png",
+   "assets/Images/cur_note20.png",
+   "assets/Images/cur_note50.png",
    "assets/Images/obj_apple.png",
    "assets/Images/obj_bananas.png",
    "assets/Images/obj_carrots.png",
-   "assets/Images/obj_chips.png",
-   "assets/Images/obj_chocolate.png",
-   "assets/Images/obj_copy.png",
    "assets/Images/obj_grapes.png",
-   "assets/Images/obj_juice.png",
    "assets/Images/obj_oranges.png",
-   "assets/Images/obj_plates.png",
-   "assets/Images/obj_toffee.png",
    "assets/Images/obj_tomatoes.png",
+   "assets/Images/obj_wallet.png",
+   "assets/Images/obj_wallet_front.png",
    "assets/Images/pari_basket.png",
    "assets/Images/pari_basket_full.png",
-   "assets/Images/pari_celebrate.png",
    "assets/Images/play_btn.svg",
    "assets/Images/play_btn_disabled.svg",
    "assets/Images/scn_landing.png",
-   "assets/Images/scn_market.png",
    "assets/Images/shop_stall.png",
+   "assets/Images/title_pari_chali_bazaar.png",
    "assets/UI/bgdeco_spark.svg",
    "assets/UI/bgdeco_star.svg",
    "assets/UI/bgdeco_star_o.svg",
@@ -1377,49 +847,38 @@
   ],
   "audio": [
    "assets/Audio/sfx_celebrate.ogg",
+   "assets/Audio/sfx_confetti.ogg",
    "assets/Audio/sfx_correct.ogg",
    "assets/Audio/sfx_drop_coin.ogg",
    "assets/Audio/sfx_drop_note.ogg",
    "assets/Audio/sfx_fb_correct.ogg",
    "assets/Audio/sfx_fb_incorrect.ogg",
    "assets/Audio/sfx_next_button.ogg",
+   "assets/Audio/sfx_nudge.ogg",
    "assets/Audio/sfx_play_button.ogg",
    "assets/Audio/sfx_pop.ogg",
    "assets/Audio/sfx_tap.ogg",
    "assets/Audio/sfx_wrong.ogg",
+   "assets/Audio/vo_b14_prompt.ogg",
+   "assets/Audio/vo_b32_done.ogg",
+   "assets/Audio/vo_b32_prompt.ogg",
+   "assets/Audio/vo_b45_done.ogg",
+   "assets/Audio/vo_b45_prompt.ogg",
    "assets/Audio/vo_cel_prompt.ogg",
    "assets/Audio/vo_g1_prompt.ogg",
-   "assets/Audio/vo_g2_1.ogg",
-   "assets/Audio/vo_g2_2.ogg",
-   "assets/Audio/vo_g2_3.ogg",
-   "assets/Audio/vo_g2_5.ogg",
-   "assets/Audio/vo_g2_7.ogg",
    "assets/Audio/vo_g2_done.ogg",
-   "assets/Audio/vo_g2_idle.ogg",
-   "assets/Audio/vo_g3_1a.ogg",
-   "assets/Audio/vo_g3_1b.ogg",
-   "assets/Audio/vo_g3_2.ogg",
-   "assets/Audio/vo_g3_3.ogg",
-   "assets/Audio/vo_g3_done.ogg",
-   "assets/Audio/vo_g3_idle2.ogg",
-   "assets/Audio/vo_g3_wrong.ogg",
-   "assets/Audio/vo_g4_done.ogg",
-   "assets/Audio/vo_g4_o15.ogg",
-   "assets/Audio/vo_g4_o5.ogg",
-   "assets/Audio/vo_g4_prompt.ogg",
-   "assets/Audio/vo_g4_t20.ogg",
-   "assets/Audio/vo_g4_t21.ogg",
-   "assets/Audio/vo_g4_t22.ogg",
-   "assets/Audio/vo_g4_t23.ogg",
-   "assets/Audio/vo_g4_t24.ogg",
+   "assets/Audio/vo_g2_prompt.ogg",
    "assets/Audio/vo_landing.ogg",
    "assets/Audio/vo_m_done.ogg",
    "assets/Audio/vo_m_idle.ogg",
-   "assets/Audio/vo_m_less.ogg",
-   "assets/Audio/vo_m_more.ogg",
-   "assets/Audio/vo_m_ok_apple.ogg",
+   "assets/Audio/vo_m_intro.ogg",
+   "assets/Audio/vo_m_less1.ogg",
+   "assets/Audio/vo_m_less2.ogg",
+   "assets/Audio/vo_m_more1.ogg",
+   "assets/Audio/vo_m_more2.ogg",
    "assets/Audio/vo_m_ok_oranges.ogg",
    "assets/Audio/vo_m_prompt.ogg",
+   "assets/Audio/vo_m_retry.ogg",
    "assets/Audio/vo_m_sel_apple.ogg",
    "assets/Audio/vo_m_sel_bananas.ogg",
    "assets/Audio/vo_m_sel_carrots.ogg",
@@ -1427,58 +886,12 @@
    "assets/Audio/vo_m_sel_oranges.ogg",
    "assets/Audio/vo_m_sel_tomatoes.ogg",
    "assets/Audio/vo_m_tip.ogg",
-   "assets/Audio/vo_ones_use_1.ogg",
-   "assets/Audio/vo_ones_use_2.ogg",
-   "assets/Audio/vo_ones_use_3.ogg",
-   "assets/Audio/vo_ones_use_4.ogg",
-   "assets/Audio/vo_ones_use_5.ogg",
-   "assets/Audio/vo_ones_use_6.ogg",
-   "assets/Audio/vo_ones_use_7.ogg",
-   "assets/Audio/vo_p1_done.ogg",
-   "assets/Audio/vo_p1_o15.ogg",
-   "assets/Audio/vo_p1_o25.ogg",
-   "assets/Audio/vo_p1_o5.ogg",
-   "assets/Audio/vo_p1_prompt.ogg",
-   "assets/Audio/vo_p1_t30.ogg",
-   "assets/Audio/vo_p1_t31.ogg",
-   "assets/Audio/vo_p1_t32.ogg",
-   "assets/Audio/vo_p1_t33.ogg",
-   "assets/Audio/vo_p1_t34.ogg",
-   "assets/Audio/vo_p2_done.ogg",
-   "assets/Audio/vo_p2_prompt.ogg",
-   "assets/Audio/vo_p2_t0.ogg",
-   "assets/Audio/vo_p2_t1.ogg",
-   "assets/Audio/vo_p2_t2.ogg",
-   "assets/Audio/vo_p2_t3.ogg",
-   "assets/Audio/vo_p2_t4.ogg",
-   "assets/Audio/vo_p3_done.ogg",
-   "assets/Audio/vo_p3_o7.ogg",
-   "assets/Audio/vo_p3_prompt.ogg",
-   "assets/Audio/vo_p3_t10.ogg",
-   "assets/Audio/vo_p3_t11.ogg",
-   "assets/Audio/vo_p3_t12.ogg",
-   "assets/Audio/vo_p3_t13.ogg",
-   "assets/Audio/vo_p3_t14.ogg",
-   "assets/Audio/vo_p3_t15.ogg",
-   "assets/Audio/vo_p3_t16.ogg",
-   "assets/Audio/vo_p4_prompt.ogg",
    "assets/Audio/vo_pt_guided.ogg",
-   "assets/Audio/vo_pt_mastery.ogg",
    "assets/Audio/vo_pt_practice.ogg",
    "assets/Audio/vo_pt_tutorial.ogg",
-   "assets/Audio/vo_t1_prompt.ogg",
-   "assets/Audio/vo_t2_correct.ogg",
-   "assets/Audio/vo_t2_prompt.ogg",
-   "assets/Audio/vo_t2_wrong.ogg",
-   "assets/Audio/vo_t3_correct.ogg",
-   "assets/Audio/vo_t3_prompt.ogg",
-   "assets/Audio/vo_t3_wrong.ogg",
-   "assets/Audio/vo_t4_prompt.ogg",
-   "assets/Audio/vo_tens_use_coin_10.ogg",
-   "assets/Audio/vo_tens_use_coin_20.ogg",
-   "assets/Audio/vo_tens_use_note_10.ogg",
-   "assets/Audio/vo_tens_use_note_20.ogg",
-   "assets/Audio/vo_tens_use_note_30.ogg"
+   "assets/Audio/vo_sort_done.ogg",
+   "assets/Audio/vo_t1_coin.ogg",
+   "assets/Audio/vo_t1_note.ogg"
   ],
   "fetch": [
    "assets/Audio/bgm_lesson.ogg"

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><!-- [24a N9] pinch-zoom lock: a child two-finger-zooms the game off-centre in any real browser without it -->
-<title>SwiftPAL · MTG2A04_L01_S01 · परी की पिकनिक की खरीदारी</title>
+<title>SwiftPAL · MTG2A04_L01_S01 · परी चली बाज़ार</title>
 <!-- OFFLINE BUILD — factory.py replaces the marker below with a <style>@font-face…</style>.
      Baloo 2 (Devanagari) is ALSO embedded in the inlined style.css below; by CSS order the
      inlined (correct) font wins. NOT 'Baloo Bhai 2' (Gujarati, no Devanagari glyphs). -->
@@ -4359,6 +4359,71 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 @font-face{font-family:'Baloo 2';font-style:normal;font-weight:800;font-display:block;unicode-range:U+20B9;ascent-override:107.8%;descent-override:52.4%;line-gap-override:0%;src:url(data:font/woff2;base64,d09GMgABAAAAAAI0AA4AAAAABCAAAAHhAAID1wAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcQgZgP1NUQVRaADQRCApccAE2AiQDCAsGAAQgBYFQByAbOQOgHoNty7lmVE1UXeYCcf0pHv5/v2/7nHdHNSkmWUXrVDITChC61VlkryKaqXz72k/3QqiBVBxLILw4xvcDViclELKyRndanP9mO91g4DvfQxCAZVHEBRTrOAsswAQTDEi7y22MTk9wFYmOlgo0GzAkVqWLTSgUqAUQaLbEMjLZc5y8HlbwnBqffKC+nj2Ml3qpT5ueeQ5KXhGPqCOvZQewEd+MI/DFBiBb6rLUlcwCSIC1WysZfI+Mj7wU5/+3lFNsDATklHyCEfVCaFShV4XZcnQ6I4bRUzRjIc5Tf8WWSvW6DQmIudUIQshY4hSopIxlAAIkwTkqLEZQ2mBkvLYf/jGLgRC19AgJCgJDmAwogBhqOcBaxu59mVTRcvP2q0oVbZpv3DKoNT971tz/Pz43HbH+ZfbGH9K3m6XAf/j17/45AhdUy5rVmP7+TLAMQ1Yv737esKurX/SvUVz9gvdXn/4Efvz9feYnm/MJ6iUIXltyg0jzkukOAMjcAJ4r4BdIQwIEjhqdIRalSehmtdSuOwpajSA0m425us3BEq3W8VLZtdcyqBxTtkW27Hbq2ziqG5sSrPQdcGNzUzOEmxshMykX5KAvbmtlFOMdrPWt5NCo54bqtsdDG2Kghg8B) format('woff2');}
 
 
+/* ======================= round 3 (SME restructure + checklist, 2026-10-14) ======================= */
+/* teaching (MONEY_INTRO): the ₹10 note, then the ₹1 coin — each with its label ABOVE it, front view,
+   nothing else on the screen; a piece is invisible until its line starts */
+.mn-intro{flex:1;display:flex;align-items:center;justify-content:center;gap:120px;padding-bottom:20px;}
+.mn-intro-it{display:flex;flex-direction:column;align-items:center;gap:22px;}
+.mn-intro-it.mn-intro-wait{visibility:hidden;}
+.mn-intro-lbl{font-family:var(--font-hi);font-weight:800;font-size:64px;line-height:1;color:var(--navy);
+  background:#FDE39A;border:4px solid #F4B63F;border-radius:22px;padding:12px 30px;}
+.mn-intro-it.is-note img{width:430px;height:auto;filter:drop-shadow(0 12px 18px rgba(11,61,140,.18));}
+.mn-intro-it.is-coin img{width:220px;height:auto;filter:drop-shadow(0 12px 18px rgba(11,61,140,.18));}
+
+/* sorting (MONEY_SORT): notes and coins scattered over the field, each with a small tilt (on the
+   picture, so the pop / wiggle animations on the piece never fight it); the wallet sits bottom-right */
+.mn-sort{flex:1;position:relative;width:100%;}
+.mn-sp{position:absolute;transform-origin:50% 50%;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.mn-sp img{display:block;width:100%;height:auto;transform:rotate(var(--tilt,0deg));pointer-events:none;
+  filter:drop-shadow(0 8px 10px rgba(11,61,140,.18));}
+.mn-sp.is-note{width:210px;}
+.mn-sp.is-coin{width:112px;}
+.mn-sp.mn-sp-wait{visibility:hidden;}
+.mn-sp.mn-sp-gone{visibility:hidden;pointer-events:none;}
+@keyframes mnWiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-10deg)}40%{transform:rotate(9deg)}
+  60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+.mn-sp.mn-wiggle{animation:mnWiggle .5s ease-in-out 1;}
+.mn-sp.mn-sp-hint img{animation:mnHintGlow 1s ease-in-out 3;}
+.mn-wallet{position:absolute;right:3%;bottom:2%;width:190px;pointer-events:none;}
+.mn-wallet img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 14px rgba(84,46,12,.22));}
+.mn-wallet.mn-bump{animation:mnBump .35s ease-out 1;}
+.mn-float.mn-sortfly img{display:block;width:100%;height:100%;object-fit:contain;}
+
+/* make ₹14 / ₹32 / ₹45: no item picture — only the amount, prominently, in the same card */
+.mn-item.mn-item-amt{justify-content:center;}
+.mn-item.mn-item-amt .mn-tag.mn-tag-big{font-size:72px;width:180px;padding:18px 0;}
+
+/* checklist: the title screen's speaker button is 70 px (was 58), centred where it was */
+.sg-vo{width:70px;height:70px;left:90px;bottom:-22px;}
+
+/* ======================= round 3b (user, 2026-10-14) ======================= */
+/* sorting: the teaching screen's grid-paper card (blue border), the instruction panel kept above it,
+   no Swiftee inside; the card stops short of the arrow */
+.mn-sort-card{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;margin:4px 0 26px;
+  border:10px solid #50AAF2;border-radius:34px;background-color:#F2F7FA;
+  background-image:linear-gradient(to right,rgba(111,150,216,.16) 1.5px,transparent 1.5px),
+                   linear-gradient(to bottom,rgba(111,150,216,.16) 1.5px,transparent 1.5px);
+  background-size:46px 46px;box-shadow:0 6px 18px rgba(11,61,140,.10);}
+.mn-sort-field{flex:1;min-height:0;position:relative;}
+.mn-sp.is-note{width:180px;}
+.mn-sp.is-coin{width:100px;}
+/* the team's wallet in two layers: the whole wallet behind, its front pocket in front; a collected
+   piece is drawn between them (.mn-wfly) so it slides INTO the wallet */
+.mn-wallet{position:absolute;right:24px;bottom:14px;width:210px;aspect-ratio:1383/997;z-index:5;pointer-events:none;}
+.mn-wallet .mn-wb,.mn-wallet .mn-wf{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.mn-wallet .mn-wb{z-index:1;}
+.mn-wallet .mn-wfly{position:absolute;inset:0;z-index:2;}
+.mn-wallet .mn-wf{z-index:3;}
+.mn-wpiece{position:absolute;}
+.mn-wpiece img{display:block;width:100%;height:100%;object-fit:contain;}
+
+/* make ₹14 / ₹32 / ₹45: no container around the amount — the amount card alone, with the «कुल»
+   counter under it (out of the drop zone, where it hid the third / fourth note) */
+.mn-item.mn-item-amt{width:auto;height:auto;background:none;border:none;box-shadow:none;padding:0;gap:18px;}
+/* round 3c (user): the cover's title is a separate picture, centred at the top of the cover */
+.start-gate .sg-card.sg-scene .sg-title-img{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:470px;height:auto;
+  z-index:2;pointer-events:none;filter:drop-shadow(0 8px 12px rgba(80,40,0,.22));}
+
 /* ============ CONFETTI, round 2s (user, 2026-10-08): copied verbatim from MTG2A04_L02_S01 style.css —
    the FLN animation kit confetti block + that lesson's [13] body-level layer (whole window, pieces 1.5x,
    sized with the stage --scale). Used by confettiCannon (money_modules.js). ============ */
@@ -4566,40 +4631,41 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
  "part_label": "",
  "medium": "hi",
  "title": {
-  "hi": "परी की पिकनिक की खरीदारी",
-  "en": "Pari's picnic shopping — making amounts with ₹10 and ₹1"
+  "hi": "परी चली बाज़ार",
+  "en": "Pari goes to the market — making amounts with ₹10 and ₹1"
  },
  "subtitle_hi": "",
  "theme": "toybox",
  "skill_description_hi": "₹10 और ₹1 से 99 तक की राशि बनाता है।",
  "landing_audio": "vo_landing",
  "landing_scene": {
-  "img": "scn_landing"
+  "img": "scn_landing",
+  "title_img": "title_pari_chali_bazaar"
  },
  "phase_distribution": {
-  "tutorial": 4,
-  "guided": 4,
-  "practice": 4,
-  "mastery": 2
+  "tutorial": 1,
+  "guided": 5,
+  "practice": 1,
+  "mastery": 1
  },
- "mastery_gate": {
-  "title": "खरीदारी का खेल!",
-  "audio": "vo_pt_mastery"
+ "gate_titles": {
+  "tutorial": "चलिए, शुरू करते हैं।",
+  "guided": "चलिए, साथ में करें।",
+  "practice": "अब आपकी बारी।",
+  "independent": "अब आपकी बारी।"
  },
  "gate": {
   "img": "assets/UI/swifty_gate_seek.webp",
   "talk_at_ms": 1960,
   "title_cue_ms": {
-   "tutorial": 4030,
+   "tutorial": 2259,
    "guided": 3970,
-   "practice": 1260,
-   "mastery": 798
+   "practice": 1260
   },
   "title_dur_ms": {
-   "tutorial": 1230,
+   "tutorial": 1616,
    "guided": 1300,
-   "practice": 850,
-   "mastery": 946
+   "practice": 850
   },
   "talk": {
    "src": "assets/UI/swifty_gate_talk.webp",
@@ -4646,7 +4712,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   },
   "lips": {
    "tutorial": {
-    "bits": "0000000000000000000111111111111100001110000110000000001110000000000000000011111001111000111111111001111000000000011110000000000011111111111100000000000000000000000111000000111000000000000000000001100000011001110000000000000",
+    "bits": "000000000000111111110001100001100000000111000000001111111111111100001110000111110001111110000000000000000111100001100000000000000110011000011000001100001100000000000",
     "step_ms": 25
    },
    "guided": {
@@ -4656,21 +4722,21 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "practice": {
     "bits": "0000000000001100000111111111111111000000000000000001100111111000000000000111110000000000000000000000",
     "step_ms": 25
-   },
-   "mastery": {
-    "bits": "0000000001111000011100000000001110000000011111000011100011000110000000110000000111000001100011000000000000",
-    "step_ms": 25
    }
   },
   "title_voice_ms": {
    "tutorial": [
     [
-     4025,
-     4400
+     2125,
+     2275
     ],
     [
-     4700,
-     5275
+     2600,
+     2925
+    ],
+    [
+     3100,
+     3875
     ]
    ],
    "guided": [
@@ -4687,12 +4753,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     [
      1250,
      2125
-    ]
-   ],
-   "mastery": [
-    [
-     725,
-     1950
     ]
    ]
   }
@@ -4813,7 +4873,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
  "signals_expected": [
   "slide_entered",
   "slide_completed",
-  "money_pick_first_try",
+  "money_sort_done",
   "money_build_done",
   "answer_wrong",
   "phase_transition",
@@ -4827,223 +4887,170 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "id": "T1",
    "phase": "tutorial",
    "eis": "iconic",
-   "type": "MONEY_SHOW",
-   "prompt_hi": "क्या आप ₹10 और ₹1 को पहचानते हैं?",
+   "type": "MONEY_INTRO",
+   "prompt_hi": "",
    "audio": {
-    "prompt": "vo_t1_prompt"
+    "prompt": "vo_t1_note"
    },
    "data": {
-    "groups": [
+    "no_heading": true,
+    "items": [
      {
-      "faces": [
-       "cur_note10"
-      ]
+      "img": "cur_note10",
+      "label": "₹10",
+      "note": true,
+      "say": "vo_t1_note"
      },
      {
-      "faces": [
-       "cur_coin1",
-       "cur_coin1_back"
-      ]
+      "img": "cur_coin1",
+      "label": "₹1",
+      "say": "vo_t1_coin"
      }
     ]
    },
-   "dev_label": "p2 · ₹10 और ₹1 पहचानें"
-  },
-  {
-   "id": "T2",
-   "phase": "tutorial",
-   "eis": "iconic",
-   "type": "MONEY_PICK",
-   "prompt_hi": "₹10 पर टैप कीजिए।",
-   "audio": {
-    "prompt": "vo_t2_prompt",
-    "correct": "vo_t2_correct",
-    "wrong": "vo_t2_wrong"
-   },
-   "data": {
-    "options": [
-     {
-      "id": "note10",
-      "faces": [
-       "cur_note10"
-      ],
-      "correct": true
-     },
-     {
-      "id": "coin1",
-      "faces": [
-       "cur_coin1",
-       "cur_coin1_back"
-      ]
-     }
-    ],
-    "reveal_faces": [
-     "cur_note10"
-    ],
-    "wrong_text": "यह दस रुपये का नोट है।",
-    "idle_pulse_ms": 5000
-   },
-   "dev_label": "p3–4 · ₹10 पर टैप"
-  },
-  {
-   "id": "T3",
-   "phase": "tutorial",
-   "eis": "iconic",
-   "type": "MONEY_PICK",
-   "prompt_hi": "₹1 पर टैप कीजिए।",
-   "audio": {
-    "prompt": "vo_t3_prompt",
-    "correct": "vo_t3_correct",
-    "wrong": "vo_t3_wrong"
-   },
-   "data": {
-    "options": [
-     {
-      "id": "coin10",
-      "faces": [
-       "cur_coin10",
-       "cur_coin10_back"
-      ]
-     },
-     {
-      "id": "coin1",
-      "faces": [
-       "cur_coin1",
-       "cur_coin1_back"
-      ],
-      "correct": true
-     }
-    ],
-    "reveal_faces": [
-     "cur_coin1",
-     "cur_coin1_back"
-    ],
-    "wrong_text": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।"
-   },
-   "dev_label": "p5–6 · ₹1 पर टैप"
-  },
-  {
-   "id": "T4",
-   "phase": "tutorial",
-   "eis": "iconic",
-   "type": "MONEY_SCENE",
-   "prompt_hi": "अब परी के साथ बाज़ार चलिए।",
-   "audio": {
-    "prompt": "vo_t4_prompt"
-   },
-   "data": {
-    "img": "scn_market",
-    "scene": true
-   },
-   "dev_label": "p7 · बाज़ार"
+   "dev_label": "पढ़ाना · ₹10 और ₹1"
   },
   {
    "id": "G1",
    "phase": "guided",
-   "eis": "symbolic",
-   "type": "MONEY_LIST",
-   "prompt_hi": "परी की सूची",
+   "eis": "iconic",
+   "type": "MONEY_SORT",
+   "prompt_hi": "चलिए, ₹10 छाँटते हैं।",
    "audio": {
-    "prompt": "vo_g1_prompt"
+    "prompt": "vo_g1_prompt",
+    "done": "vo_sort_done"
    },
    "data": {
-    "rows": [
+    "target": 10,
+    "wallet_img": "obj_wallet",
+    "wallet_front_img": "obj_wallet_front",
+    "no_engine_idle": true,
+    "idle_ms": 7000,
+    "pieces": [
      {
-      "name": "कॉपी",
-      "price": 14,
-      "img": "obj_copy",
-      "cue_ms": 550
+      "img": "cur_note10",
+      "value": 10,
+      "note": true
      },
      {
-      "name": "चिप्स",
-      "price": 20,
-      "img": "obj_chips",
-      "cue_ms": 1022
+      "img": "cur_note10",
+      "value": 10,
+      "note": true
      },
      {
-      "name": "चॉकलेट",
-      "price": 25,
-      "img": "obj_chocolate",
-      "cue_ms": 1573
+      "img": "cur_coin10",
+      "value": 10
      },
      {
-      "name": "प्लेटों का पैकेट",
-      "price": 35,
-      "img": "obj_plates",
-      "cue_ms": 2202
+      "img": "cur_coin10",
+      "value": 10
      },
      {
-      "name": "टॉफ़ी",
-      "price": 5,
-      "img": "obj_toffee",
-      "cue_ms": 3067
+      "img": "cur_note20",
+      "value": 20,
+      "note": true
+     },
+     {
+      "img": "cur_note50",
+      "value": 50,
+      "note": true
+     },
+     {
+      "img": "cur_coin20",
+      "value": 20
+     },
+     {
+      "img": "cur_coin5",
+      "value": 5
+     },
+     {
+      "img": "cur_coin2",
+      "value": 2
      }
     ]
    },
-   "dev_label": "p8 · परी की सूची"
+   "dev_label": "छाँटना · ₹10"
   },
   {
    "id": "G2",
    "phase": "guided",
+   "eis": "iconic",
+   "type": "MONEY_SORT",
+   "prompt_hi": "चलिए, ₹1 के सिक्के छांटिए।",
+   "audio": {
+    "prompt": "vo_g2_prompt",
+    "done": "vo_sort_done"
+   },
+   "data": {
+    "target": 1,
+    "wallet_img": "obj_wallet",
+    "wallet_front_img": "obj_wallet_front",
+    "no_engine_idle": true,
+    "idle_ms": 7000,
+    "pieces": [
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin1",
+      "value": 1
+     },
+     {
+      "img": "cur_coin2",
+      "value": 2
+     },
+     {
+      "img": "cur_coin2",
+      "value": 2
+     },
+     {
+      "img": "cur_coin5",
+      "value": 5
+     },
+     {
+      "img": "cur_coin5",
+      "value": 5
+     },
+     {
+      "img": "cur_coin10",
+      "value": 10
+     }
+    ]
+   },
+   "dev_label": "छाँटना · ₹1"
+  },
+  {
+   "id": "G3",
+   "phase": "guided",
    "eis": "enactive",
    "type": "MONEY_BUILD",
-   "prompt_hi": "₹14 बनाइए",
+   "prompt_hi": "₹14 बनाइए।",
    "audio": {
-    "prompt": "vo_g2_1",
+    "prompt": "vo_b14_prompt",
     "done": "vo_g2_done"
    },
    "data": {
-    "mode": "teach",
+    "mode": "ghost",
     "target": 14,
-    "item_img": "obj_copy",
-    "item_name": "कॉपी",
+    "no_item": true,
+    "tray_down": true,
     "sources": [
      "n10",
      "c1"
     ],
+    "pop_sources": true,
     "no_engine_idle": true,
-    "script": [
-     {
-      "say": "vo_g2_1",
-      "tag": true
-     },
-     {
-      "say": "vo_g2_2",
-      "auto": "n10"
-     },
-     {
-      "say": "vo_g2_3",
-      "pulse_total": true
-     },
-     {
-      "say": "vo_g2_5",
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     },
-     {
-      "say": null,
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     },
-     {
-      "say": null,
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     },
-     {
-      "say": "vo_g2_7",
-      "child": "c1",
-      "idle": [
-       "vo_g2_idle"
-      ]
-     }
-    ],
+    "idle_ms": 7000,
+    "eq_in_band": false,
     "done_cues": {
      "tens": [
       606,
@@ -5059,403 +5066,103 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      ]
     }
    },
-   "dev_label": "p9 · कॉपी ₹14 (teach)"
-  },
-  {
-   "id": "G3",
-   "phase": "guided",
-   "eis": "enactive",
-   "type": "MONEY_BUILD",
-   "prompt_hi": "₹20 बनाइए।",
-   "audio": {
-    "prompt": "vo_g3_1a",
-    "done": "vo_g3_done"
-   },
-   "data": {
-    "mode": "teach",
-    "target": 20,
-    "item_img": "obj_chips",
-    "item_name": "चिप्स",
-    "sources": [
-     "c10",
-     "c1"
-    ],
-    "no_engine_idle": true,
-    "teach_wrong": {
-     "c1": "vo_g3_wrong"
-    },
-    "script": [
-     {
-      "say": "vo_g3_1a",
-      "tag": true
-     },
-     {
-      "say": "vo_g3_1b"
-     },
-     {
-      "say": "vo_g3_2",
-      "auto": "c10"
-     },
-     {
-      "say": "vo_g3_3",
-      "pulse_total": true,
-      "child": "c10",
-      "idle": [
-       "vo_g3_idle2"
-      ]
-     }
-    ],
-    "done_cues": {
-     "tens": [
-      800,
-      2425
-     ],
-     "total": [
-      2425,
-      4225
-     ]
-    }
-   },
-   "dev_label": "p11 · चिप्स ₹20 (teach)"
+   "dev_label": "₹14 (घोस्ट)"
   },
   {
    "id": "G4",
    "phase": "guided",
    "eis": "enactive",
    "type": "MONEY_BUILD",
-   "prompt_hi": "₹25 बनाइए।",
+   "prompt_hi": "₹32 बनाइए।",
    "audio": {
-    "prompt": "vo_g4_prompt",
-    "done": "vo_g4_done"
+    "prompt": "vo_b32_prompt",
+    "done": "vo_b32_done"
    },
    "data": {
-    "mode": "practice",
-    "target": 25,
-    "item_img": "obj_chocolate",
-    "item_name": "चॉकलेट",
-    "sources": [
-     "c10",
-     "c1"
-    ],
-    "ladder": {
-     "tens": {
-      "20": [
-       "vo_g4_t20",
-       "vo_ones_use_5"
-      ],
-      "21": [
-       "vo_g4_t21",
-       "vo_ones_use_4"
-      ],
-      "22": [
-       "vo_g4_t22",
-       "vo_ones_use_3"
-      ],
-      "23": [
-       "vo_g4_t23",
-       "vo_ones_use_2"
-      ],
-      "24": [
-       "vo_g4_t24",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {
-      "5": [
-       "vo_g4_o5",
-       "vo_tens_use_coin_20"
-      ],
-      "15": [
-       "vo_g4_o15",
-       "vo_tens_use_coin_10"
-      ]
-     }
-    },
-    "eq_in_band": false,
-    "no_engine_idle": true,
-    "tag_fx": "pulse",
-    "done_cues": {
-     "tens": [
-      585,
-      2425
-     ],
-     "ones": [
-      2609,
-      4657
-     ],
-     "total": [
-      4657,
-      7325
-     ]
-    }
-   },
-   "dev_label": "p12 · चॉकलेट ₹25"
-  },
-  {
-   "id": "P1",
-   "phase": "practice",
-   "eis": "enactive",
-   "type": "MONEY_BUILD",
-   "prompt_hi": "₹35 बनाइए।",
-   "audio": {
-    "prompt": "vo_p1_prompt",
-    "done": "vo_p1_done"
-   },
-   "data": {
-    "mode": "practice",
-    "target": 35,
-    "item_img": "obj_plates",
-    "item_name": "प्लेटों का पैकेट",
-    "sources": [
-     "n10",
-     "c1"
-    ],
-    "ladder": {
-     "tens": {
-      "30": [
-       "vo_p1_t30",
-       "vo_ones_use_5"
-      ],
-      "31": [
-       "vo_p1_t31",
-       "vo_ones_use_4"
-      ],
-      "32": [
-       "vo_p1_t32",
-       "vo_ones_use_3"
-      ],
-      "33": [
-       "vo_p1_t33",
-       "vo_ones_use_2"
-      ],
-      "34": [
-       "vo_p1_t34",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {
-      "5": [
-       "vo_p1_o5",
-       "vo_tens_use_note_30"
-      ],
-      "15": [
-       "vo_p1_o15",
-       "vo_tens_use_note_20"
-      ],
-      "25": [
-       "vo_p1_o25",
-       "vo_tens_use_note_10"
-      ]
-     }
-    },
-    "eq_in_band": false,
-    "no_engine_idle": true,
+    "mode": "seq",
+    "target": 32,
+    "no_item": true,
     "tray_down": true,
-    "done_cues": {
-     "tens": [
-      504,
-      2143
-     ],
-     "ones": [
-      2305,
-      4042
-     ],
-     "total": [
-      4042,
-      6253
-     ]
-    }
-   },
-   "dev_label": "p13 · प्लेटें ₹35"
-  },
-  {
-   "id": "P2",
-   "phase": "practice",
-   "eis": "enactive",
-   "type": "MONEY_BUILD",
-   "prompt_hi": "₹5 बनाइए।",
-   "audio": {
-    "prompt": "vo_p2_prompt",
-    "done": "vo_p2_done"
-   },
-   "data": {
-    "mode": "practice",
-    "target": 5,
-    "item_img": "obj_toffee",
-    "item_name": "टॉफ़ी",
     "sources": [
      "n10",
      "c1"
     ],
-    "ladder": {
-     "tens": {
-      "0": [
-       "vo_p2_t0",
-       "vo_ones_use_5"
-      ],
-      "1": [
-       "vo_p2_t1",
-       "vo_ones_use_4"
-      ],
-      "2": [
-       "vo_p2_t2",
-       "vo_ones_use_3"
-      ],
-      "3": [
-       "vo_p2_t3",
-       "vo_ones_use_2"
-      ],
-      "4": [
-       "vo_p2_t4",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {}
-    },
-    "eq_in_band": false,
+    "pop_sources": true,
     "no_engine_idle": true,
+    "idle_ms": 7000,
+    "eq_in_band": false,
     "done_cues": {
+     "tens": [
+      656,
+      2275
+     ],
      "ones": [
-      511,
-      2615
+      2448,
+      4065
      ],
      "total": [
-      2615,
-      4753
+      4065,
+      6575
      ]
     }
    },
-   "dev_label": "added · टॉफ़ी ₹5"
+   "dev_label": "₹32 (क्रम से)"
   },
   {
-   "id": "P3",
-   "phase": "practice",
+   "id": "G5",
+   "phase": "guided",
    "eis": "enactive",
    "type": "MONEY_BUILD",
-   "prompt_hi": "₹17 बनाइए।",
+   "prompt_hi": "₹45 बनाइए।",
    "audio": {
-    "prompt": "vo_p3_prompt",
-    "done": "vo_p3_done"
+    "prompt": "vo_b45_prompt",
+    "done": "vo_b45_done"
    },
    "data": {
-    "mode": "practice",
-    "target": 17,
-    "item_img": "obj_juice",
-    "item_name": "जूस",
+    "mode": "seq",
+    "target": 45,
+    "no_item": true,
+    "tray_down": true,
     "sources": [
      "n10",
      "c1"
     ],
-    "ladder": {
-     "tens": {
-      "10": [
-       "vo_p3_t10",
-       "vo_ones_use_7"
-      ],
-      "11": [
-       "vo_p3_t11",
-       "vo_ones_use_6"
-      ],
-      "12": [
-       "vo_p3_t12",
-       "vo_ones_use_5"
-      ],
-      "13": [
-       "vo_p3_t13",
-       "vo_ones_use_4"
-      ],
-      "14": [
-       "vo_p3_t14",
-       "vo_ones_use_3"
-      ],
-      "15": [
-       "vo_p3_t15",
-       "vo_ones_use_2"
-      ],
-      "16": [
-       "vo_p3_t16",
-       "vo_ones_use_1"
-      ]
-     },
-     "ones": {
-      "7": [
-       "vo_p3_o7",
-       "vo_tens_use_note_10"
-      ]
-     }
-    },
-    "eq_in_band": false,
+    "pop_sources": true,
     "no_engine_idle": true,
-    "tag_fx": "glow",
+    "idle_ms": 7000,
+    "eq_in_band": false,
     "done_cues": {
      "tens": [
-      655,
-      2297
+      616,
+      2165
      ],
      "ones": [
-      2500,
-      4321
+      2341,
+      4293
      ],
      "total": [
-      4321,
-      6922
+      4293,
+      6850
      ]
     }
    },
-   "dev_label": "p16 · जूस ₹17 (हो गया)"
-  },
-  {
-   "id": "P4",
-   "phase": "practice",
-   "eis": "iconic",
-   "type": "MONEY_DONE",
-   "prompt_hi": "परी की पिकनिक की खरीदारी पूरी हुई!",
-   "audio": {
-    "prompt": "vo_p4_prompt"
-   },
-   "data": {
-    "items": [
-     {
-      "name": "कॉपी",
-      "price": 14,
-      "img": "obj_copy"
-     },
-     {
-      "name": "चिप्स",
-      "price": 20,
-      "img": "obj_chips"
-     },
-     {
-      "name": "चॉकलेट",
-      "price": 25,
-      "img": "obj_chocolate"
-     },
-     {
-      "name": "प्लेटों का पैकेट",
-      "price": 35,
-      "img": "obj_plates"
-     },
-     {
-      "name": "टॉफ़ी",
-      "price": 5,
-      "img": "obj_toffee"
-     }
-    ],
-    "pari_img": "pari_celebrate"
-   },
-   "dev_label": "p18 · खरीदारी पूरी"
+   "dev_label": "₹45 (क्रम से)"
   },
   {
    "id": "M1",
-   "phase": "mastery",
+   "phase": "practice",
    "eis": "enactive",
    "type": "SHOP_GAME",
    "prompt_hi": "कोई वस्तु चुनिए।",
    "audio": {
+    "intro": "vo_m_intro",
     "prompt": "vo_m_prompt",
     "idle": "vo_m_idle",
-    "less": "vo_m_less",
-    "more": "vo_m_more",
+    "more1": "vo_m_more1",
+    "less1": "vo_m_less1",
+    "more2": "vo_m_more2",
+    "less2": "vo_m_less2",
+    "retry": "vo_m_retry",
     "first_ok": "vo_m_ok_oranges",
     "tip": "vo_m_tip",
     "done": "vo_m_done"
@@ -5469,7 +5176,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       "price": 14,
       "praise": "शाबाश!",
       "vo_select": "vo_m_sel_apple",
-      "vo_praise": "vo_m_ok_apple"
+      "vo_praise": "vo_sort_done"
      },
      {
       "id": "oranges",
@@ -5487,7 +5194,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       "price": 35,
       "praise": "शाबाश!",
       "vo_select": "vo_m_sel_tomatoes",
-      "vo_praise": "vo_m_ok_apple"
+      "vo_praise": "vo_sort_done"
      },
      {
       "id": "grapes",
@@ -5496,7 +5203,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
       "price": 42,
       "praise": "शाबाश!",
       "vo_select": "vo_m_sel_grapes",
-      "vo_praise": "vo_m_ok_apple"
+      "vo_praise": "vo_sort_done"
      },
      {
       "id": "bananas",
@@ -5519,15 +5226,20 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
     ],
     "detail": {},
     "no_engine_idle": true,
-    "idle_ms": 5500,
+    "idle_ms": 7000,
+    "make_idle_ms": 7000,
     "pari_img": "pari_basket",
     "pari_full_img": "pari_basket_full",
     "stall_img": "shop_stall",
     "text": {
+     "intro": "परी पहुँच गई है बाज़ार। आओ, चलो खरीदारी शुरू करें।",
+     "more1": "ओहो! रुपये ज़्यादा हैं। कुछ कम करिए।",
+     "less1": "ओहो! रुपये कम हैं। कुछ और डालिए।",
+     "more2": "ओहो! अभी भी रुपये ज़्यादा हैं। कुछ कम करिए।",
+     "less2": "ओहो! अभी भी रुपये कम हैं। कुछ और डालिए।",
+     "retry": "फिर से कोशिश करें।",
      "choose": "कोई वस्तु चुनिए।",
      "make": "₹{T} बनाइए।",
-     "less": "ओह! रुपये कम हैं। फिर से बनाइए।",
-     "more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
      "check": "जाँचें",
      "detail_tpl": "बहुत बढ़िया! {parts} मिलाकर ₹{T} बने।",
      "done": "शाबाश! परी की सारी खरीदारी हो गई।",
@@ -5536,7 +5248,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
      "great": "बहुत बढ़िया खरीदारी!"
     }
    },
-   "dev_label": "p17–21 · दुकान का खेल"
+   "dev_label": "दुकान का खेल"
   },
   {
    "id": "CEL",
@@ -5554,95 +5266,36 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
  "assets": {
   "audio": {
    "vo_landing": "assets/Audio/vo_landing.ogg",
-   "vo_pt_mastery": "assets/Audio/vo_pt_mastery.ogg",
-   "vo_t1_prompt": "assets/Audio/vo_t1_prompt.ogg",
-   "vo_t2_prompt": "assets/Audio/vo_t2_prompt.ogg",
-   "vo_t2_correct": "assets/Audio/vo_t2_correct.ogg",
-   "vo_t2_wrong": "assets/Audio/vo_t2_wrong.ogg",
-   "vo_t3_prompt": "assets/Audio/vo_t3_prompt.ogg",
-   "vo_t3_correct": "assets/Audio/vo_t3_correct.ogg",
-   "vo_t3_wrong": "assets/Audio/vo_t3_wrong.ogg",
-   "vo_t4_prompt": "assets/Audio/vo_t4_prompt.ogg",
+   "vo_pt_tutorial": "assets/Audio/vo_pt_tutorial.ogg",
+   "vo_sort_done": "assets/Audio/vo_sort_done.ogg",
+   "vo_t1_note": "assets/Audio/vo_t1_note.ogg",
+   "vo_t1_coin": "assets/Audio/vo_t1_coin.ogg",
    "vo_g1_prompt": "assets/Audio/vo_g1_prompt.ogg",
+   "vo_g2_prompt": "assets/Audio/vo_g2_prompt.ogg",
+   "vo_b14_prompt": "assets/Audio/vo_b14_prompt.ogg",
    "vo_g2_done": "assets/Audio/vo_g2_done.ogg",
-   "vo_g2_1": "assets/Audio/vo_g2_1.ogg",
-   "vo_g2_2": "assets/Audio/vo_g2_2.ogg",
-   "vo_g2_3": "assets/Audio/vo_g2_3.ogg",
-   "vo_g2_5": "assets/Audio/vo_g2_5.ogg",
-   "vo_g2_idle": "assets/Audio/vo_g2_idle.ogg",
-   "vo_g2_7": "assets/Audio/vo_g2_7.ogg",
-   "vo_g3_done": "assets/Audio/vo_g3_done.ogg",
-   "vo_g3_wrong": "assets/Audio/vo_g3_wrong.ogg",
-   "vo_g3_1a": "assets/Audio/vo_g3_1a.ogg",
-   "vo_g3_1b": "assets/Audio/vo_g3_1b.ogg",
-   "vo_g3_2": "assets/Audio/vo_g3_2.ogg",
-   "vo_g3_3": "assets/Audio/vo_g3_3.ogg",
-   "vo_g3_idle2": "assets/Audio/vo_g3_idle2.ogg",
-   "vo_g4_prompt": "assets/Audio/vo_g4_prompt.ogg",
-   "vo_g4_done": "assets/Audio/vo_g4_done.ogg",
-   "vo_g4_t20": "assets/Audio/vo_g4_t20.ogg",
-   "vo_ones_use_5": "assets/Audio/vo_ones_use_5.ogg",
-   "vo_g4_t21": "assets/Audio/vo_g4_t21.ogg",
-   "vo_ones_use_4": "assets/Audio/vo_ones_use_4.ogg",
-   "vo_g4_t22": "assets/Audio/vo_g4_t22.ogg",
-   "vo_ones_use_3": "assets/Audio/vo_ones_use_3.ogg",
-   "vo_g4_t23": "assets/Audio/vo_g4_t23.ogg",
-   "vo_ones_use_2": "assets/Audio/vo_ones_use_2.ogg",
-   "vo_g4_t24": "assets/Audio/vo_g4_t24.ogg",
-   "vo_ones_use_1": "assets/Audio/vo_ones_use_1.ogg",
-   "vo_g4_o5": "assets/Audio/vo_g4_o5.ogg",
-   "vo_tens_use_coin_20": "assets/Audio/vo_tens_use_coin_20.ogg",
-   "vo_g4_o15": "assets/Audio/vo_g4_o15.ogg",
-   "vo_tens_use_coin_10": "assets/Audio/vo_tens_use_coin_10.ogg",
-   "vo_p1_prompt": "assets/Audio/vo_p1_prompt.ogg",
-   "vo_p1_done": "assets/Audio/vo_p1_done.ogg",
-   "vo_p1_t30": "assets/Audio/vo_p1_t30.ogg",
-   "vo_p1_t31": "assets/Audio/vo_p1_t31.ogg",
-   "vo_p1_t32": "assets/Audio/vo_p1_t32.ogg",
-   "vo_p1_t33": "assets/Audio/vo_p1_t33.ogg",
-   "vo_p1_t34": "assets/Audio/vo_p1_t34.ogg",
-   "vo_p1_o5": "assets/Audio/vo_p1_o5.ogg",
-   "vo_tens_use_note_30": "assets/Audio/vo_tens_use_note_30.ogg",
-   "vo_p1_o15": "assets/Audio/vo_p1_o15.ogg",
-   "vo_tens_use_note_20": "assets/Audio/vo_tens_use_note_20.ogg",
-   "vo_p1_o25": "assets/Audio/vo_p1_o25.ogg",
-   "vo_tens_use_note_10": "assets/Audio/vo_tens_use_note_10.ogg",
-   "vo_p2_prompt": "assets/Audio/vo_p2_prompt.ogg",
-   "vo_p2_done": "assets/Audio/vo_p2_done.ogg",
-   "vo_p2_t0": "assets/Audio/vo_p2_t0.ogg",
-   "vo_p2_t1": "assets/Audio/vo_p2_t1.ogg",
-   "vo_p2_t2": "assets/Audio/vo_p2_t2.ogg",
-   "vo_p2_t3": "assets/Audio/vo_p2_t3.ogg",
-   "vo_p2_t4": "assets/Audio/vo_p2_t4.ogg",
-   "vo_p3_prompt": "assets/Audio/vo_p3_prompt.ogg",
-   "vo_p3_done": "assets/Audio/vo_p3_done.ogg",
-   "vo_p3_t10": "assets/Audio/vo_p3_t10.ogg",
-   "vo_ones_use_7": "assets/Audio/vo_ones_use_7.ogg",
-   "vo_p3_t11": "assets/Audio/vo_p3_t11.ogg",
-   "vo_ones_use_6": "assets/Audio/vo_ones_use_6.ogg",
-   "vo_p3_t12": "assets/Audio/vo_p3_t12.ogg",
-   "vo_p3_t13": "assets/Audio/vo_p3_t13.ogg",
-   "vo_p3_t14": "assets/Audio/vo_p3_t14.ogg",
-   "vo_p3_t15": "assets/Audio/vo_p3_t15.ogg",
-   "vo_p3_t16": "assets/Audio/vo_p3_t16.ogg",
-   "vo_p3_o7": "assets/Audio/vo_p3_o7.ogg",
-   "vo_p4_prompt": "assets/Audio/vo_p4_prompt.ogg",
+   "vo_b32_prompt": "assets/Audio/vo_b32_prompt.ogg",
+   "vo_b32_done": "assets/Audio/vo_b32_done.ogg",
+   "vo_b45_prompt": "assets/Audio/vo_b45_prompt.ogg",
+   "vo_b45_done": "assets/Audio/vo_b45_done.ogg",
    "vo_m_sel_apple": "assets/Audio/vo_m_sel_apple.ogg",
-   "vo_m_ok_apple": "assets/Audio/vo_m_ok_apple.ogg",
    "vo_m_sel_oranges": "assets/Audio/vo_m_sel_oranges.ogg",
    "vo_m_ok_oranges": "assets/Audio/vo_m_ok_oranges.ogg",
    "vo_m_sel_tomatoes": "assets/Audio/vo_m_sel_tomatoes.ogg",
    "vo_m_sel_grapes": "assets/Audio/vo_m_sel_grapes.ogg",
    "vo_m_sel_bananas": "assets/Audio/vo_m_sel_bananas.ogg",
    "vo_m_sel_carrots": "assets/Audio/vo_m_sel_carrots.ogg",
+   "vo_m_intro": "assets/Audio/vo_m_intro.ogg",
    "vo_m_prompt": "assets/Audio/vo_m_prompt.ogg",
    "vo_m_idle": "assets/Audio/vo_m_idle.ogg",
-   "vo_m_less": "assets/Audio/vo_m_less.ogg",
-   "vo_m_more": "assets/Audio/vo_m_more.ogg",
+   "vo_m_more1": "assets/Audio/vo_m_more1.ogg",
+   "vo_m_less1": "assets/Audio/vo_m_less1.ogg",
+   "vo_m_more2": "assets/Audio/vo_m_more2.ogg",
+   "vo_m_less2": "assets/Audio/vo_m_less2.ogg",
+   "vo_m_retry": "assets/Audio/vo_m_retry.ogg",
    "vo_m_tip": "assets/Audio/vo_m_tip.ogg",
    "vo_m_done": "assets/Audio/vo_m_done.ogg",
    "vo_cel_prompt": "assets/Audio/vo_cel_prompt.ogg",
-   "vo_pt_tutorial": "assets/Audio/vo_pt_tutorial.ogg",
    "vo_pt_guided": "assets/Audio/vo_pt_guided.ogg",
    "vo_pt_practice": "assets/Audio/vo_pt_practice.ogg",
    "sfx_celebrate": "assets/Audio/sfx_celebrate.ogg",
@@ -5655,186 +5308,72 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "sfx_play_button": "assets/Audio/sfx_play_button.ogg",
    "sfx_next_button": "assets/Audio/sfx_next_button.ogg",
    "sfx_drop_coin": "assets/Audio/sfx_drop_coin.ogg",
-   "sfx_drop_note": "assets/Audio/sfx_drop_note.ogg"
+   "sfx_drop_note": "assets/Audio/sfx_drop_note.ogg",
+   "sfx_confetti": "assets/Audio/sfx_confetti.ogg",
+   "sfx_nudge": "assets/Audio/sfx_nudge.ogg"
   },
   "audio_text": {
    "vo_landing": "नमस्ते दोस्त! मैं हूँ स्विफ्टी। परी के स्कूल में पिकनिक होने वाली है। उसे पिकनिक के लिए कुछ सामान खरीदना है। चलिए, उसकी मदद करते हैं!",
-   "vo_pt_mastery": "चलिए, अब खरीदारी का खेल खेलते हैं!",
-   "vo_t1_prompt": "बाज़ार जाने से पहले, आइए पहचानते हैं कि दस रुपये और एक रुपये कैसे दिखते हैं।",
-   "vo_t2_prompt": "इनमें से दस रुपये का नोट पहचानिए।",
-   "vo_t2_correct": "शाबाश! यह दस रुपये का नोट है।",
-   "vo_t2_wrong": "यह दस रुपये का नोट है।",
-   "vo_t3_prompt": "इनमें से एक रुपये का सिक्का कौन सा है?",
-   "vo_t3_correct": "शाबाश! यह एक रुपये का सिक्का है।",
-   "vo_t3_wrong": "यह एक रुपये का सिक्का है। एक रुपये का सिक्का ऐसा दिखता है।",
-   "vo_t4_prompt": "परी अपनी खरीदारी की सूची लेकर बाज़ार पहुँच गई है। आइए देखें, उसे क्या-क्या खरीदना है।",
-   "vo_g1_prompt": "परी को कॉपी, चिप्स, चॉकलेट, प्लेटें और टॉफ़ी खरीदनी हैं। चलो, दस रुपये और एक रुपये से हर चीज़ की राशि बनाते हैं।",
+   "vo_pt_tutorial": "ध्यान से देखिए और मेरे साथ जानिए। चलिए, शुरू करते हैं।",
+   "vo_sort_done": "शाबाश!",
+   "vo_t1_note": "यह दस रुपये का नोट है।",
+   "vo_t1_coin": "और यह एक रुपये का सिक्का है।",
+   "vo_g1_prompt": "चलिए, दस रुपये छाँटते हैं।",
+   "vo_g2_prompt": "चलिए, एक रुपये के सिक्के छांटिए।",
+   "vo_b14_prompt": "दस रुपये और एक रुपये से चौदह रुपये बनाइए।",
    "vo_g2_done": "शाबाश! एक दस रुपये का नोट और चार एक रुपये के सिक्के, कुल मिलाकर बने चौदह रुपये।",
-   "vo_g2_1": "सबसे पहले परी को चौदह रुपये की कॉपी लेनी है। आइए, दस रुपये और एक रुपये से चौदह रुपये बनाते हैं।",
-   "vo_g2_2": "पहले दस रुपये का एक नोट रखते हैं।",
-   "vo_g2_3": "अभी कुल दस रुपये हुए। चौदह रुपये बनाने के लिए अभी चार रुपये और चाहिए।",
-   "vo_g2_5": "चलो, अब तुम रखो।",
-   "vo_g2_idle": "सिक्के को ऊपर वाली ट्रे में रखिए।",
-   "vo_g2_7": "आखिरी सिक्का।",
-   "vo_g3_done": "बहुत अच्छे! दो दस रुपये के सिक्के, कुल मिलाकर बने बीस रुपये।",
-   "vo_g3_wrong": "बीस रुपये बनाने के लिए दस रुपये के सिक्के लगेंगे।",
-   "vo_g3_1a": "अब परी को बीस रुपये के चिप्स लेने हैं।",
-   "vo_g3_1b": "आइए, दस रुपये के सिक्कों से बीस रुपये बनाते हैं।",
-   "vo_g3_2": "पहले दस रुपये का सिक्का रखते हैं।",
-   "vo_g3_3": "कुल दस रुपये हुए। बीस रुपये के लिए दस रुपये और रखिए।",
-   "vo_g3_idle2": "दस रुपये का सिक्का ट्रे में रखिए।",
-   "vo_g4_prompt": "परी को पच्चीस रुपये की चॉकलेट लेनी है। दस रुपये और एक रुपये के सिक्कों से पच्चीस रुपये बनाइए।",
-   "vo_g4_done": "शाबाश! दो दस रुपये के सिक्के और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पच्चीस रुपये।",
-   "vo_g4_t20": "कुल बीस रुपये हुए। पच्चीस रुपये बनाने के लिए पाँच रुपये और चाहिए।",
-   "vo_ones_use_5": "पाँच रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t21": "कुल इक्कीस रुपये हुए। पच्चीस रुपये बनाने के लिए चार रुपये और चाहिए।",
-   "vo_ones_use_4": "चार रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t22": "कुल बाईस रुपये हुए। पच्चीस रुपये बनाने के लिए तीन रुपये और चाहिए।",
-   "vo_ones_use_3": "तीन रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t23": "कुल तेईस रुपये हुए। पच्चीस रुपये बनाने के लिए दो रुपये और चाहिए।",
-   "vo_ones_use_2": "दो रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_t24": "कुल चौबीस रुपये हुए। पच्चीस रुपये बनाने के लिए एक रुपये और चाहिए।",
-   "vo_ones_use_1": "एक रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_g4_o5": "कुल पाँच रुपये हैं। पच्चीस रुपये के लिए बीस रुपये और बनाओ।",
-   "vo_tens_use_coin_20": "बीस रुपये बनाने के लिए दस रुपये का सिक्का इस्तेमाल कीजिए।",
-   "vo_g4_o15": "कुल पंद्रह रुपये हैं। पच्चीस रुपये के लिए दस रुपये और बनाओ।",
-   "vo_tens_use_coin_10": "दस रुपये बनाने के लिए दस रुपये का सिक्का इस्तेमाल कीजिए।",
-   "vo_p1_prompt": "अब परी को पैंतीस रुपये का प्लेटों का पैकेट लेना है।",
-   "vo_p1_done": "शाबाश! तीन दस रुपये के नोट और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पैंतीस रुपये। अब परी प्लेटों का पैकेट खरीद सकती है।",
-   "vo_p1_t30": "कुल तीस रुपये हुए। पैंतीस रुपये के लिए पाँच रुपये और चाहिए।",
-   "vo_p1_t31": "कुल इकतीस रुपये हुए। पैंतीस रुपये के लिए चार रुपये और चाहिए।",
-   "vo_p1_t32": "कुल बत्तीस रुपये हुए। पैंतीस रुपये के लिए तीन रुपये और चाहिए।",
-   "vo_p1_t33": "कुल तैंतीस रुपये हुए। पैंतीस रुपये के लिए दो रुपये और चाहिए।",
-   "vo_p1_t34": "कुल चौंतीस रुपये हुए। पैंतीस रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p1_o5": "कुल पाँच रुपये हैं। पैंतीस रुपये के लिए तीस रुपये और बनाओ।",
-   "vo_tens_use_note_30": "तीस रुपये बनाने के लिए दस रुपये का नोट इस्तेमाल कीजिए।",
-   "vo_p1_o15": "कुल पंद्रह रुपये हैं। पैंतीस रुपये के लिए बीस रुपये और बनाओ।",
-   "vo_tens_use_note_20": "बीस रुपये बनाने के लिए दस रुपये का नोट इस्तेमाल कीजिए।",
-   "vo_p1_o25": "कुल पच्चीस रुपये हैं। पैंतीस रुपये के लिए दस रुपये और बनाओ।",
-   "vo_tens_use_note_10": "दस रुपये बनाने के लिए दस रुपये का नोट इस्तेमाल कीजिए।",
-   "vo_p2_prompt": "परी को पाँच रुपये की टॉफ़ी लेनी है।",
-   "vo_p2_done": "शाबाश! पाँच एक रुपये के सिक्के, कुल मिलाकर बने पाँच रुपये। अब परी टॉफ़ी खरीद सकती है।",
-   "vo_p2_t0": "दस रुपये का नोट पाँच रुपये से ज़्यादा है।",
-   "vo_p2_t1": "कुल एक रुपये हुए। पाँच रुपये के लिए चार रुपये और चाहिए।",
-   "vo_p2_t2": "कुल दो रुपये हुए। पाँच रुपये के लिए तीन रुपये और चाहिए।",
-   "vo_p2_t3": "कुल तीन रुपये हुए। पाँच रुपये के लिए दो रुपये और चाहिए।",
-   "vo_p2_t4": "कुल चार रुपये हुए। पाँच रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p3_prompt": "परी को सत्रह रुपये का जूस पैकेट लेना है।",
-   "vo_p3_done": "शाबाश! एक दस रुपये का नोट और सात एक रुपये के सिक्के, कुल मिलाकर बने सत्रह रुपये। अब परी जूस पैकेट खरीद सकती है।",
-   "vo_p3_t10": "कुल दस रुपये हुए। सत्रह रुपये के लिए सात रुपये और चाहिए।",
-   "vo_ones_use_7": "सात रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_p3_t11": "कुल ग्यारह रुपये हुए। सत्रह रुपये के लिए छह रुपये और चाहिए।",
-   "vo_ones_use_6": "छह रुपये बनाने के लिए एक रुपये के सिक्कों का इस्तेमाल कीजिए।",
-   "vo_p3_t12": "कुल बारह रुपये हुए। सत्रह रुपये के लिए पाँच रुपये और चाहिए।",
-   "vo_p3_t13": "कुल तेरह रुपये हुए। सत्रह रुपये के लिए चार रुपये और चाहिए।",
-   "vo_p3_t14": "कुल चौदह रुपये हुए। सत्रह रुपये के लिए तीन रुपये और चाहिए।",
-   "vo_p3_t15": "कुल पंद्रह रुपये हुए। सत्रह रुपये के लिए दो रुपये और चाहिए।",
-   "vo_p3_t16": "कुल सोलह रुपये हुए। सत्रह रुपये के लिए एक रुपये और चाहिए।",
-   "vo_p3_o7": "कुल सात रुपये हैं। सत्रह रुपये के लिए दस रुपये और बनाओ।",
-   "vo_p4_prompt": "शाबाश! आपने दस रुपये और एक रुपये का उपयोग करके सभी धनराशियाँ बनाईं। परी की पिकनिक की खरीदारी पूरी हुई!",
+   "vo_b32_prompt": "दस रुपये और एक रुपये से बत्तीस रुपये बनाइए।",
+   "vo_b32_done": "शाबाश! तीन दस रुपये के नोट और दो एक रुपये के सिक्के, कुल मिलाकर बने बत्तीस रुपये।",
+   "vo_b45_prompt": "दस रुपये और एक रुपये से पैंतालीस रुपये बनाइए।",
+   "vo_b45_done": "शाबाश! चार दस रुपये के नोट और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पैंतालीस रुपये।",
    "vo_m_sel_apple": "सेब की कीमत चौदह रुपये है। चौदह रुपये बनाइए।",
-   "vo_m_ok_apple": "शाबाश!",
    "vo_m_sel_oranges": "संतरे की कीमत पच्चीस रुपये है। पच्चीस रुपये बनाइए।",
    "vo_m_ok_oranges": "बहुत बढ़िया!",
    "vo_m_sel_tomatoes": "टमाटर की कीमत पैंतीस रुपये है। पैंतीस रुपये बनाइए।",
    "vo_m_sel_grapes": "अंगूर की कीमत बयालीस रुपये है। बयालीस रुपये बनाइए।",
    "vo_m_sel_bananas": "केले की कीमत साठ रुपये है। साठ रुपये बनाइए।",
    "vo_m_sel_carrots": "गाजर की कीमत पैंसठ रुपये है। पैंसठ रुपये बनाइए।",
+   "vo_m_intro": "परी पहुँच गई है बाज़ार। आओ, चलो खरीदारी शुरू करें।",
    "vo_m_prompt": "कोई वस्तु चुनिए और उसकी राशि बनाइए।",
    "vo_m_idle": "कोई वस्तु चुनिए।",
-   "vo_m_less": "ओह! रुपये कम हैं। फिर से बनाइए।",
-   "vo_m_more": "ओह! रुपये ज़्यादा हैं। फिर से बनाइए।",
+   "vo_m_more1": "ओहो! रुपये ज़्यादा हैं। कुछ कम करिए।",
+   "vo_m_less1": "ओहो! रुपये कम हैं। कुछ और डालिए।",
+   "vo_m_more2": "ओहो! अभी भी रुपये ज़्यादा हैं। कुछ कम करिए।",
+   "vo_m_less2": "ओहो! अभी भी रुपये कम हैं। कुछ और डालिए।",
+   "vo_m_retry": "फिर से कोशिश करें।",
    "vo_m_tip": "कोई पैसा हटाना हो, तो उसे वापस नीचे खींच लीजिए।",
    "vo_m_done": "शाबाश! परी की सारी खरीदारी हो गई।",
    "vo_cel_prompt": "बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!"
   },
   "audio_ms": {
    "vo_landing": 9730,
-   "vo_pt_mastery": 2650,
-   "vo_t1_prompt": 4890,
-   "vo_t2_prompt": 2930,
-   "vo_t2_correct": 2570,
-   "vo_t2_wrong": 1890,
-   "vo_t3_prompt": 2890,
-   "vo_t3_correct": 3250,
-   "vo_t3_wrong": 4410,
-   "vo_t4_prompt": 6170,
-   "vo_g1_prompt": 8810,
+   "vo_pt_tutorial": 4130,
+   "vo_sort_done": 1090,
+   "vo_t1_note": 2010,
+   "vo_t1_coin": 2010,
+   "vo_g1_prompt": 2330,
+   "vo_g2_prompt": 2370,
+   "vo_b14_prompt": 4290,
    "vo_g2_done": 7170,
-   "vo_g2_1": 7050,
-   "vo_g2_2": 2410,
-   "vo_g2_3": 5210,
-   "vo_g2_5": 1570,
-   "vo_g2_idle": 2650,
-   "vo_g2_7": 1530,
-   "vo_g3_done": 4370,
-   "vo_g3_wrong": 3930,
-   "vo_g3_1a": 3130,
-   "vo_g3_1b": 3170,
-   "vo_g3_2": 2210,
-   "vo_g3_3": 3810,
-   "vo_g3_idle2": 2450,
-   "vo_g4_prompt": 6610,
-   "vo_g4_done": 7610,
-   "vo_g4_t20": 5330,
-   "vo_ones_use_5": 4170,
-   "vo_g4_t21": 5410,
-   "vo_ones_use_4": 4130,
-   "vo_g4_t22": 4650,
-   "vo_ones_use_3": 4410,
-   "vo_g4_t23": 4170,
-   "vo_ones_use_2": 4770,
-   "vo_g4_t24": 4650,
-   "vo_ones_use_1": 4370,
-   "vo_g4_o5": 4690,
-   "vo_tens_use_coin_20": 4010,
-   "vo_g4_o15": 3970,
-   "vo_tens_use_coin_10": 3930,
-   "vo_p1_prompt": 3730,
-   "vo_p1_done": 9130,
-   "vo_p1_t30": 4570,
-   "vo_p1_t31": 4690,
-   "vo_p1_t32": 4490,
-   "vo_p1_t33": 4050,
-   "vo_p1_t34": 4490,
-   "vo_p1_o5": 4450,
-   "vo_tens_use_note_30": 4130,
-   "vo_p1_o15": 5010,
-   "vo_tens_use_note_20": 4330,
-   "vo_p1_o25": 4810,
-   "vo_tens_use_note_10": 3450,
-   "vo_p2_prompt": 2410,
-   "vo_p2_done": 7090,
-   "vo_p2_t0": 3210,
-   "vo_p2_t1": 4370,
-   "vo_p2_t2": 4530,
-   "vo_p2_t3": 4370,
-   "vo_p2_t4": 4210,
-   "vo_p3_prompt": 3170,
-   "vo_p3_done": 9770,
-   "vo_p3_t10": 4730,
-   "vo_ones_use_7": 3810,
-   "vo_p3_t11": 4090,
-   "vo_ones_use_6": 4410,
-   "vo_p3_t12": 4250,
-   "vo_p3_t13": 4210,
-   "vo_p3_t14": 4890,
-   "vo_p3_t15": 4570,
-   "vo_p3_t16": 4970,
-   "vo_p3_o7": 5370,
-   "vo_p4_prompt": 7650,
+   "vo_b32_prompt": 3770,
+   "vo_b32_done": 6810,
+   "vo_b45_prompt": 4050,
+   "vo_b45_done": 7010,
    "vo_m_sel_apple": 3530,
-   "vo_m_ok_apple": 1090,
    "vo_m_sel_oranges": 4210,
    "vo_m_ok_oranges": 1210,
    "vo_m_sel_tomatoes": 3810,
    "vo_m_sel_grapes": 4690,
    "vo_m_sel_bananas": 3690,
    "vo_m_sel_carrots": 4450,
+   "vo_m_intro": 3890,
    "vo_m_prompt": 2890,
    "vo_m_idle": 1450,
-   "vo_m_less": 2810,
-   "vo_m_more": 2610,
+   "vo_m_more1": 2970,
+   "vo_m_less1": 3170,
+   "vo_m_more2": 3850,
+   "vo_m_less2": 3210,
+   "vo_m_retry": 1250,
    "vo_m_tip": 3650,
    "vo_m_done": 3930,
    "vo_cel_prompt": 2942
@@ -5842,33 +5381,31 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   "image": {
    "cur_coin1": "assets/Images/cur_coin1.png",
    "cur_coin10": "assets/Images/cur_coin10.png",
-   "cur_coin10_back": "assets/Images/cur_coin10_back.png",
    "cur_coin10_glow": "assets/Images/cur_coin10_glow.png",
    "cur_coin10_lock": "assets/Images/cur_coin10_lock.png",
-   "cur_coin1_back": "assets/Images/cur_coin1_back.png",
    "cur_coin1_glow": "assets/Images/cur_coin1_glow.png",
    "cur_coin1_lock": "assets/Images/cur_coin1_lock.png",
+   "cur_coin2": "assets/Images/cur_coin2.png",
+   "cur_coin20": "assets/Images/cur_coin20.png",
+   "cur_coin5": "assets/Images/cur_coin5.png",
    "cur_note10": "assets/Images/cur_note10.png",
    "cur_note10_glow": "assets/Images/cur_note10_glow.png",
    "cur_note10_lock": "assets/Images/cur_note10_lock.png",
+   "cur_note20": "assets/Images/cur_note20.png",
+   "cur_note50": "assets/Images/cur_note50.png",
    "obj_apple": "assets/Images/obj_apple.png",
    "obj_bananas": "assets/Images/obj_bananas.png",
    "obj_carrots": "assets/Images/obj_carrots.png",
-   "obj_chips": "assets/Images/obj_chips.png",
-   "obj_chocolate": "assets/Images/obj_chocolate.png",
-   "obj_copy": "assets/Images/obj_copy.png",
    "obj_grapes": "assets/Images/obj_grapes.png",
-   "obj_juice": "assets/Images/obj_juice.png",
    "obj_oranges": "assets/Images/obj_oranges.png",
-   "obj_plates": "assets/Images/obj_plates.png",
-   "obj_toffee": "assets/Images/obj_toffee.png",
    "obj_tomatoes": "assets/Images/obj_tomatoes.png",
+   "obj_wallet": "assets/Images/obj_wallet.png",
+   "obj_wallet_front": "assets/Images/obj_wallet_front.png",
    "pari_basket": "assets/Images/pari_basket.png",
    "pari_basket_full": "assets/Images/pari_basket_full.png",
-   "pari_celebrate": "assets/Images/pari_celebrate.png",
    "scn_landing": "assets/Images/scn_landing.png",
-   "scn_market": "assets/Images/scn_market.png",
-   "shop_stall": "assets/Images/shop_stall.png"
+   "shop_stall": "assets/Images/shop_stall.png",
+   "title_pari_chali_bazaar": "assets/Images/title_pari_chali_bazaar.png"
   },
   "audio_ext": "ogg",
   "img_ext": "png"
@@ -5877,35 +5414,33 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   "images": [
    "assets/Images/cur_coin1.png",
    "assets/Images/cur_coin10.png",
-   "assets/Images/cur_coin10_back.png",
    "assets/Images/cur_coin10_glow.png",
    "assets/Images/cur_coin10_lock.png",
-   "assets/Images/cur_coin1_back.png",
    "assets/Images/cur_coin1_glow.png",
    "assets/Images/cur_coin1_lock.png",
+   "assets/Images/cur_coin2.png",
+   "assets/Images/cur_coin20.png",
+   "assets/Images/cur_coin5.png",
    "assets/Images/cur_note10.png",
    "assets/Images/cur_note10_glow.png",
    "assets/Images/cur_note10_lock.png",
+   "assets/Images/cur_note20.png",
+   "assets/Images/cur_note50.png",
    "assets/Images/obj_apple.png",
    "assets/Images/obj_bananas.png",
    "assets/Images/obj_carrots.png",
-   "assets/Images/obj_chips.png",
-   "assets/Images/obj_chocolate.png",
-   "assets/Images/obj_copy.png",
    "assets/Images/obj_grapes.png",
-   "assets/Images/obj_juice.png",
    "assets/Images/obj_oranges.png",
-   "assets/Images/obj_plates.png",
-   "assets/Images/obj_toffee.png",
    "assets/Images/obj_tomatoes.png",
+   "assets/Images/obj_wallet.png",
+   "assets/Images/obj_wallet_front.png",
    "assets/Images/pari_basket.png",
    "assets/Images/pari_basket_full.png",
-   "assets/Images/pari_celebrate.png",
    "assets/Images/play_btn.svg",
    "assets/Images/play_btn_disabled.svg",
    "assets/Images/scn_landing.png",
-   "assets/Images/scn_market.png",
    "assets/Images/shop_stall.png",
+   "assets/Images/title_pari_chali_bazaar.png",
    "assets/UI/bgdeco_spark.svg",
    "assets/UI/bgdeco_star.svg",
    "assets/UI/bgdeco_star_o.svg",
@@ -5935,49 +5470,38 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
   ],
   "audio": [
    "assets/Audio/sfx_celebrate.ogg",
+   "assets/Audio/sfx_confetti.ogg",
    "assets/Audio/sfx_correct.ogg",
    "assets/Audio/sfx_drop_coin.ogg",
    "assets/Audio/sfx_drop_note.ogg",
    "assets/Audio/sfx_fb_correct.ogg",
    "assets/Audio/sfx_fb_incorrect.ogg",
    "assets/Audio/sfx_next_button.ogg",
+   "assets/Audio/sfx_nudge.ogg",
    "assets/Audio/sfx_play_button.ogg",
    "assets/Audio/sfx_pop.ogg",
    "assets/Audio/sfx_tap.ogg",
    "assets/Audio/sfx_wrong.ogg",
+   "assets/Audio/vo_b14_prompt.ogg",
+   "assets/Audio/vo_b32_done.ogg",
+   "assets/Audio/vo_b32_prompt.ogg",
+   "assets/Audio/vo_b45_done.ogg",
+   "assets/Audio/vo_b45_prompt.ogg",
    "assets/Audio/vo_cel_prompt.ogg",
    "assets/Audio/vo_g1_prompt.ogg",
-   "assets/Audio/vo_g2_1.ogg",
-   "assets/Audio/vo_g2_2.ogg",
-   "assets/Audio/vo_g2_3.ogg",
-   "assets/Audio/vo_g2_5.ogg",
-   "assets/Audio/vo_g2_7.ogg",
    "assets/Audio/vo_g2_done.ogg",
-   "assets/Audio/vo_g2_idle.ogg",
-   "assets/Audio/vo_g3_1a.ogg",
-   "assets/Audio/vo_g3_1b.ogg",
-   "assets/Audio/vo_g3_2.ogg",
-   "assets/Audio/vo_g3_3.ogg",
-   "assets/Audio/vo_g3_done.ogg",
-   "assets/Audio/vo_g3_idle2.ogg",
-   "assets/Audio/vo_g3_wrong.ogg",
-   "assets/Audio/vo_g4_done.ogg",
-   "assets/Audio/vo_g4_o15.ogg",
-   "assets/Audio/vo_g4_o5.ogg",
-   "assets/Audio/vo_g4_prompt.ogg",
-   "assets/Audio/vo_g4_t20.ogg",
-   "assets/Audio/vo_g4_t21.ogg",
-   "assets/Audio/vo_g4_t22.ogg",
-   "assets/Audio/vo_g4_t23.ogg",
-   "assets/Audio/vo_g4_t24.ogg",
+   "assets/Audio/vo_g2_prompt.ogg",
    "assets/Audio/vo_landing.ogg",
    "assets/Audio/vo_m_done.ogg",
    "assets/Audio/vo_m_idle.ogg",
-   "assets/Audio/vo_m_less.ogg",
-   "assets/Audio/vo_m_more.ogg",
-   "assets/Audio/vo_m_ok_apple.ogg",
+   "assets/Audio/vo_m_intro.ogg",
+   "assets/Audio/vo_m_less1.ogg",
+   "assets/Audio/vo_m_less2.ogg",
+   "assets/Audio/vo_m_more1.ogg",
+   "assets/Audio/vo_m_more2.ogg",
    "assets/Audio/vo_m_ok_oranges.ogg",
    "assets/Audio/vo_m_prompt.ogg",
+   "assets/Audio/vo_m_retry.ogg",
    "assets/Audio/vo_m_sel_apple.ogg",
    "assets/Audio/vo_m_sel_bananas.ogg",
    "assets/Audio/vo_m_sel_carrots.ogg",
@@ -5985,58 +5509,12 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
    "assets/Audio/vo_m_sel_oranges.ogg",
    "assets/Audio/vo_m_sel_tomatoes.ogg",
    "assets/Audio/vo_m_tip.ogg",
-   "assets/Audio/vo_ones_use_1.ogg",
-   "assets/Audio/vo_ones_use_2.ogg",
-   "assets/Audio/vo_ones_use_3.ogg",
-   "assets/Audio/vo_ones_use_4.ogg",
-   "assets/Audio/vo_ones_use_5.ogg",
-   "assets/Audio/vo_ones_use_6.ogg",
-   "assets/Audio/vo_ones_use_7.ogg",
-   "assets/Audio/vo_p1_done.ogg",
-   "assets/Audio/vo_p1_o15.ogg",
-   "assets/Audio/vo_p1_o25.ogg",
-   "assets/Audio/vo_p1_o5.ogg",
-   "assets/Audio/vo_p1_prompt.ogg",
-   "assets/Audio/vo_p1_t30.ogg",
-   "assets/Audio/vo_p1_t31.ogg",
-   "assets/Audio/vo_p1_t32.ogg",
-   "assets/Audio/vo_p1_t33.ogg",
-   "assets/Audio/vo_p1_t34.ogg",
-   "assets/Audio/vo_p2_done.ogg",
-   "assets/Audio/vo_p2_prompt.ogg",
-   "assets/Audio/vo_p2_t0.ogg",
-   "assets/Audio/vo_p2_t1.ogg",
-   "assets/Audio/vo_p2_t2.ogg",
-   "assets/Audio/vo_p2_t3.ogg",
-   "assets/Audio/vo_p2_t4.ogg",
-   "assets/Audio/vo_p3_done.ogg",
-   "assets/Audio/vo_p3_o7.ogg",
-   "assets/Audio/vo_p3_prompt.ogg",
-   "assets/Audio/vo_p3_t10.ogg",
-   "assets/Audio/vo_p3_t11.ogg",
-   "assets/Audio/vo_p3_t12.ogg",
-   "assets/Audio/vo_p3_t13.ogg",
-   "assets/Audio/vo_p3_t14.ogg",
-   "assets/Audio/vo_p3_t15.ogg",
-   "assets/Audio/vo_p3_t16.ogg",
-   "assets/Audio/vo_p4_prompt.ogg",
    "assets/Audio/vo_pt_guided.ogg",
-   "assets/Audio/vo_pt_mastery.ogg",
    "assets/Audio/vo_pt_practice.ogg",
    "assets/Audio/vo_pt_tutorial.ogg",
-   "assets/Audio/vo_t1_prompt.ogg",
-   "assets/Audio/vo_t2_correct.ogg",
-   "assets/Audio/vo_t2_prompt.ogg",
-   "assets/Audio/vo_t2_wrong.ogg",
-   "assets/Audio/vo_t3_correct.ogg",
-   "assets/Audio/vo_t3_prompt.ogg",
-   "assets/Audio/vo_t3_wrong.ogg",
-   "assets/Audio/vo_t4_prompt.ogg",
-   "assets/Audio/vo_tens_use_coin_10.ogg",
-   "assets/Audio/vo_tens_use_coin_20.ogg",
-   "assets/Audio/vo_tens_use_note_10.ogg",
-   "assets/Audio/vo_tens_use_note_20.ogg",
-   "assets/Audio/vo_tens_use_note_30.ogg"
+   "assets/Audio/vo_sort_done.ogg",
+   "assets/Audio/vo_t1_coin.ogg",
+   "assets/Audio/vo_t1_note.ogg"
   ],
   "fetch": [
    "assets/Audio/bgm_lesson.ogg"
@@ -6455,7 +5933,7 @@ function _chainMs(srcs, gapMs){
    no reason to fetch it again and the reviewer keeps hearing the previous take. __AUDIO_V is
    stamped by the builder from the CONTENT of the audio folder, so it changes exactly when a clip
    changes and not otherwise - a fresh URL on every build would defeat caching for no reason. */
-var __AUDIO_V = "4dacaca0f37b";
+var __AUDIO_V = "5d82c4951c45";
 function _av(src){
   if(typeof src !== "string" || src.indexOf("assets/Audio/") < 0) return src;
   return src.indexOf("?") >= 0 ? src : src + "?v=" + __AUDIO_V;
@@ -18017,6 +17495,7 @@ if(document.fonts && document.fonts.load){
       var sl = (CARD && CARD.slides && CARD.slides[state.idx]) || {};
       layer();
       M.confetti.burst({ host: "#fxLayer", phase: sl.phase, phases: [], count: 100, fall: [1.6, 2.6] });
+      try { sfxVol("sfx_confetti", 0.4); } catch(e){}    /* round 3 (checklist): the standard confetti SFX */
     };
   })();
   /* CARD is parsed AFTER this script runs (the engine polls for it the same way in _warmSoon), so
@@ -18029,6 +17508,10 @@ if(document.fonts && document.fonts.load){
     try {
       const g = CARD && CARD.mastery_gate;
       if(g){ PHASE_ROUND.mastery = "mastery"; PHASE_GATE_TITLE.mastery = g.title || ""; PHASE_GATE_VO.mastery = g.audio || null; }
+      /* round 3 (checklist): the transitions' on-screen titles, worded exactly as the checklist —
+         «चलिए, शुरू करते हैं।» / «चलिए, साथ में करें।» / «अब आपकी बारी।» (CARD.gate_titles) */
+      const tt = CARD && CARD.gate_titles;
+      if(tt) Object.keys(tt).forEach(ph => { PHASE_GATE_TITLE[ph] = tt[ph]; });
       ok = true;
     } catch(e){}
     if(!ok && tries < 400) setTimeout(()=> regGate(tries + 1), 25);
@@ -18045,6 +17528,11 @@ if(document.fonts && document.fonts.load){
       const ext = (CARD.assets && CARD.assets.img_ext) || "png";
       c.classList.add("sg-scene");
       c.style.backgroundImage = 'url("assets/Images/' + sc.img + "." + ext + '")';
+      /* round 3c (user): the title is its own picture (the cover has none), laid over the cover */
+      if(sc.title_img && !c.querySelector(".sg-title-img")){
+        const ti = document.createElement("img"); ti.className = "sg-title-img"; ti.alt = "";
+        ti.decoding = "sync"; ti.src = "assets/Images/" + sc.title_img + "." + ext; c.appendChild(ti);
+      }
     } catch(e){ if(tries < 200) setTimeout(()=> applyScene(tries + 1), 25); }
   })(0), 0);
 
@@ -18059,6 +17547,26 @@ if(document.fonts && document.fonts.load){
         const s = CARD.slides[i];
         if(s && s.dev_label) o.textContent = (i + 1) + ". " + s.id + " · " + s.dev_label;
       });
+      /* round 3b (user): «दुकान का खेल» sub-entries, so a later item / the end can be tested without
+         playing the whole game. Value "<slide>.<sub>": the engine's own handler parseInt()s it to the
+         shop's index; this capture listener (on the bar, so it runs FIRST) leaves the sub-state for
+         SHOP_GAME.mount to pick up. */
+      const si = CARD.slides.findIndex(s => s.type === "SHOP_GAME");
+      if(si >= 0 && !sel.querySelector('option[value^="' + si + '."]')){
+        const items = CARD.slides[si].data.items || [];
+        const subs = items.map((it, k)=> ({ v:si + "." + (k + 1), t:"   ↳ " + it.name + " ₹" + it.price + " (बनाना)", st:{ open:k, bought:k } }));
+        subs.push({ v:si + ".s5", t:"   ↳ स्टॉल · 5 खरीदे", st:{ bought:Math.max(0, items.length - 1) } });
+        subs.push({ v:si + ".done", t:"   ↳ सब खरीदे · सूची", st:{ bought:items.length, done:true } });
+        let after = sel.options[si];
+        subs.forEach(sb => { const o = document.createElement("option"); o.value = sb.v; o.textContent = sb.t;
+          after.insertAdjacentElement("afterend", o); after = o; });
+        const map = {}; subs.forEach(sb => { map[sb.v] = sb.st; });
+        sel.parentElement.addEventListener("change", (ev)=>{
+          if(ev.target !== sel) return;
+          window.__shopDev = map[sel.value] || null;
+          if(window.__shopDev) window.__sgDragInShown = true;   /* skip the first-item demo in a jump */
+        }, true);
+      }
     } catch(e){}
   })(0);
 
@@ -18373,6 +17881,20 @@ if(document.fonts && document.fonts.load){
   const sfxDrop   = (kind)=> sfxFile(kind === "n10" ? "sfx_drop_note" : "sfx_drop_coin",
                                      ()=> tone([560, 840], "sine", 0.13, 0.07));
   const sfxPop    = ()=> tone([720], "sine", 0.10, 0.06);
+  /* round 3 (checklist): the team's Standard SFX pack (from MTG2A04_L02_S01) — the confetti and the
+     nudge chime are mastered hotter than the rest, so they play at their own, lower gain (that
+     lesson: 0.45 against 0.8 for correct). Through the loader's decoded buffers, like playSfx. */
+  function sfxVol(name, vol){
+    try {
+      const src = "assets/Audio/" + name + "." + AUDIO_EXT;
+      _loadVoiceBuffer(src).then(buf => {
+        const c = _resumeVoiceAudio(); if(!c) return;
+        const s = c.createBufferSource(), g = c.createGain();
+        s.buffer = buf; g.gain.value = vol; s.connect(g).connect(c.destination); s.start(0);
+      }).catch(()=>{});
+    } catch(e){}
+  }
+  const sfxNudge  = ()=> sfxVol("sfx_nudge", 0.4);      /* with every inactivity nudge */
   const mood = (m)=>{ if(typeof setSwMood === "function") setSwMood(m); };
 
   /* ---------------------------------------------------------------- stage geometry */
@@ -18558,6 +18080,165 @@ if(document.fonts && document.fonts.load){
     }
   };
 
+  /* ================================================================ MONEY_INTRO (round 3) */
+  /* SME round 3, teaching: "Keep the screen simple … Swifty will introduce the ₹10 note and ₹1 coin.
+     First, show the ₹10 note (front view only) with the text «₹10» above it. Next, show the ₹1 coin
+     (front view only) with the text «₹1» above it. Both visuals and labels should appear one by one,
+     synchronised with the VO. No separate title or heading." Each picture + its label arrives as its
+     own line starts (with a soft pop); the arrow is enabled when the last line ends. */
+  SlideModules.MONEY_INTRO = {
+    mount(host, slide){
+      epoch(); state.ownsAudio = true; setNavActive(false);
+      const d = slide.data;
+      $("promptText").textContent = slide.prompt_hi || "";
+      const root = el("div", "mn-intro");
+      const cols = (d.items || []).map(it => {
+        const c = el("div", "mn-intro-it mn-intro-wait " + (it.note ? "is-note" : "is-coin"),
+          '<div class="mn-intro-lbl">' + it.label + '</div>' +
+          '<img src="' + img(it.img) + '" alt="' + it.label + '" draggable="false" decoding="sync">');
+        root.appendChild(c); return c;
+      });
+      host.appendChild(root);
+      const show = (i)=>{ const c = cols[i]; if(!c) return; c.classList.remove("mn-intro-wait"); restart(c, "mn-pop"); sfxPop(); };
+      const run = (i, first)=>{
+        if(i >= cols.length){ if(first) setNavActive(true); return; }
+        if(first) show(i); else restart(cols[i], "mn-bump");
+        say(d.items[i].say, ()=> setTimeout(()=> run(i + 1, first), 250));
+      };
+      state.replayAudio = ()=> run(0, false);
+      setTimeout(()=> run(0, true), 350);
+    }
+  };
+
+  /* ================================================================ MONEY_SORT (round 3 / 3b) */
+  /* SME round 3, guided practice — sorting: a random arrangement of notes and coins, a small wallet in
+     a corner. The child CLICKS each piece of the asked value (d.target: ₹10 notes AND ₹10 coins, or the
+     ₹1 coins): it goes INTO the wallet with a sound. Any other piece only wiggles (with the standard
+     incorrect sound) — no wrong-answer flow. Done when every asked piece is in: confetti + «शाबाश!»,
+     then the arrow. Pieces arrive one by one, each with a soft pop (checklist). Inactive 7 s -> a piece
+     still to be collected glows, with the nudge chime.
+     Round 3b (user): the screen sits in the teaching screen's grid-paper card (blue border) but KEEPS
+     the instruction panel and has no Swiftee in the card; the team's wallet is drawn in TWO layers —
+     the whole wallet behind, its front pocket in front — and a collected piece flies to the wallet's
+     mouth and slides down BETWEEN them, so it really goes inside. No piece is ever placed over the
+     wallet: the slots are a 4 x 3 grid, and any slot whose piece would touch the wallet is skipped. */
+  const SORT_COLS = [0.135, 0.345, 0.555, 0.765], SORT_ROWS = [0.19, 0.50, 0.81];
+  const SORT_SIZE = { note:[180, 85], coin:[100, 100] };
+  SlideModules.MONEY_SORT = {
+    mount(host, slide){
+      const gen = epoch(); state.ownsAudio = true; setNavActive(false);
+      const d = slide.data, T = d.target;
+      const root = el("div", "mn-sort-card");
+      const field = el("div", "mn-sort-field");
+      const wallet = el("div", "mn-wallet",
+        '<img class="mn-wb" src="' + img(d.wallet_img) + '" alt="" draggable="false" decoding="sync">' +
+        '<div class="mn-wfly"></div>' +
+        '<img class="mn-wf" src="' + img(d.wallet_front_img) + '" alt="" draggable="false" decoding="sync">');
+      field.appendChild(wallet);
+      root.appendChild(field);
+      host.appendChild(root);
+      /* slots that keep clear of the wallet (measured in the laid-out field, stage px) */
+      const FW = field.offsetWidth || 1100, FH = field.offsetHeight || 380;
+      const wr = { x:wallet.offsetLeft - 16, y:wallet.offsetTop - 16, w:wallet.offsetWidth + 32, h:wallet.offsetHeight + 32 };
+      const hit = (r)=> r.x < wr.x + wr.w && r.x + r.w > wr.x && r.y < wr.y + wr.h && r.y + r.h > wr.y;
+      const slots = [];
+      SORT_ROWS.forEach(ry => SORT_COLS.forEach(cx => slots.push([cx * FW, ry * FH])));
+      for(let i = slots.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const x = slots[i]; slots[i] = slots[j]; slots[j] = x; }
+      const order = (d.pieces || []).map((pc, i)=> i);
+      for(let i = order.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const x = order[i]; order[i] = order[j]; order[j] = x; }
+      /* notes first into the slots (the bigger pieces need the clear ones), coins after */
+      order.sort((x, y)=> (d.pieces[y].note ? 1 : 0) - (d.pieces[x].note ? 1 : 0));
+      const used = new Set(), placedR = [];
+      const clash = (r)=> placedR.some(q => r.x < q.x + q.w + 10 && r.x + r.w + 10 > q.x && r.y < q.y + q.h + 10 && r.y + r.h + 10 > q.y);
+      const pieces = [];
+      order.forEach((pi)=>{
+        const pc = d.pieces[pi], sz = SORT_SIZE[pc.note ? "note" : "coin"];
+        let slot = null;
+        /* never on the wallet, never touching another piece (10 px apart); a little jitter if it fits,
+           else the slot's exact centre */
+        for(let k = 0; k < slots.length && !slot; k++){
+          if(used.has(k)) continue;
+          for(const jit of [1, 0]){
+            const jx = jit * (Math.random() * 2 - 1) * 8, jy = jit * (Math.random() * 2 - 1) * 8;
+            const r = { x:Math.max(6, Math.min(FW - sz[0] - 6, slots[k][0] - sz[0] / 2 + jx)),
+                        y:Math.max(6, Math.min(FH - sz[1] - 6, slots[k][1] - sz[1] / 2 + jy)), w:sz[0], h:sz[1] };
+            if(hit(r) || clash(r)) continue;
+            used.add(k); slot = r; placedR.push(r); break;
+          }
+        }
+        if(!slot) return;
+        const e = el("div", "mn-sp mn-sp-wait " + (pc.note ? "is-note" : "is-coin"),
+                     '<img src="' + img(pc.img) + '" alt="₹' + pc.value + '" draggable="false" decoding="sync">');
+        e.style.left = slot.x + "px"; e.style.top = slot.y + "px";
+        e.style.setProperty("--tilt", ((Math.random() * 2 - 1) * (pc.note ? 8 : 12)).toFixed(1) + "deg");
+        e.dataset.value = pc.value;
+        field.insertBefore(e, wallet);
+        pieces.push(e);
+      });
+      /* appear in a random order, not slot order */
+      const shown = pieces.slice().sort(()=> Math.random() - 0.5);
+      const want = pieces.filter(e => +e.dataset.value === T);
+      let got = 0, armed = false, done = false, wrongs = 0, lastAct = Date.now(), nudges = 0;
+      const touch = ()=>{ lastAct = Date.now(); nudges = 0; };
+      root.addEventListener("pointerdown", touch, true);
+      shown.forEach((e, k)=> setTimeout(()=>{ if(!e.isConnected) return; e.classList.remove("mn-sp-wait"); restart(e, "mn-pop"); sfxPop(); }, 200 + k * 170));
+      const ready = 200 + shown.length * 170 + 250;
+      const finish = ()=>{
+        done = true; state.locked = true;
+        restart(wallet, "mn-bump");
+        fbCorrect(); mood("celebrate");
+        if(typeof confettiCannon === "function") confettiCannon();
+        SwiftPAL.emit("money_sort_done", { slide_id:slide.id, phase:slide.phase, value:wrongs === 0, target:T, wrong:wrongs,
+          latency_ms:Date.now() - state.slideStart });
+        say(A(slide, "done"), ()=>{ setNavActive(true); $("navBtn").onclick = ()=> completeSlide(wrongs === 0); });
+      };
+      /* INTO the wallet: the piece is re-drawn inside the wallet, between its two layers — first it
+         travels to just above the wallet's mouth (shrinking), then slides down behind the front pocket */
+      const intoWallet = (e)=> new Promise(res => {
+        const b = box(e), w = box(wallet), isNote = e.classList.contains("is-note");
+        const f = el("div", "mn-wpiece " + (isNote ? "is-note" : "is-coin"), e.innerHTML);
+        f.style.left = (b.x - w.x) + "px"; f.style.top = (b.y - w.y) + "px";
+        f.style.width = b.w + "px"; f.style.height = b.h + "px";
+        wallet.querySelector(".mn-wfly").appendChild(f);
+        const tw = w.w * (isNote ? 0.50 : 0.27), th = tw * b.h / b.w;
+        animTo(f, { x:w.w * 0.45 - tw / 2, y:w.h * 0.27 - th, w:tw, h:th }, 560).then(()=>{
+          sfxFile(isNote ? "sfx_drop_note" : "sfx_drop_coin");
+          return animTo(f, { x:w.w * 0.45 - tw / 2, y:w.h * 0.66 - th / 2, w:tw, h:th }, 300, "cubic-bezier(.5,0,.9,.6)");
+        }).then(()=>{ f.remove(); restart(wallet, "mn-bump"); res(); });
+      });
+      pieces.forEach(e => {
+        e.addEventListener("click", ()=>{
+          if(!armed || done || isPlaying || e.classList.contains("mn-sp-gone") || e.classList.contains("mn-sp-wait")) return;
+          touch();
+          if(+e.dataset.value !== T){
+            restart(e, "mn-wiggle"); fbWrong(); mood("tryagain"); wrongs++;
+            SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, value:+e.dataset.value, target:T });
+            return;
+          }
+          const p = intoWallet(e);
+          e.classList.add("mn-sp-gone");
+          mood("happy");
+          p.then(()=>{
+            if(gen !== _gen) return;
+            if(++got >= want.length && !done) setTimeout(()=>{ if(gen === _gen) finish(); }, 250);
+          });
+        });
+      });
+      /* inactivity: a piece still to be collected glows, with the nudge chime — every 7 s while idle */
+      const idleT = setInterval(()=>{
+        if(!root.isConnected){ clearInterval(idleT); return; }
+        if(!armed || done || isPlaying){ lastAct = Math.max(lastAct, Date.now() - 1000); return; }
+        if(Date.now() - lastAct < (d.idle_ms || 7000) || nudges >= 5) return;
+        lastAct = Date.now(); nudges++;
+        const left = want.filter(e => !e.classList.contains("mn-sp-gone"));
+        const e = left[Math.floor(Math.random() * left.length)];
+        if(e){ restart(e, "mn-sp-hint"); sfxNudge(); }
+      }, 500);
+      state.replayAudio = ()=> say(A(slide, "prompt"));
+      setTimeout(()=>{ if(gen !== _gen) return; say(A(slide, "prompt"), ()=>{ armed = true; touch(); }); }, ready);
+    }
+  };
+
   /* ================================================================ MONEY_PICK (p3–p6) */
   SlideModules.MONEY_PICK = {
     mount(host, slide){
@@ -18682,13 +18363,18 @@ if(document.fonts && document.fonts.load){
 
       const root = el("div", "mn-build" + (d.total_below ? " mn-total-below" : "") + (d.tray_down ? " mn-tray-down" : ""));
       /* round 2d: picture + price tag in a card, no name text (the name is the image's alt) */
-      const item = el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="' + (d.item_name || "") + '">' +
-                                       '<div class="mn-tag"><span>₹' + T + '</span></div>');
+      /* round 3 (SME): no item picture — only the amount, prominently (d.no_item) */
+      const item = d.no_item
+        ? el("div", "mn-item mn-item-amt", '<div class="mn-tag mn-tag-big"><span>₹' + T + '</span></div>')
+        : el("div", "mn-item", '<img class="mn-item-img" src="' + img(d.item_img) + '" alt="' + (d.item_name || "") + '">' +
+                               '<div class="mn-tag"><span>₹' + T + '</span></div>');
       const tcol = el("div", "mn-tcol");
       const tgt = el("div", "mn-target");
       const tray = makeTray();
       const tot = el("div", "mn-total", 'कुल <b>₹0</b>');
       tgt.appendChild(tray);
+      /* (round 3c: the «कुल» counter stays IN the drop zone, top-right; on the amount-only screens the
+         money starts below it instead — data.tray_down — so it never hides a note) */
       if(d.total_below){ tcol.append(tgt, tot); } else { tgt.appendChild(tot); tcol.appendChild(tgt); }
       const top = el("div", "mn-top"); top.append(item, tcol);
       const bottom = el("div", "mn-bottom");
@@ -18696,6 +18382,10 @@ if(document.fonts && document.fonts.load){
       const srcs = {};
       (d.sources || []).forEach(kd => { const s = piece(kd, "mn-src"); srcs[kd] = s; bank.appendChild(s); });
       bottom.appendChild(bank);
+      /* round 3 (checklist): the notes / coins arrive one by one, each with a soft pop */
+      if(d.pop_sources) Object.keys(srcs).forEach((kd, i)=>{ const s = srcs[kd]; s.style.animationDelay = (150 + i * 300) + "ms";
+        s.classList.add("mn-pop"); setTimeout(()=>{ if(s.isConnected) sfxPop(); }, 150 + i * 300); });
+      { const nx = CARD.slides[state.idx + 1]; if(nx && nx.type === "SHOP_GAME") warmShop(); }   /* round 3 */
       let chk = null;
       if(d.check_label){ chk = el("button", "mn-check", d.check_label); chk.disabled = true; bottom.appendChild(chk); }
       const eq = el("div", "mn-eq");
@@ -18728,6 +18418,22 @@ if(document.fonts && document.fonts.load){
       const ghost = (kd)=>{ if(!srcs[kd]) return; const slot = nextSlot(tray, kd);
         fly(kd, srcs[kd], slot, { ghost:true, ms:1000 }).then(()=> slot.remove()); };
       let teachWait = null;
+      /* round 3 (SME): ₹14 / ₹32 / ₹45 — STRICT ORDER: ₹10 first (₹1 locked), then ₹1 (₹10 locked);
+         no tolerance, no other order; complete the moment the amount is formed. d.mode "ghost" (₹14
+         only) also shows a ghost of the next piece before EVERY move — one ₹10, then each ₹1 — and
+         never moves money itself; "seq" (₹32 / ₹45) has no ghost. */
+      const seqMode = d.mode === "seq" || d.mode === "ghost";
+      const ghostMode = d.mode === "ghost";
+      const seqLocks = ()=>{
+        if(!seqMode || !tensKind) return;
+        const tensPhase = tc < TP;
+        setOff(tensKind, !tensPhase); setOff("c1", tensPhase || oc >= OP);
+      };
+      const stepGhost = ()=>{
+        if(!ghostMode || done || reached || !root.isConnected) return;
+        const kd = needKind(); if(!srcs[kd] || off.has(kd)) return;
+        hintOn(kd); ghost(kd);
+      };
       const idleTick = ()=>{
         if(!root.isConnected){ clearInterval(idleTimer); return; }
         if(done || !armed || reached || isPlaying || (teach && !teachWait)){ touch(); return; }
@@ -18735,6 +18441,12 @@ if(document.fonts && document.fonts.load){
            reminder, not a loop. Practice keeps its silent pulse -> ghost nudge, capped at 3. */
         if(Date.now() - lastAct < (teach ? 10000 : (d.idle_ms || 7000))) return;
         lastAct = Date.now();
+        if(seqMode){                                   /* round 3: ₹14 / ₹32 / ₹45 — every 7 s, up to 3 */
+          if(idleN >= 3) return;
+          idleN++;
+          const kd = needKind(); pulse(kd); ghost(kd); sfxNudge();
+          return;
+        }
         if(teach){
           if(!teachWait || teachWait.reminded) return;
           teachWait.reminded = true;
@@ -18844,6 +18556,7 @@ if(document.fonts && document.fonts.load){
         setTotal(); touch(); idleN = 0;
         clearHints();
         if(total() === T){ onReached(); return true; }
+        if(seqMode){ seqLocks(); setTimeout(stepGhost, 450); }
         return false;
       };
 
@@ -18922,7 +18635,8 @@ if(document.fonts && document.fonts.load){
       } else {
         state.replayAudio = ()=> say(A(slide, "prompt"));
         restart(item.querySelector(".mn-tag"), d.tag_fx === "glow" ? "mn-tagglow" : "mn-pulse");
-        say(A(slide, "prompt"), ()=>{ armed = true; touch(); });
+        seqLocks();
+        say(A(slide, "prompt"), ()=>{ armed = true; touch(); stepGhost(); });
       }
     }
   };
@@ -19059,13 +18773,19 @@ if(document.fonts && document.fonts.load){
             const c = free[Math.floor(Math.random() * free.length)];
             /* round 2p: NOT "sg-glow" — the engine owns .sg-glow (a full-screen landing layer with
                pointer-events:none / display:none), so a glowed item stopped taking taps for good */
-            if(c){ restart(c, "sg-hilite"); setTimeout(()=> c.classList.remove("sg-hilite"), 3200); }
+            if(c){ restart(c, "sg-hilite"); setTimeout(()=> c.classList.remove("sg-hilite"), 3200); sfxNudge(); }
             say(A(slide, "idle"), arm);
           }, d.idle_ms || 5500);
         };
         v.addEventListener("pointerdown", arm, true);
         state.replayAudio = ()=> say(A(slide, "prompt"), arm);
-        if(speak) say(A(slide, "prompt"), arm); else arm();
+        /* round 3 (SME): Swiftee opens the game on the stall — «परी पहुँच गई है बाज़ार। आओ, चलो खरीदारी
+           शुरू करें।» — then the instruction; each line's text shows as it is spoken */
+        if(speak && A(slide, "intro")){
+          if(d.text.intro) band(d.text.intro);
+          say(A(slide, "intro"), ()=>{ band(d.text.choose); say(A(slide, "prompt"), arm); });
+        }
+        else if(speak) say(A(slide, "prompt"), arm); else arm();
       }
 
       function pick(i, c, cells){
@@ -19103,6 +18823,7 @@ if(document.fonts && document.fonts.load){
         restart(card.querySelector(".mn-tag"), "mn-pulse");
 
         let attempts = 0, caps = false, working = false, solved = false, tipping = false;
+        let wrongRun = 0;            /* round 3: wrong checks since the last reset (1, 2 keep the money; 3 resets) */
         const placed = [];   /* {kind, el} in placement order */
         const tens = ()=> placed.filter(p => KIND[p.kind].v === 10).length;
         const ones = ()=> placed.filter(p => KIND[p.kind].v === 1).length;
@@ -19202,18 +18923,31 @@ if(document.fonts && document.fonts.load){
           if(working || solved || !placed.length || isPlaying) return;
           const s = sum();
           if(s === T){ win(); return; }
-          working = true; attempts++;
+          /* round 3 (SME): "the child should be able to correct the amount already placed instead of
+             having the entire tray reset immediately". 1st wrong: «ओहो! रुपये ज़्यादा हैं। कुछ कम करिए।» /
+             «ओहो! रुपये कम हैं। कुछ और डालिए।» — the money STAYS; 2nd: «ओहो! अभी भी …» — it stays; 3rd:
+             the same line and the tray resets (every piece bounces home) so the child starts again, and
+             the existing silent caps switch on (tens <= tens-part, ones <= ones-part). The count starts
+             again after a reset. Idle 7 s after a wrong check -> a ghost shows the fix (below). */
+          working = true; attempts++; wrongRun++;
           state.attempts++;
-          SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, item:it.id, attempts, kind: s < T ? "less" : "more" });
-          fbWrong(); mood("tryagain");                       /* round 2t: no tray shake — the money bounces back */
-          band(s < T ? d.text.less : d.text.more);
-          setTimeout(()=>{
-            placed.slice().reverse().forEach((rec, j)=> setTimeout(()=> giveBack(rec), j * 70));
-          }, 520);
-          if(attempts >= 3) caps = true;                     /* S20: silent backend support from now on */
-          say(A(slide, s < T ? "less" : "more"), ()=>{
+          const more = s > T;
+          SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, item:it.id, attempts, kind: more ? "more" : "less" });
+          fbWrong(); mood("tryagain");
+          /* round 3b (user): the 3rd wrong check empties the tray, so it does not say «कुछ और डालिए / कम करिए»
+             — it says «फिर से कोशिश करें।» (the money is placed again from the start) */
+          const key = wrongRun >= 3 ? "retry" : (more ? "more" : "less") + (wrongRun >= 2 ? "2" : "1");
+          band(d.text[key]);
+          if(wrongRun >= 3){
+            wrongRun = 0; caps = true;
+            setTimeout(()=>{
+              placed.slice().reverse().forEach((rec, j)=> setTimeout(()=> giveBack(rec), j * 70));
+            }, 520);
+          }
+          say(A(slide, key), ()=>{
             working = false; refresh();
             band(d.text.make.replace("{T}", T));
+            idleAt = Date.now(); nudges = 0;
           });
         };
         const win = ()=>{
@@ -19237,24 +18971,33 @@ if(document.fonts && document.fonts.load){
           say(line, ()=> backToStall(i, card, chk));
         };
         refresh();                                   /* जाँचें starts inactive — nothing placed yet */
-        /* round 2o (user): INACTIVITY NUDGE. If the child does nothing, one ghost currency glides from
-           the tray into the amount area — a reminder of the drag, never the answer (one piece only: a
-           ₹10 while tens are still missing, else a ₹1). First nudge after 10 s on the first item of the
-           game (12 s later), then again every 15 s, at most 3 per item. Any touch restarts the clock. */
+        /* INACTIVITY NUDGE — round 3: every 7 s of inactivity (checklist), with the nudge chime, up to
+           5 in a row (any touch restarts the count). What it shows follows the amount in the tray, as in
+           the Game Zone: TOO MUCH -> a ghost of the last-added piece travels from the tray back to its
+           place (how to take money out); TOO LITTLE / nothing yet -> a ghost of the piece still needed
+           (a ₹10 while tens are missing, else a ₹1) travels in; the RIGHT amount -> «जाँचें» pulses. */
         let idleAt = Date.now(), nudges = 0;
-        const firstWait = (bought.size === 0) ? 10000 : 12000;
-        v.addEventListener("pointerdown", ()=>{ idleAt = Date.now(); }, true);
+        v.addEventListener("pointerdown", ()=>{ idleAt = Date.now(); nudges = 0; }, true);
         const nudgeT = setInterval(()=>{
           if(!v.isConnected){ clearInterval(nudgeT); return; }
           if(working || solved || tipping || isPlaying){ idleAt = Math.max(idleAt, Date.now() - 1000); return; }
-          if(nudges >= 3 || Date.now() - idleAt < (nudges === 0 ? firstWait : 15000)) return;
+          if(nudges >= 5 || Date.now() - idleAt < (d.make_idle_ms || 7000)) return;
           nudges++; idleAt = Date.now();
-          const kd = tens() < TP ? (nudges % 2 ? "n10" : "c10") : "c1";
-          if(srcs[kd].classList.contains("mn-off")) return;
-          const slot = nextSlot(tray, kd);
-          restart(srcs[kd], "mn-hintglow");
-          fly(kd, srcs[kd], slot, { ghost:true, ms:1100 }).then(()=> slot.remove());
-          SwiftPAL.emit("hint_shown", { slide_id:slide.id, level:"idle_ghost", item:it.id });
+          const s = sum();
+          if(s > T){
+            const rec = placed[placed.length - 1];
+            if(!rec || !rec.el || !srcs[rec.kind]) return;
+            fly(rec.kind, rec.el, srcs[rec.kind], { ghost:true, ms:1100 });
+            SwiftPAL.emit("hint_shown", { slide_id:slide.id, level:"idle_ghost_back", item:it.id });
+          } else if(s < T){
+            const kd = tens() < TP ? (nudges % 2 ? "n10" : "c10") : "c1";
+            if(srcs[kd].classList.contains("mn-off")) return;
+            const slot = nextSlot(tray, kd);
+            restart(srcs[kd], "mn-hintglow");
+            fly(kd, srcs[kd], slot, { ghost:true, ms:1100 }).then(()=> slot.remove());
+            SwiftPAL.emit("hint_shown", { slide_id:slide.id, level:"idle_ghost", item:it.id });
+          } else restart(chk, "mn-pulse");
+          sfxNudge();
         }, 500);
         state.replayAudio = ()=> say(it.vo_select);
         /* round 2p: the first time the game opens an item, a ghost ₹10 note glides from the tray into
@@ -19330,7 +19073,16 @@ if(document.fonts && document.fonts.load){
         });
       }
 
-      showChoose(true);
+      /* round 3b (user): the dev menu's «दुकान का खेल» sub-entries (dev only) — open one item's amount
+         screen directly (the items before it bought), the stall with five bought, or the final list */
+      const dv = window.__shopDev; window.__shopDev = null;
+      if(dv){
+        for(let k = 0; k < Math.min(dv.bought || 0, items.length); k++) bought.add(k);
+        if(bought.size) first = false;
+      }
+      if(dv && dv.done) showComplete();
+      else if(dv && dv.open != null){ showMake(dv.open); }
+      else showChoose(!(dv && dv.bought));
     }
   };
 })();
