@@ -616,12 +616,13 @@
      tray (as a correct tap does) and then bounces back — otherwise the child would see nothing move. */
   /* round 2v: the error bounce takes 0.62 s (the plain return keeps 0.44 s) so the child SEES the
      piece travel home — at 0.44 s with this overshoot curve it covered the distance in ~0.17 s. */
-  function rejectPiece(f, src, zone){
+  function rejectPiece(f, src, zone, shake){
     if(!f) return Promise.resolve();
-    if(f.dataset.tap !== "1" || !zone) return bounceBack(f, src, 620);
+    /* round 4 (SME, ₹32 / ₹45): `shake` — the drop zone wiggles the moment the refused piece is in it */
+    if(f.dataset.tap !== "1" || !zone){ if(shake && zone) restart(zone, "mn-shake"); return bounceBack(f, src, 620); }
     const z = box(zone), w = parseFloat(f.style.width), h = parseFloat(f.style.height);
     return animTo(f, { x:z.x + z.w / 2 - w / 2, y:z.y + z.h / 2 - h / 2, w, h }, 320)
-      .then(()=> bounceBack(f, src, 620));
+      .then(()=>{ if(shake) restart(zone, "mn-shake"); return bounceBack(f, src, 620); });
   }
   function tapFloat(kind, src){ const f = floatAt(kind, box(src)); f.dataset.tap = "1"; return f; }
 
@@ -755,16 +756,31 @@
      the whole wallet behind, its front pocket in front — and a collected piece flies to the wallet's
      mouth and slides down BETWEEN them, so it really goes inside. No piece is ever placed over the
      wallet: the slots are a 4 x 3 grid, and any slot whose piece would touch the wallet is skipped. */
-  const SORT_COLS = [0.135, 0.345, 0.555, 0.765], SORT_ROWS = [0.19, 0.50, 0.81];
-  const SORT_SIZE = { note:[180, 85], coin:[100, 100] };
+  /* round 5 (user mockup): the table is the wooden board, the pieces sit in BALANCED slots (3 rows x 3 —
+     each slot made for a note or a coin, the mockup's pattern), the denominations are shuffled into the
+     slots of their kind on every visit, and the layout is mirrored on some visits. The open coin purse
+     sits on the right: a collected piece is lifted over its mouth and drops in BEHIND the purse's front
+     rim (obj_purse_front), so it really goes inside. Fractions of the field; the purse keeps x > 0.74. */
+  /* round 6 (user): the purse sits in the BOTTOM-RIGHT corner, so the top rows run the full width and
+     the bottom row stays left of the purse */
+  const SORT_LAYOUTS = {
+    mixed: [{k:"note", x:0.160, y:0.18}, {k:"coin", x:0.385, y:0.18}, {k:"note", x:0.600, y:0.19}, {k:"coin", x:0.840, y:0.18},
+            {k:"coin", x:0.175, y:0.50}, {k:"note", x:0.400, y:0.51}, {k:"coin", x:0.620, y:0.50},
+            {k:"note", x:0.195, y:0.82}, {k:"coin", x:0.430, y:0.82}],
+    coins: [{k:"coin", x:0.150, y:0.18}, {k:"coin", x:0.370, y:0.18}, {k:"coin", x:0.590, y:0.18}, {k:"coin", x:0.810, y:0.18},
+            {k:"coin", x:0.255, y:0.50}, {k:"coin", x:0.470, y:0.50}, {k:"coin", x:0.660, y:0.50},
+            {k:"coin", x:0.165, y:0.82}, {k:"coin", x:0.400, y:0.82}]
+  };
+  const SORT_SIZE = { note:[210, 99], coin:[112, 112] };
   SlideModules.MONEY_SORT = {
     mount(host, slide){
       const gen = epoch(); state.ownsAudio = true; setNavActive(false);
       const d = slide.data, T = d.target;
-      /* round 3d (SME: "All text … must be synchronised with the VO"): the instruction is shown when
-         Swiftee starts saying it — after the pieces have arrived — not when the screen opens */
+      /* round 3d: the instruction is shown when Swiftee starts saying it — after the pieces arrive */
       $("promptText").textContent = "";
       const root = el("div", "mn-sort-card");
+      if(d.board_img) root.style.backgroundImage = 'url("' + img(d.board_img) + '")';
+      root.insertAdjacentHTML("beforeend", '<span class="mn-star s1">★</span><span class="mn-star s2">★</span><span class="mn-star s3">★</span>');
       const field = el("div", "mn-sort-field");
       const wallet = el("div", "mn-wallet",
         '<img class="mn-wb" src="' + img(d.wallet_img) + '" alt="" draggable="false" decoding="sync">' +
@@ -773,40 +789,25 @@
       field.appendChild(wallet);
       root.appendChild(field);
       host.appendChild(root);
-      /* slots that keep clear of the wallet (measured in the laid-out field, stage px) */
       const FW = field.offsetWidth || 1100, FH = field.offsetHeight || 380;
-      const wr = { x:wallet.offsetLeft - 16, y:wallet.offsetTop - 16, w:wallet.offsetWidth + 32, h:wallet.offsetHeight + 32 };
-      const hit = (r)=> r.x < wr.x + wr.w && r.x + r.w > wr.x && r.y < wr.y + wr.h && r.y + r.h > wr.y;
-      const slots = [];
-      SORT_ROWS.forEach(ry => SORT_COLS.forEach(cx => slots.push([cx * FW, ry * FH])));
-      for(let i = slots.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const x = slots[i]; slots[i] = slots[j]; slots[j] = x; }
-      const order = (d.pieces || []).map((pc, i)=> i);
-      for(let i = order.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const x = order[i]; order[i] = order[j]; order[j] = x; }
-      /* notes first into the slots (the bigger pieces need the clear ones), coins after */
-      order.sort((x, y)=> (d.pieces[y].note ? 1 : 0) - (d.pieces[x].note ? 1 : 0));
-      const used = new Set(), placedR = [];
-      const clash = (r)=> placedR.some(q => r.x < q.x + q.w + 10 && r.x + r.w + 10 > q.x && r.y < q.y + q.h + 10 && r.y + r.h + 10 > q.y);
+      const slotsOf = (kind)=>{
+        const s = (SORT_LAYOUTS[d.layout] || SORT_LAYOUTS.mixed).filter(q => q.k === kind)
+          .map(q => ({ x:q.x * FW, y:q.y * FH }));
+        for(let i = s.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const x = s[i]; s[i] = s[j]; s[j] = x; }
+        return s;
+      };
+      const free = { note:slotsOf("note"), coin:slotsOf("coin") };
       const pieces = [];
-      order.forEach((pi)=>{
-        const pc = d.pieces[pi], sz = SORT_SIZE[pc.note ? "note" : "coin"];
-        let slot = null;
-        /* never on the wallet, never touching another piece (10 px apart); a little jitter if it fits,
-           else the slot's exact centre */
-        for(let k = 0; k < slots.length && !slot; k++){
-          if(used.has(k)) continue;
-          for(const jit of [1, 0]){
-            const jx = jit * (Math.random() * 2 - 1) * 8, jy = jit * (Math.random() * 2 - 1) * 8;
-            const r = { x:Math.max(6, Math.min(FW - sz[0] - 6, slots[k][0] - sz[0] / 2 + jx)),
-                        y:Math.max(6, Math.min(FH - sz[1] - 6, slots[k][1] - sz[1] / 2 + jy)), w:sz[0], h:sz[1] };
-            if(hit(r) || clash(r)) continue;
-            used.add(k); slot = r; placedR.push(r); break;
-          }
-        }
-        if(!slot) return;
+      (d.pieces || []).forEach(pc => {
+        const kind = pc.note ? "note" : "coin", sz = SORT_SIZE[kind];
+        const c = free[kind].shift() || free[kind === "note" ? "coin" : "note"].shift();
+        if(!c) return;
+        const jx = (Math.random() * 2 - 1) * 6, jy = (Math.random() * 2 - 1) * 6;
+        const x = Math.max(6, Math.min(FW - sz[0] - 6, c.x - sz[0] / 2 + jx)), y = Math.max(6, Math.min(FH - sz[1] - 6, c.y - sz[1] / 2 + jy));
         const e = el("div", "mn-sp mn-sp-wait " + (pc.note ? "is-note" : "is-coin"),
                      '<img src="' + img(pc.img) + '" alt="₹' + pc.value + '" draggable="false" decoding="sync">');
-        e.style.left = slot.x + "px"; e.style.top = slot.y + "px";
-        e.style.setProperty("--tilt", ((Math.random() * 2 - 1) * (pc.note ? 8 : 12)).toFixed(1) + "deg");
+        e.style.left = x + "px"; e.style.top = y + "px";
+        e.style.setProperty("--tilt", ((Math.random() * 2 - 1) * (pc.note ? 7 : 11)).toFixed(1) + "deg");
         e.dataset.value = pc.value;
         field.insertBefore(e, wallet);
         pieces.push(e);
@@ -817,7 +818,9 @@
       let got = 0, armed = false, done = false, wrongs = 0, lastAct = Date.now(), nudges = 0;
       const touch = ()=>{ lastAct = Date.now(); nudges = 0; };
       root.addEventListener("pointerdown", touch, true);
-      shown.forEach((e, k)=> setTimeout(()=>{ if(!e.isConnected) return; e.classList.remove("mn-sp-wait"); restart(e, "mn-pop"); sfxPop(); }, 200 + k * 170));
+      shown.forEach((e, k)=> setTimeout(()=>{ if(!e.isConnected) return; e.classList.remove("mn-sp-wait"); restart(e, "mn-sp-in"); sfxPop(); }, 200 + k * 170));
+      /* round 8 (user): the pop-in animation must not stay on the piece — it outranked the wrong-tap wiggle */
+      pieces.forEach(e => e.addEventListener("animationend", (ev)=>{ if(ev.animationName === "mnSpIn") e.classList.remove("mn-sp-in"); }));
       const ready = 200 + shown.length * 170 + 250;
       const finish = ()=>{
         done = true; state.locked = true;
@@ -830,24 +833,53 @@
       };
       /* INTO the wallet: the piece is re-drawn inside the wallet, between its two layers — first it
          travels to just above the wallet's mouth (shrinking), then slides down behind the front pocket */
+      /* INTO the purse: the piece is re-drawn inside the purse, between its two layers — it is lifted over
+         the purse's open mouth (shrinking), then drops in behind the front rim, out of sight */
+      /* round 6 (user: "when the coin or note goes inside the purse it should be visible inside the purse as
+         it has an open mouth"): the piece is lifted over the mouth, then drops in and STAYS there — resting in
+         the opening with its lower part behind the front rim, slightly tilted, beside the ones before it.
+         The rim's top edge in the purse art runs from y .546 (x .17) to y .692 (x .77) of the picture. */
+      const RIM = (fx)=> 0.546 + (fx - 0.169) * 0.245;
+      const REST = [{x:0.42, r:-9}, {x:0.58, r:8}, {x:0.33, r:5}, {x:0.66, r:-6}, {x:0.50, r:2}];
+      let rested = 0;
       const intoWallet = (e)=> new Promise(res => {
         const b = box(e), w = box(wallet), isNote = e.classList.contains("is-note");
         const f = el("div", "mn-wpiece " + (isNote ? "is-note" : "is-coin"), e.innerHTML);
         f.style.left = (b.x - w.x) + "px"; f.style.top = (b.y - w.y) + "px";
         f.style.width = b.w + "px"; f.style.height = b.h + "px";
         wallet.querySelector(".mn-wfly").appendChild(f);
-        const tw = w.w * (isNote ? 0.50 : 0.27), th = tw * b.h / b.w;
-        animTo(f, { x:w.w * 0.45 - tw / 2, y:w.h * 0.27 - th, w:tw, h:th }, 560).then(()=>{
+        const tw = w.w * (isNote ? 0.44 : 0.26), th = tw * b.h / b.w;
+        const spot = REST[rested++ % REST.length];
+        const cx = w.w * spot.x, restY = w.h * RIM(spot.x) - th * 0.62;   /* ~60 % shows above the rim */
+        animTo(f, { x:cx - tw / 2, y:w.h * 0.12 - th / 2, w:tw, h:th }, 560).then(()=>{
           sfxFile(isNote ? "sfx_drop_note" : "sfx_drop_coin");
-          return animTo(f, { x:w.w * 0.45 - tw / 2, y:w.h * 0.66 - th / 2, w:tw, h:th }, 300, "cubic-bezier(.5,0,.9,.6)");
-        }).then(()=>{ f.remove(); restart(wallet, "mn-bump"); res(); });
+          f.style.transform = "rotate(" + spot.r + "deg)";
+          return animTo(f, { x:cx - tw / 2, y:restY, w:tw, h:th }, 320, "cubic-bezier(.5,0,.9,.6)");
+        }).then(()=>{ restart(wallet, "mn-bump"); res(); });
       });
+      /* round 5 (SME: "On the first wallet screen, show a hand nudge on the ₹10 coin to guide the child to
+         tap it"): when the instruction ends, the standard hand taps a ₹10 COIN a few times; any tap ends it */
+      let hand = null;
+      const dropHand = ()=>{ if(hand){ hand.remove(); hand = null; } };
+      const showHand = ()=>{
+        if(!d.hand_nudge || done || got) return;
+        const c = pieces.find(e => +e.dataset.value === T && e.classList.contains("is-coin") && !e.classList.contains("mn-sp-gone"))
+               || pieces.find(e => +e.dataset.value === T && !e.classList.contains("mn-sp-gone"));
+        if(!c) return;
+        hand = el("img", "mn-hand"); hand.src = "assets/UI/nudge_hand_new.svg"; hand.alt = "";
+        const hw = 74, hh = 93;
+        hand.style.left = (c.offsetLeft + c.offsetWidth / 2 - hw * 0.38) + "px";
+        hand.style.top = (c.offsetTop + c.offsetHeight / 2 - hh * 0.06) + "px";
+        field.appendChild(hand);
+        setTimeout(()=>{ if(hand) dropHand(); }, 4200);
+      };
+      root.addEventListener("pointerdown", dropHand, true);
       pieces.forEach(e => {
         e.addEventListener("click", ()=>{
           if(!armed || done || isPlaying || e.classList.contains("mn-sp-gone") || e.classList.contains("mn-sp-wait")) return;
-          touch();
+          touch(); dropHand();
           if(+e.dataset.value !== T){
-            restart(e, "mn-wiggle"); fbWrong(); mood("tryagain"); wrongs++;
+            e.classList.remove("mn-sp-in"); restart(e, "mn-wiggle"); fbWrong(); mood("tryagain"); wrongs++;
             SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, value:+e.dataset.value, target:T });
             return;
           }
@@ -873,7 +905,7 @@
       state.replayAudio = ()=> say(A(slide, "prompt"));
       setTimeout(()=>{ if(gen !== _gen) return;
         $("promptText").textContent = slide.prompt_hi || "";
-        say(A(slide, "prompt"), ()=>{ armed = true; touch(); }); }, ready);
+        say(A(slide, "prompt"), ()=>{ armed = true; touch(); showHand(); }); }, ready);
     }
   };
 
@@ -1062,10 +1094,13 @@
          never moves money itself; "seq" (₹32 / ₹45) has no ghost. */
       const seqMode = d.mode === "seq" || d.mode === "ghost";
       const ghostMode = d.mode === "ghost";
+      /* round 4 (SME): on ₹32 / ₹45 (d.keep_tens_open) the ₹10 is NOT locked once its notes are in — the
+         ₹1 unlocks and an extra ₹10 goes through the hint ladder in wrong(); the 3rd extra locks it */
+      let tensLocked = false;
       const seqLocks = ()=>{
         if(!seqMode || !tensKind) return;
         const tensPhase = tc < TP;
-        setOff(tensKind, !tensPhase); setOff("c1", tensPhase || oc >= OP);
+        setOff(tensKind, (!tensPhase && !d.keep_tens_open) || tensLocked); setOff("c1", tensPhase || oc >= OP);
       };
       const stepGhost = ()=>{
         if(!ghostMode || done || reached || !root.isConnected) return;
@@ -1163,6 +1198,19 @@
 
       /* ---- the ladder (practice) ---- */
       const wrong = (type, kind, f, src)=>{
+        /* round 4 (SME, ₹32 / ₹45): an extra ₹10 — it ALWAYS bounces back home with the drop zone shaking;
+           1st: nothing more (no VO) · 2nd: a ghost of the ₹1 coin into the tray + «ध्यान से देखिए! अब एक
+           रुपये के सिक्कों से <the ₹ still missing> बनाइए।» · 3rd: the ₹10 locks (attention to the ₹1) */
+        if(seqMode && d.keep_tens_open && type === "tens"){
+          rejectPiece(f, src, tgt, true);
+          state.attempts++;
+          SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, attempts:state.attempts, kind:type, total:total() });
+          mood("tryagain"); fbWrong();
+          const n = ++wrongN.tens;
+          if(n === 2){ ghost("c1"); say((d.ones_hint || {})[String(T - total())]); }
+          else if(n >= 3){ tensLocked = true; setOff(tensKind, true); }
+          return;
+        }
         rejectPiece(f, src, tgt);                                 /* round 2t: bounce back, no tray shake */
         state.attempts++;
         SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, attempts:state.attempts, kind:type, total:total() });
@@ -1276,7 +1324,16 @@
         state.replayAudio = ()=> say(A(slide, "prompt"));
         restart(item.querySelector(".mn-tag"), d.tag_fx === "glow" ? "mn-tagglow" : "mn-pulse");
         seqLocks();
-        say(A(slide, "prompt"), ()=>{ armed = true; touch(); stepGhost(); });
+        const startPrompt = ()=>{
+          if(d.intro_text) $("promptText").textContent = slide.prompt_hi || "";
+          say(A(slide, "prompt"), ()=>{ armed = true; touch(); stepGhost(); });
+        };
+        /* round 4 (SME, ₹14): Swiftee's line from the earlier version plays first —
+           «चलिए, दस रुपये और एक रुपये के सिक्कों से इस राशि को बनाते हैं।» — then the existing flow */
+        if(A(slide, "intro")){
+          if(d.intro_text) $("promptText").textContent = d.intro_text;
+          say(A(slide, "intro"), startPrompt);
+        } else startPrompt();
       }
     }
   };

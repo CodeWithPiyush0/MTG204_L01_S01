@@ -90,12 +90,17 @@ def sort_screen(sid, target, ncorrect):
       return [ps.filter(r=>ov(r,w)).length, pp, !!document.querySelector('.mn-sort-card'), !!document.querySelector('.mn-sort-card .tut-mascot'), getComputedStyle(document.querySelector('.header-row')||document.body).display]""")
     check("%s in the grid card, panel kept, no Swiftee in the card, nothing on the wallet / overlapping" % sid,
           lay[0] == 0 and lay[1] == 0 and lay[2] and not lay[3] and lay[4] != "none", lay)
-    check("%s wallet has two layers (back + front pocket)" % sid, js("return !!document.querySelector('.mn-wallet .mn-wb') && !!document.querySelector('.mn-wallet .mn-wf')"))
+    check("%s purse has two layers (back + front rim)" % sid, js("return !!document.querySelector('.mn-wallet .mn-wb') && !!document.querySelector('.mn-wallet .mn-wf')"))
+    check("%s wooden table (board image) behind the pieces" % sid, "bg_wood" in js("return getComputedStyle(document.querySelector('.mn-sort-card')).backgroundImage"))
     while js("return isPlaying"): time.sleep(0.1)
     time.sleep(0.5)
+    time.sleep(0.3)
+    hand = js("return !!document.querySelector('.mn-hand')")
+    check("%s hand nudge %s" % (sid, "on a ₹10 coin after the instruction" if sid == "G1" else "absent (first wallet screen only)"), hand == (sid == "G1"), hand)
     js("const w=[...document.querySelectorAll('.mn-sp')].find(e=>+e.dataset.value!==arguments[0]); w.click(); window.__w=w;", target); time.sleep(0.2)
+    if sid == "G1": check("G1 the hand goes at the first tap", not js("return !!document.querySelector('.mn-hand')"))
     check("%s wrong piece: wiggles + incorrect sound, stays" % sid,
-          js("return window.__w.classList.contains('mn-wiggle') && !window.__w.classList.contains('mn-sp-gone')") and "sfx_fb_incorrect" in js("return window.__sfx"),
+          js("return window.__w.classList.contains('mn-wiggle') && getComputedStyle(window.__w).animationName === 'mnSpWiggle' && !window.__w.classList.contains('mn-sp-gone')") and "sfx_fb_incorrect" in js("return window.__sfx"),
           js("return window.__sfx"))
     js("window.__sfx=[]; [...document.querySelectorAll('.mn-sp')].find(e=>+e.dataset.value===arguments[0]).click()", target); time.sleep(0.2)
     fl = js("return !!document.querySelector('.mn-wallet .mn-wfly .mn-wpiece')")   # round 3b: drawn BETWEEN the wallet's layers
@@ -124,25 +129,45 @@ T = "document.querySelector('.mn-target')"
 placed = lambda: js("return document.querySelectorAll('.mn-target .mn-placed:not(.mn-slot)').length")
 off = lambda k: js("return src(arguments[0]).classList.contains('mn-off')", k)
 def make(sid, Tv, ghost):
-    js("mountSlide(arguments[0]); window.__said=[]; window.__ghosts=0", idx[sid]); time.sleep(0.2)
+    js("window.__said=[]; window.__ghosts=0; window.__shk=0; mountSlide(arguments[0])", idx[sid]); time.sleep(0.2)
+    js("""new MutationObserver(ms=>ms.forEach(m=>{ const t=m.target; if(t.classList && t.classList.contains('mn-target') && t.classList.contains('mn-shake')) window.__shk++; }))
+          .observe(document.querySelector('.mn-target'),{attributes:true, attributeFilter:['class']});""")
+    if sid == "G3":   # round 4: the retained line first, then the instruction; the panel follows the voice
+        band0 = js("return document.getElementById('promptText').textContent")
+        check("G3 opens with «चलिए, दस रुपये और एक रुपये के सिक्कों से इस राशि को बनाते हैं।» (panel shows it)",
+              said()[:1] == ["vo_b14_intro"] and "इस राशि को बनाते हैं" in band0, (said(), band0))
     check("%s no container round the amount; «कुल» in the drop zone" % sid,
           js("const i=document.querySelector('.mn-item-amt'), s=getComputedStyle(i); return s.borderTopStyle==='none' && s.backgroundColor==='rgba(0, 0, 0, 0)' && !!document.querySelector('.mn-target .mn-total')"))
     check("%s only the amount (no item picture), ₹10 note + ₹1 coin below" % sid,
           js("return !document.querySelector('.mn-item-img') && document.querySelector('.mn-tag-big').textContent") == "₹%d" % Tv
           and js("return document.querySelectorAll('.mn-src').length") == 2 and js("return !!src('n10') && !!src('c1')"))
     check("%s starts: ₹10 unlocked, ₹1 locked" % sid, (not off("n10")) and off("c1"))
-    time.sleep(1.4)
+    time.sleep(1.4 if sid != "G3" else 1.8)
+    if sid == "G3":
+        check("G3 then the instruction «₹14 बनाइए।»", said()[:2] == ["vo_b14_intro", "vo_b14_prompt"] and js("return document.getElementById('promptText').textContent") == "₹14 बनाइए।", said())
     g0 = js("return window.__ghosts")
     check("%s %s" % (sid, "ghost ₹10 after the instruction" if ghost else "no ghost"), (g0 >= 1) if ghost else (g0 == 0), g0)
     TP, OP = Tv // 10, Tv % 10
     for i in range(TP):
         js("drag(src('n10'), %s)" % T); time.sleep(0.8)
-    check("%s after %d tens: ₹10 locked, ₹1 unlocked" % (sid, TP), off("n10") and not off("c1"))
-    if ghost:
+    if ghost:      # ₹14 (page 4): unchanged — the ₹10 locks after its one note
+        check("%s after %d tens: ₹10 locked, ₹1 unlocked" % (sid, TP), off("n10") and not off("c1"))
         time.sleep(0.6)
         check("%s ghost ₹1 before the first coin" % sid, js("return window.__ghosts") > g0)
-    js("drag(src('n10'), %s)" % T); time.sleep(0.6)
-    check("%s a locked ₹10 cannot be added" % sid, placed() == TP)
+        js("drag(src('n10'), %s)" % T); time.sleep(0.6)
+        check("%s a locked ₹10 cannot be added" % sid, placed() == TP)
+    else:          # round 4: ₹32 / ₹45 — ₹10 stays open; extra ₹10 -> bounce + shake; 2nd + ghost ₹1 + hint; 3rd locks
+        check("%s after %d tens: ₹1 unlocks, ₹10 stays OPEN" % (sid, TP), (not off("n10")) and not off("c1"))
+        js("window.__said=[]; window.__ghosts=0; window.__shk=0"); js("drag(src('n10'), %s)" % T); time.sleep(1.2)
+        check("%s 1st extra ₹10: bounces back + drop zone shakes, no VO, no ghost" % sid,
+              placed() == TP and js("return window.__shk") >= 1 and not said() and js("return window.__ghosts") == 0, (placed(), js("return window.__shk"), said()))
+        js("window.__said=[]; window.__ghosts=0; window.__shk=0"); js("drag(src('n10'), %s)" % T); time.sleep(1.2)
+        check("%s 2nd extra ₹10: bounces + shake + ghost ₹1 + «ध्यान से देखिए! … %s रुपये बनाइए।»" % (sid, ["", "", "दो", "", "", "पाँच"][OP]),
+              placed() == TP and js("return window.__shk") >= 1 and js("return window.__ghosts") >= 1 and said()[:1] == ["vo_hint_ones_%d" % OP], (said(), js("return window.__ghosts")))
+        time.sleep(0.4); js("window.__shk=0"); js("drag(src('n10'), %s)" % T); time.sleep(1.2)
+        check("%s 3rd extra ₹10: bounces back and the ₹10 LOCKS" % sid, placed() == TP and off("n10") and not off("c1"), (placed(), off("n10")))
+        js("drag(src('n10'), %s)" % T); time.sleep(0.6)
+        check("%s a locked ₹10 cannot be dragged any more" % sid, placed() == TP)
     for i in range(OP):
         g1 = js("return window.__ghosts")
         js("drag(src('c1'), %s)" % T); time.sleep(0.9)

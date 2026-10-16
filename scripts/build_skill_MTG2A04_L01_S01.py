@@ -89,7 +89,10 @@ def s_sort(id_, target, kinds, shown):
     return {"id": id_, "phase": "guided", "eis": "iconic", "type": "MONEY_SORT",
             "prompt_hi": shown,
             "audio": {"prompt": vo("vo_%s_prompt" % id_.lower(), shown), "done": SORT_DONE},
-            "data": {"target": target, "wallet_img": "obj_wallet", "wallet_front_img": "obj_wallet_front",   # round 3b: two layers
+            # round 5 (user mockup): wooden table, open coin purse in two layers, balanced slots
+            "data": {"target": target, "wallet_img": "obj_purse", "wallet_front_img": "obj_purse_front", "board_img": "bg_wood",
+                     "layout": "coins" if all(not P[k].get("note") for k in kinds) else "mixed",
+                     "hand_nudge": id_ == "G1",          # SME: the hand on the ₹10 coin, first wallet screen only
                      "no_engine_idle": True, "idle_ms": 7000,
                      "pieces": [dict(P[k]) for k in kinds]}}
 
@@ -99,24 +102,33 @@ def s_sort10():   # «चलिए, दस रुपये छाँटते �
 def s_sort1():    # «चलिए, एक रुपये के सिक्के छांटिए।» — ₹1 among ₹2 / ₹5 / ₹10
     return s_sort("G2", 1, ["c1", "c1", "c1", "c1", "c2", "c2", "c5", "c5", "c10"], "चलिए, ₹1 के सिक्के छांटिए।")
 
-def s_make(id_, T, mode, done_id, done_line):
+def s_make(id_, T, mode, done_id, done_line, intro=None, keep_tens_open=False):
     """round 3 (SME): make ₹T on the existing build layout — no item picture, only the amount; the ₹10
     note + the ₹1 coin below; ₹10 first, then ₹1 (strict). mode "ghost" = ₹14 (a ghost before every
     move), "seq" = ₹32 / ₹45 (no ghost)."""
+    audio = {"prompt": vo("vo_b%d_prompt" % T, "₹10 और ₹1 से ₹%d बनाइए।" % T), "done": vo(done_id, done_line)}
+    extra = {}
+    if intro:                       # round 4 (SME, ₹14): the earlier version's line, spoken first
+        audio["intro"] = vo("vo_b%d_intro" % T, intro); extra["intro_text"] = intro
+    if keep_tens_open:              # round 4 (SME, ₹32 / ₹45): ₹10 stays open; extra ₹10 -> the hint ladder
+        extra["keep_tens_open"] = True
+        # the 2nd extra ₹10's line names the ₹ still missing (₹45: पाँच … एक; ₹32: दो, एक)
+        extra["ones_hint"] = {str(n): vo("vo_hint_ones_%d" % n, ("ध्यान से देखिए! अब ₹1 के सिक्कों से ₹%d बनाइए।" % n) if n > 1
+                                         else "ध्यान से देखिए! अब ₹1 का एक सिक्का रखिए।") for n in range(1, T % 10 + 1)}
     return {"id": id_, "phase": "guided", "eis": "enactive", "type": "MONEY_BUILD",
             "prompt_hi": "₹%d बनाइए।" % T,
-            "audio": {"prompt": vo("vo_b%d_prompt" % T, "₹10 और ₹1 से ₹%d बनाइए।" % T),
-                      "done": vo(done_id, done_line)},
+            "audio": audio,
             # round 3c: the «कुल» counter stays in the drop zone; the money starts below it (tray_down)
-            "data": {"mode": mode, "target": T, "no_item": True, "tray_down": True, "sources": ["n10", "c1"], "pop_sources": True,
-                     "no_engine_idle": True, "idle_ms": 7000, "eq_in_band": False}}
+            "data": dict({"mode": mode, "target": T, "no_item": True, "tray_down": True, "sources": ["n10", "c1"], "pop_sources": True,
+                          "no_engine_idle": True, "idle_ms": 7000, "eq_in_band": False}, **extra)}
 
 def s_b14():
-    return s_make("G3", 14, "ghost", "vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14।")
+    return s_make("G3", 14, "ghost", "vo_g2_done", "शाबाश! एक ₹10 का नोट और चार ₹1 के सिक्के — कुल मिलाकर बने ₹14।",
+                  intro="चलिए, ₹10 और ₹1 के सिक्कों से इस राशि को बनाते हैं।")
 def s_b32():
-    return s_make("G4", 32, "seq", "vo_b32_done", "शाबाश! तीन ₹10 के नोट और दो ₹1 के सिक्के — कुल मिलाकर बने ₹32।")
+    return s_make("G4", 32, "seq", "vo_b32_done", "शाबाश! तीन ₹10 के नोट और दो ₹1 के सिक्के — कुल मिलाकर बने ₹32।", keep_tens_open=True)
 def s_b45():
-    return s_make("G5", 45, "seq", "vo_b45_done", "शाबाश! चार ₹10 के नोट और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹45।")
+    return s_make("G5", 45, "seq", "vo_b45_done", "शाबाश! चार ₹10 के नोट और पाँच ₹1 के सिक्के — कुल मिलाकर बने ₹45।", keep_tens_open=True)
 
 # the shop (unchanged items / sequence / mechanics). Round 3: preceded by «अब आपकी बारी।» (phase
 # practice), opened by Swiftee's line, wooden basket, keep-and-correct retry with ghost hints.
@@ -211,7 +223,7 @@ def guards(slides, src):
     def walk(o):
         if isinstance(o, dict):
             for k, v in o.items():
-                if k in ("img", "item_img", "pari_img", "pari_full_img", "stall_img", "wallet_img", "wallet_front_img") and isinstance(v, str): need.add(v)
+                if k in ("img", "item_img", "pari_img", "pari_full_img", "stall_img", "wallet_img", "wallet_front_img", "board_img") and isinstance(v, str): need.add(v)
                 elif k in ("faces", "reveal_faces"): need.update(v)
                 else: walk(v)
         elif isinstance(o, list):

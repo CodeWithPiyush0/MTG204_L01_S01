@@ -480,6 +480,31 @@
 .mn-sort-field{flex:1;min-height:0;position:relative;}
 .mn-sp.is-note{width:180px;}
 .mn-sp.is-coin{width:100px;}
+/* ======================= round 5 (user mockup): wooden table, purse, hand ======================= */
+.mn-sort-card{background-color:#F6D7A2;background-image:none;background-size:cover;background-position:center;}
+.mn-sp.is-note{width:210px;}
+.mn-sp.is-coin{width:112px;}
+/* round 6 (user): shadows like the mockup — soft, offset down-right, warm brown on the wood */
+.mn-sp img{filter:drop-shadow(5px 8px 5px rgba(95,45,0,.36));}
+.mn-wallet .mn-wb{filter:drop-shadow(8px 12px 9px rgba(95,30,10,.36));}
+@keyframes mnSpIn{0%{transform:scale(.3) rotate(-8deg);opacity:0}55%{transform:scale(1.08) rotate(5deg);opacity:1}
+  80%{transform:scale(.97) rotate(-2deg)}100%{transform:scale(1) rotate(0)}}
+.mn-sp.mn-sp-in{animation:mnSpIn .55s cubic-bezier(.3,1.3,.5,1) both;}
+/* round 8 (user): a wrong note / coin WIGGLES — declared after the pop-in so it always wins; a clear
+   side-to-side shake with a slight turn */
+@keyframes mnSpWiggle{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-9px) rotate(-7deg)}
+  35%{transform:translateX(8px) rotate(6deg)}55%{transform:translateX(-6px) rotate(-4deg)}75%{transform:translateX(4px) rotate(2deg)}}
+.mn-sp.mn-wiggle,.mn-sp.mn-sp-in.mn-wiggle{animation:mnSpWiggle .55s ease-in-out 1;}
+.mn-star{position:absolute;color:#FFCB45;font-size:30px;line-height:1;opacity:.85;pointer-events:none;z-index:1;
+  text-shadow:0 2px 3px rgba(150,90,0,.25);}
+.mn-star.s1{left:22px;top:46%;}
+.mn-star.s2{right:26px;top:16px;font-size:26px;}
+.mn-star.s3{left:46%;bottom:12px;font-size:22px;}
+.mn-wallet{right:14px;bottom:10px;top:auto;margin-top:0;width:280px;aspect-ratio:700/543;}   /* round 6: bottom-right corner */
+.mn-wpiece{transition:transform .3s ease-out;}
+.mn-hand{position:absolute;width:74px;height:93px;z-index:8;pointer-events:none;transform-origin:38% 6%;
+  animation:mnHandTap 1s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));}
+@keyframes mnHandTap{0%,100%{transform:translate(10px,14px) scale(1)}45%{transform:translate(0,0) scale(.92)}60%{transform:translate(0,0) scale(.92)}}
 /* the team's wallet in two layers: the whole wallet behind, its front pocket in front; a collected
    piece is drawn between them (.mn-wfly) so it slides INTO the wallet */
 .mn-wallet{position:absolute;right:24px;bottom:14px;width:210px;aspect-ratio:1383/997;z-index:5;pointer-events:none;}
@@ -496,6 +521,17 @@
 /* round 3c (user): the cover's title is a separate picture, centred at the top of the cover */
 .start-gate .sg-card.sg-scene .sg-title-img{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:470px;height:auto;
   z-index:2;pointer-events:none;filter:drop-shadow(0 8px 12px rgba(80,40,0,.22));}
+
+/* round 4b (user): on ₹14 / ₹32 / ₹45 the notes row sat 2 px under the «कुल» counter — when the total turns
+   green and the notes glow (and both grow as the closing line names them) they ran into each other. The
+   money now starts ~19 px below the (67 px tall) counter, rows from the top of the tray (the coins row still clears
+   the bottom edge with room for its glow) */
+.mn-build.mn-tray-down .mn-target .mn-tray{top:104px;justify-content:flex-start;gap:12px;}
+.mn-build.mn-tray-down .mn-target .mn-piece.mn-placed.mn-note{width:140px;height:68px;}
+.mn-build.mn-tray-down .mn-target .mn-piece.mn-placed.mn-coin{width:72px;height:72px;}
+/* as the closing line enlarges them, the counter grows up-and-left and the notes row grows down — apart */
+.mn-build.mn-tray-down .mn-target .mn-total{transform-origin:100% 100%;}
+.mn-build.mn-tray-down .mn-target .mn-row-t{transform-origin:50% 0;}
 
 /* ============ CONFETTI, round 2s (user, 2026-10-08): copied verbatim from MTG2A04_L02_S01 style.css —
    the FLN animation kit confetti block + that lesson's [13] body-level layer (whole window, pieces 1.5x,

@@ -106,9 +106,16 @@ def main():
             im = Image.open(p)
             # ship at 2x the largest size the game ever draws it: items <= 150 px, Pari <= 410 px,
             # scenes <= 620 px wide on the 1333-px stage
-            cap = 1280 if stem.startswith("scn_") else (900 if stem.startswith("pari_") else 400)
-            if max(im.size) > cap: im.thumbnail((cap, cap), Image.LANCZOS)
-            im.save(os.path.join(DIST, "assets", "Images", stem + ".webp"), "WEBP", quality=85, method=6)
+            # round 6 (user: "notes or coins feel low quality (blurred)"): the currency ships at its ORIGINAL
+            # resolution and higher quality (the art is not touched) — the 400-px cap made the delivery copy
+            # stretch notes (694 px) and the purse / wood / title back up on any normal screen
+            if stem.startswith("cur_"): cap, q = None, 95
+            elif stem.startswith(("scn_", "bg_")): cap, q = 1600, 88
+            elif stem.startswith(("pari_", "title_")): cap, q = 900, 88
+            elif stem.startswith("obj_purse"): cap, q = 700, 90
+            else: cap, q = 400, 85
+            if cap and max(im.size) > cap: im.thumbnail((cap, cap), Image.LANCZOS)
+            im.save(os.path.join(DIST, "assets", "Images", stem + ".webp"), "WEBP", quality=q, method=6)
             n_img += 1
         elif ext == ".svg" and f in html:
             shutil.copy2(p, os.path.join(DIST, "assets", "Images", f))

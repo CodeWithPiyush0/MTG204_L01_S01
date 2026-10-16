@@ -299,8 +299,11 @@
    },
    "data": {
     "target": 10,
-    "wallet_img": "obj_wallet",
-    "wallet_front_img": "obj_wallet_front",
+    "wallet_img": "obj_purse",
+    "wallet_front_img": "obj_purse_front",
+    "board_img": "bg_wood",
+    "layout": "mixed",
+    "hand_nudge": true,
     "no_engine_idle": true,
     "idle_ms": 7000,
     "pieces": [
@@ -360,8 +363,11 @@
    },
    "data": {
     "target": 1,
-    "wallet_img": "obj_wallet",
-    "wallet_front_img": "obj_wallet_front",
+    "wallet_img": "obj_purse",
+    "wallet_front_img": "obj_purse_front",
+    "board_img": "bg_wood",
+    "layout": "coins",
+    "hand_nudge": false,
     "no_engine_idle": true,
     "idle_ms": 7000,
     "pieces": [
@@ -413,7 +419,8 @@
    "prompt_hi": "₹14 बनाइए।",
    "audio": {
     "prompt": "vo_b14_prompt",
-    "done": "vo_g2_done"
+    "done": "vo_g2_done",
+    "intro": "vo_b14_intro"
    },
    "data": {
     "mode": "ghost",
@@ -428,6 +435,7 @@
     "no_engine_idle": true,
     "idle_ms": 7000,
     "eq_in_band": false,
+    "intro_text": "चलिए, ₹10 और ₹1 के सिक्कों से इस राशि को बनाते हैं।",
     "done_cues": {
      "tens": [
       606,
@@ -468,6 +476,11 @@
     "no_engine_idle": true,
     "idle_ms": 7000,
     "eq_in_band": false,
+    "keep_tens_open": true,
+    "ones_hint": {
+     "1": "vo_hint_ones_1",
+     "2": "vo_hint_ones_2"
+    },
     "done_cues": {
      "tens": [
       656,
@@ -508,6 +521,14 @@
     "no_engine_idle": true,
     "idle_ms": 7000,
     "eq_in_band": false,
+    "keep_tens_open": true,
+    "ones_hint": {
+     "1": "vo_hint_ones_1",
+     "2": "vo_hint_ones_2",
+     "3": "vo_hint_ones_3",
+     "4": "vo_hint_ones_4",
+     "5": "vo_hint_ones_5"
+    },
     "done_cues": {
      "tens": [
       616,
@@ -651,10 +672,16 @@
    "vo_g2_prompt": "assets/Audio/vo_g2_prompt.ogg",
    "vo_b14_prompt": "assets/Audio/vo_b14_prompt.ogg",
    "vo_g2_done": "assets/Audio/vo_g2_done.ogg",
+   "vo_b14_intro": "assets/Audio/vo_b14_intro.ogg",
    "vo_b32_prompt": "assets/Audio/vo_b32_prompt.ogg",
    "vo_b32_done": "assets/Audio/vo_b32_done.ogg",
+   "vo_hint_ones_1": "assets/Audio/vo_hint_ones_1.ogg",
+   "vo_hint_ones_2": "assets/Audio/vo_hint_ones_2.ogg",
    "vo_b45_prompt": "assets/Audio/vo_b45_prompt.ogg",
    "vo_b45_done": "assets/Audio/vo_b45_done.ogg",
+   "vo_hint_ones_3": "assets/Audio/vo_hint_ones_3.ogg",
+   "vo_hint_ones_4": "assets/Audio/vo_hint_ones_4.ogg",
+   "vo_hint_ones_5": "assets/Audio/vo_hint_ones_5.ogg",
    "vo_m_sel_apple": "assets/Audio/vo_m_sel_apple.ogg",
    "vo_m_sel_oranges": "assets/Audio/vo_m_sel_oranges.ogg",
    "vo_m_ok_oranges": "assets/Audio/vo_m_ok_oranges.ogg",
@@ -699,10 +726,16 @@
    "vo_g2_prompt": "चलिए, एक रुपये के सिक्के छांटिए।",
    "vo_b14_prompt": "दस रुपये और एक रुपये से चौदह रुपये बनाइए।",
    "vo_g2_done": "शाबाश! एक दस रुपये का नोट और चार एक रुपये के सिक्के, कुल मिलाकर बने चौदह रुपये।",
+   "vo_b14_intro": "चलिए, दस रुपये और एक रुपये के सिक्कों से इस राशि को बनाते हैं।",
    "vo_b32_prompt": "दस रुपये और एक रुपये से बत्तीस रुपये बनाइए।",
    "vo_b32_done": "शाबाश! तीन दस रुपये के नोट और दो एक रुपये के सिक्के, कुल मिलाकर बने बत्तीस रुपये।",
+   "vo_hint_ones_1": "ध्यान से देखिए! अब एक रुपये का एक सिक्का रखिए।",
+   "vo_hint_ones_2": "ध्यान से देखिए! अब एक रुपये के सिक्कों से दो रुपये बनाइए।",
    "vo_b45_prompt": "दस रुपये और एक रुपये से पैंतालीस रुपये बनाइए।",
    "vo_b45_done": "शाबाश! चार दस रुपये के नोट और पाँच एक रुपये के सिक्के, कुल मिलाकर बने पैंतालीस रुपये।",
+   "vo_hint_ones_3": "ध्यान से देखिए! अब एक रुपये के सिक्कों से तीन रुपये बनाइए।",
+   "vo_hint_ones_4": "ध्यान से देखिए! अब एक रुपये के सिक्कों से चार रुपये बनाइए।",
+   "vo_hint_ones_5": "ध्यान से देखिए! अब एक रुपये के सिक्कों से पाँच रुपये बनाइए।",
    "vo_m_sel_apple": "सेब की कीमत चौदह रुपये है। चौदह रुपये बनाइए।",
    "vo_m_sel_oranges": "संतरे की कीमत पच्चीस रुपये है। पच्चीस रुपये बनाइए।",
    "vo_m_ok_oranges": "बहुत बढ़िया!",
@@ -732,10 +765,16 @@
    "vo_g2_prompt": 2370,
    "vo_b14_prompt": 4290,
    "vo_g2_done": 7170,
+   "vo_b14_intro": 4690,
    "vo_b32_prompt": 3770,
    "vo_b32_done": 6810,
+   "vo_hint_ones_1": 3170,
+   "vo_hint_ones_2": 4890,
    "vo_b45_prompt": 4050,
    "vo_b45_done": 7010,
+   "vo_hint_ones_3": 4210,
+   "vo_hint_ones_4": 4690,
+   "vo_hint_ones_5": 4090,
    "vo_m_sel_apple": 3530,
    "vo_m_sel_oranges": 4210,
    "vo_m_ok_oranges": 1210,
@@ -756,6 +795,7 @@
    "vo_cel_prompt": 2942
   },
   "image": {
+   "bg_wood": "assets/Images/bg_wood.png",
    "cur_coin1": "assets/Images/cur_coin1.png",
    "cur_coin10": "assets/Images/cur_coin10.png",
    "cur_coin10_glow": "assets/Images/cur_coin10_glow.png",
@@ -775,9 +815,9 @@
    "obj_carrots": "assets/Images/obj_carrots.png",
    "obj_grapes": "assets/Images/obj_grapes.png",
    "obj_oranges": "assets/Images/obj_oranges.png",
+   "obj_purse": "assets/Images/obj_purse.png",
+   "obj_purse_front": "assets/Images/obj_purse_front.png",
    "obj_tomatoes": "assets/Images/obj_tomatoes.png",
-   "obj_wallet": "assets/Images/obj_wallet.png",
-   "obj_wallet_front": "assets/Images/obj_wallet_front.png",
    "pari_basket": "assets/Images/pari_basket.png",
    "pari_basket_full": "assets/Images/pari_basket_full.png",
    "scn_landing": "assets/Images/scn_landing.png",
@@ -789,6 +829,7 @@
  },
  "preload": {
   "images": [
+   "assets/Images/bg_wood.png",
    "assets/Images/cur_coin1.png",
    "assets/Images/cur_coin10.png",
    "assets/Images/cur_coin10_glow.png",
@@ -808,9 +849,9 @@
    "assets/Images/obj_carrots.png",
    "assets/Images/obj_grapes.png",
    "assets/Images/obj_oranges.png",
+   "assets/Images/obj_purse.png",
+   "assets/Images/obj_purse_front.png",
    "assets/Images/obj_tomatoes.png",
-   "assets/Images/obj_wallet.png",
-   "assets/Images/obj_wallet_front.png",
    "assets/Images/pari_basket.png",
    "assets/Images/pari_basket_full.png",
    "assets/Images/play_btn.svg",
@@ -859,6 +900,7 @@
    "assets/Audio/sfx_pop.ogg",
    "assets/Audio/sfx_tap.ogg",
    "assets/Audio/sfx_wrong.ogg",
+   "assets/Audio/vo_b14_intro.ogg",
    "assets/Audio/vo_b14_prompt.ogg",
    "assets/Audio/vo_b32_done.ogg",
    "assets/Audio/vo_b32_prompt.ogg",
@@ -868,6 +910,11 @@
    "assets/Audio/vo_g1_prompt.ogg",
    "assets/Audio/vo_g2_done.ogg",
    "assets/Audio/vo_g2_prompt.ogg",
+   "assets/Audio/vo_hint_ones_1.ogg",
+   "assets/Audio/vo_hint_ones_2.ogg",
+   "assets/Audio/vo_hint_ones_3.ogg",
+   "assets/Audio/vo_hint_ones_4.ogg",
+   "assets/Audio/vo_hint_ones_5.ogg",
    "assets/Audio/vo_landing.ogg",
    "assets/Audio/vo_m_done.ogg",
    "assets/Audio/vo_m_idle.ogg",

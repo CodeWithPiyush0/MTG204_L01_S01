@@ -371,3 +371,48 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 | 3d-1 | "Only the ₹14 amount-making screen will have ghost animations" — ₹32 / ₹45 showed a ghost in their 7 s idle nudge | ✅ | ₹32 / ₹45 nudge = glow + chime only; ₹14 keeps its ghost. Real audio on dist: 0 ghosts on ₹32 / ₹45 after 8.5 s idle; `_drive_r3`: ₹32 / ₹45 glow + chime, no ghost; ₹14 ghost + chime. |
 | 3d-2 | "All text … must be synchronised with the VO" — the sorting instruction showed 2 s before Swiftee said it | ✅ | The band is empty while the pieces arrive and the instruction appears as the line starts. Real audio on dist: empty at open, «चलिए, ₹10 छाँटते हैं।» / «चलिए, ₹1 के सिक्के छांटिए।» shown at 2.0 s, when the VO starts. |
 - Dist 9.19 MB; `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` 0 FAIL on dist.
+
+## Round 4 — SME review (2026-10-16): ₹14 line + ₹32 / ₹45 hint ladder
+| # | Ask (user's summary of the SME notes) | Status | Proof |
+|---|---|---|---|
+| 4-1 | Page 4 (₹14): nothing else changes — add Swiftee's earlier line «चलिए, दस रुपये और एक रुपये के सिक्कों से इस राशि को बनाते हैं।» | ✅ code · ⏳ VO | Plays first (the panel shows it), then «₹14 बनाइए।» and the unchanged ghost flow. `_drive_r3` (voice mocked): order + panel text pass. Clip `vo_b14_intro` not recorded yet (see below). |
+| 4-2 | Pages 5 / 6 (₹32 / ₹45): ₹10 first, ₹1 locked; after 3 / 4 notes ₹1 unlocks but ₹10 is NOT locked; ₹1 completes the amount (2 / 5 coins) | ✅ | `data.keep_tens_open`. `_drive_r3`: after the tens ₹1 unlocks and ₹10 stays open; completes at ₹32 / ₹45. |
+| 4-3 | Extra ₹10: always bounces back with the drop zone shaking. 1st: no VO · 2nd: ghost on ₹1 + «ध्यान से देखिए! अब एक रुपये के सिक्कों से पाँच रुपये बनाइए।» · 3rd: ₹10 locks | ✅ code · ⏳ VO | `_drive_r3` on both screens: 1st bounce + shake, no VO / ghost; 2nd bounce + shake + ghost ₹1 + the line (₹32 «…दो रुपये…», ₹45 «…पाँच रुपये…»); 3rd bounce + ₹10 locked, can't be dragged again. The line names the ₹ still missing (fewer if some ₹1 are already in; «…₹1 का एक सिक्का रखिए।» when one is left). Clips `vo_hint_ones_1…5` not recorded yet. |
+- ⏳ BLOCKED: Gemini TTS returns HTTP 403 "Your API key was reported as leaked" — the key in `.env` is disabled by Google. After a new key is put in `.env`: `gen_tts.py card.json --voice Leda --ext ogg` (records only the 6 missing clips), rebuild, `make_dist.py`, run the suites. Dist NOT rebuilt (it is still the round-3d build).
+- Not changed (not in the user's list): the wallet-screen redesign; the ₹32 / ₹45 idle nudge stays glow + chime (no ghost, round 3d).
+
+## Round 4b — notes vs the «कुल» counter, again (user, 2026-10-16)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 4b-1 | ₹45: the notes run into the counter (when finished) | ✅ | The counter is 67 px tall and the notes row started 2–3 px under it; with the green finish ring, the glow and the closing-line enlargement they touched. On ₹14 / ₹32 / ₹45 the money now starts 104 px down (rows from the top of the tray), notes 140 px / coins 72 px, and the counter grows up-left / the notes row down when lit. Measured on all three, finished AND lit: 23 px gap, 0 overlaps, 0 outside the drop zone, coins 30 px clear of the bottom. |
+- ⏳ VO still blocked: `.env` (unchanged since 17 Sep) holds one key, `GKEY`, which Google reports as leaked (HTTP 403). The 6 round-4 clips + the dist rebuild wait for a new key.
+
+## Round 5 — sorting screens to the user's mockup (2026-10-16)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 5-1 | Pages 2 / 3 laid out like the mockup; keep the REAL notes / coins | ✅ | Wooden table (`bg_wood`, the inner wood of the user's board) inside the blue-bordered card, the panel kept above; a few soft stars. Pieces in balanced slots — the mockup's 3 × 3 note/coin pattern on ₹10, a 3 × 3 coin pattern on ₹1 — denominations shuffled into their slots each visit, the layout mirrored on some visits, slight tilts, a small wobble as each pops in. 40 layouts: 9/9 placed, 0 on the purse, 0 overlapping, 0 outside the card. |
+| 5-2 | The mockup's purse; money must feel like it goes INSIDE | ✅ | The user's kiss-lock purse, open, on the right (280 px). Two layers: `obj_purse` (whole) and `obj_purse_front` (front body + gold rim, cut along the rim's top edge by its colour). A collected piece is lifted over the mouth, then drops in behind the rim. |
+| 5-3 | SME: hand nudge on the ₹10 coin, first wallet screen | ✅ | The standard hand (`nudge_hand_new.svg`) taps a ₹10 COIN once the instruction ends, ~4 s; any tap ends it; page 3 has none. `_drive_r3`: hand on a ₹10 coin on G1, gone at the first tap, absent on G2. |
+- New / renamed: `obj_purse_src.png` (was "Glossy Magenta Kiss-Lock Coin Purse.png") → `obj_purse.png` + `obj_purse_front.png`; `bg_wood_src.png` (was "Glossy Cartoon Wooden Signboard.png") → `bg_wood.png`. The golden wallet files stay on disk, no longer used.
+- ⏳ Still waiting on a working Gemini key for the 6 round-4 clips; dist not rebuilt (it is the round-3d build).
+
+## Round 6 — purse corner, shadows, money inside the purse, sharper money (user, 2026-10-16)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 6-1 | Purse in the bottom-right corner | ✅ | 14 px from the card's right edge, 10 px from its bottom. The layout reworked around it: top rows run the full width (4 pieces), the bottom row stays left of the purse. 40 layouts: 9/9 placed, 0 on the purse, 0 overlapping, 0 outside the card. |
+| 6-2 | Shadows on every note / coin and the purse, like the mockup | ✅ | Soft warm-brown drop shadows offset down-right (pieces 5/8 px, purse 8/12 px). |
+| 6-3 | Money visible inside the purse (it has an open mouth) | ✅ | A collected piece is lifted over the mouth, drops in and STAYS: it rests in the opening with ~60 % above the front rim, slightly tilted, beside the earlier ones (5 resting spots). After all are collected: 4 pieces visible in the purse (both screens). |
+| 6-4 | Notes / coins look low quality (blurred) — without changing the original currency | ✅ code · ⏳ dist | Cause: the delivery copy shrank every non-scene picture to 400 px at quality 85 — the notes (694 px), the purse, the wood and the title were then stretched back up on any normal screen. `make_dist.py` now ships the currency at its ORIGINAL resolution, quality 95 (the art is untouched), the purse at 700 px, the wood / cover at up to 1600 px, the title / Pari at 900 px. Notes / coins on the sorting screens drawn a little larger (210 / 112 px). Estimated dist: ~9.9 MB (limit 10). |
+- ⚠ The delivery-copy build stops at its own check while the 6 round-4 clips are missing (and it had already cleared `dist/`): `dist/` was restored from git to the last committed build. It will be rebuilt once the clips exist.
+
+## Round 7 — new Gemini key; pending work completed (2026-10-16)
+- New key (`GKEY`, ends …Fo) verified (HTTP 200, TTS + image models reachable) and written into every `.env` under `F:\CG Game\FLN` — 6 files: File3 HI02H11_L02_S02 3_CURRENT_BUILD, File4 MTG204_L01_S01, File5 3_BUILD + _DRAFT_ORIGINAL/3_BUILD, Matra Tokri-BV G1, File6 MTG2A01_L04_S01. Only the `GKEY` line changed in each; each re-tested HTTP 200.
+- Round 4 VO ✅: `vo_b14_intro` «चलिए, दस रुपये और एक रुपये के सिक्कों से इस राशि को बनाते हैं।» and `vo_hint_ones_1…5` («ध्यान से देखिए! अब एक रुपये के सिक्कों से … रुपये बनाइए।» / «…₹1 का एक सिक्का रखिए।») — Leda, all on the primary voice (no fallback). EAR-CHECK the 6.
+- Round 6 dist ✅: rebuilt with the full-resolution currency (notes 694 px, q95), purse 700 px, wood 1500 px, title 900 px — 9.92 MB (limit 10). Note sharpness on a 2× screen, dist vs working copy: 5871 vs 5912 (before: 4312 vs 5134).
+- On dist: `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` (lip-sync 99.4 %) — 0 FAIL.
+
+## Round 8 — the wrong-tap wiggle on the sorting screens (user, 2026-10-16)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 8-1 | Pages 2 / 3: a wrong note / coin should wiggle | ✅ fixed | Bug since round 5: each piece kept its pop-in animation (`mn-sp-in`, fill "both"), and that rule — same specificity, declared later — overrode the wiggle, so a wrong tap only played the sound. The pop-in class now comes off when it ends (and on any wrong tap); the wiggle (`mnSpWiggle`: a side-to-side shake with a slight turn, 0.55 s) is declared after it. Measured on dist: the running animation is the wiggle, 30–35 distinct positions in 0.6 s, on both screens. `_drive_r3` now checks the animation itself, not just the class. |
+- Dist 9.92 MB; `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` 0 FAIL on dist.
