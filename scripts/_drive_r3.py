@@ -71,6 +71,11 @@ check("T1 only the note + coin (no list / extra images)", js("return document.qu
       and js("return document.querySelectorAll('#slideHost img:not(.mn-intro img)').length") == js("return [...document.querySelectorAll('#slideHost img')].filter(i=>!i.closest('.mn-intro')).length"))
 time.sleep(0.6)
 check("T1 arrow enabled after the VO", nav_on())
+lab = js("""const s=document.getElementById('stage').getBoundingClientRect().width/1333;
+  return [...document.querySelectorAll('.mn-intro-it')].map(it=>{const l=it.querySelector('.mn-intro-lbl').getBoundingClientRect(), i=it.querySelector('img').getBoundingClientRect();
+    const tm = it.classList.contains('is-note') ? 21/326 : 7/210; return [Math.round(l.width/s), Math.round(l.height/s), Math.round(l.top/s), Math.round((i.top + i.height*tm - l.bottom)/s)]})""")
+check("T1 «₹10» / «₹1» labels: same box, same line, same gap to their art (round 9)",
+      lab[0][:3] == lab[1][:3] and abs(lab[0][3] - lab[1][3]) <= 2 and 8 <= lab[0][3] <= 16, lab)
 
 # ---- sorting
 def sort_screen(sid, target, ncorrect):
@@ -97,6 +102,9 @@ def sort_screen(sid, target, ncorrect):
     time.sleep(0.3)
     hand = js("return !!document.querySelector('.mn-hand')")
     check("%s hand nudge %s" % (sid, "on a ₹10 coin after the instruction" if sid == "G1" else "absent (first wallet screen only)"), hand == (sid == "G1"), hand)
+    if sid == "G1":
+        check("G1 the hand's ₹10 coin glows golden, no ring (round 12)",
+              js("const c=document.querySelector('.mn-sp.mn-sp-handglow'); return !!c && +c.dataset.value===10 && getComputedStyle(c.querySelector('img')).animationName==='mnSortGlow' && getComputedStyle(c,'::before').content==='none'"))
     js("const w=[...document.querySelectorAll('.mn-sp')].find(e=>+e.dataset.value!==arguments[0]); w.click(); window.__w=w;", target); time.sleep(0.2)
     if sid == "G1": check("G1 the hand goes at the first tap", not js("return !!document.querySelector('.mn-hand')"))
     check("%s wrong piece: wiggles + incorrect sound, stays" % sid,

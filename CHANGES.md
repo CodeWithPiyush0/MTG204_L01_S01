@@ -416,3 +416,35 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 |---|---|---|---|
 | 8-1 | Pages 2 / 3: a wrong note / coin should wiggle | ✅ fixed | Bug since round 5: each piece kept its pop-in animation (`mn-sp-in`, fill "both"), and that rule — same specificity, declared later — overrode the wiggle, so a wrong tap only played the sound. The pop-in class now comes off when it ends (and on any wrong tap); the wiggle (`mnSpWiggle`: a side-to-side shake with a slight turn, 0.55 s) is declared after it. Measured on dist: the running animation is the wiggle, 30–35 distinct positions in 0.6 s, on both screens. `_drive_r3` now checks the animation itself, not just the class. |
 - Dist 9.92 MB; `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` 0 FAIL on dist.
+
+## Round 9 — SME final-review notes (2026-10-19)
+| # | SME note | Status | Proof |
+|---|---|---|---|
+| 9-1 | «₹10» / «₹1» labels: closer to their currency; same size, spacing, alignment | ✅ | Before: boxes 169 vs 130 px wide, tops 9 px apart, the coin's round top made «₹1» float. Now: both boxes 170 × 96, on one line (top 187 px), each 12 px from the VISIBLE top of its own art (allowing for the note file's 13 px / the coin's 7 px transparent strip). Measured on the screen. (No reference image was shared — built to this spec.) |
+| 9-2 | Brighter, wider yellow glow on the highlighted ₹10 coin (wooden background) | ✅ | Sorting screens: a pulsing three-layer golden halo — pale core 12 px, gold 26 px, amber 48 px (was a single 14 px glow) — for the 7 s idle nudge AND on the ₹10 coin the hand points at, for as long as the hand is up. (Her generated reference image was not shared — tuned to "clearly visible on the wood".) |
+| 9-3 | "The file is lagging — file or internet?" | ✅ checked, no change | Profiled every screen on the delivery copy with real audio. Normal CPU: 56–60 fps everywhere, no long tasks (one 0.2 s hitch opening the shop stall). 4× slowed CPU (low-end tablet): smooth except the confetti moments (end of a sort, end of a build) and the celebration, ~28–41 fps. Isolated: the confetti alone takes a quiet screen to ~28 fps at 4×; stars / two-sided pieces / 3D / animation technique make no difference — it is the 100 pieces themselves (60 pieces → ~39 fps). A Web-Animations rewrite gave no gain and was reverted (the confetti stays the MTG2A04_L02_S01 kit verbatim). Conclusion: on a normal machine the file is smooth; the delay she saw is most likely loading (~9.9 MB is downloaded before the child enters — gone when PAL preloads it). Option if the team wants it: fewer confetti pieces on low-power devices only. |
+| 9-4 | ₹32 / ₹45: 3rd wrong attempt / tolerance = the lock (three-layer feedback) | N/C | Already built that way (round 4). |
+| 9-5 | VO call + manifest | ⏳ | To be scheduled; the manifest can be generated from `scripts/VO_LIST.md` (37 clips). |
+- Dist 9.92 MB; on dist: `_drive_r3` (incl. the new label + glow checks), `_gate_r2p`, `_bgm_check`, `_celcheck` (lip-sync 99.4 %) — 0 FAIL. (One earlier run died when Chrome updated itself mid-test; re-run clean.)
+
+## Round 10 — coin height on page 1, glow colour on pages 2–3 (user, 2026-10-19)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 10-1 | Page 1: the ₹1 coin as tall as the ₹10 note | ✅ | Matched on the visible art (the files' transparent strips excluded): note 173 px, coin 174 px (coin drawn 187 px, was 220); tops (306) and bottoms (479 / 480) line up; both labels still 12 px above their art, same box, same line. |
+| 10-2 | Pages 2–3: the yellow glow is not visible on the wood — another colour | ✅ | The highlight is now a white core with a sky-blue halo (10 / 24 / 46 px, pulsing) — the strongest contrast to the warm wood, matching the card's blue border. Used for the 7 s idle nudge and the coin under the hand. |
+- Dist 9.92 MB; on dist: `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` (lip-sync 100 %) — 0 FAIL.
+
+## Round 11 — the highlight back to gold, made visible (user, 2026-10-19)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 11-1 | "The blue highlight does not look good — bright golden, and make sure it is visible" | ✅ | A plain yellow halo melted into the yellow-orange wood, so the gold now has an EDGE: on the piece, a thin dark-amber outline + pale-gold core (12 px) + deep-gold halo (28 px); around it, a bright golden RING (5 px, dark-amber edged, glowing) — round for coins, rounded for notes, tilted with the piece. Both pulse — the 7 s idle nudge (×3) and the coin under the hand (while it shows). Screens checked: ₹10 coin under the hand, a ₹10 note and a ₹1 coin on the idle nudge. |
+
+## Round 12 — golden glow without a ring (user, 2026-10-19)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 12-1 | Use the golden / yellow highlight from the user's screenshot (the round-9 look), no ring | ✅ | Round 9's halo restored exactly — pale-gold core 12 px, gold 26 px, amber 48 px, pulsing; round 11's ring and dark outline removed (round 10's blue / round 11's ring are gone). Idle nudge + the coin under the hand. |
+
+## Round 13 — brighter golden highlight (user, 2026-10-19)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 13-1 | "Make it more bright, it's still not visible" | ✅ | Same golden colours, stacked (each glow also lights the ones before it): a dense bright-yellow edge (4 px ×2) at the piece's outline, then gold 12 / 24 / 44 px; the piece itself lit a little at the peak (brightness 1.12); the low point keeps a gold glow (never plain). Still no ring. The card now clips at its blue border, so a glow near the edge never spills outside it. Checked on the ₹10 coin, a ₹10 note and a ₹1 coin. |

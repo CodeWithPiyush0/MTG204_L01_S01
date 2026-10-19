@@ -442,6 +442,16 @@
   background:#FDE39A;border:4px solid #F4B63F;border-radius:22px;padding:12px 30px;}
 .mn-intro-it.is-note img{width:430px;height:auto;filter:drop-shadow(0 12px 18px rgba(11,61,140,.18));}
 .mn-intro-it.is-coin img{width:220px;height:auto;filter:drop-shadow(0 12px 18px rgba(11,61,140,.18));}
+/* round 9 (SME): «₹10» and «₹1» — the same box, on one line, each ~12 px from the visible top of its own art
+   (the note file has a 13 px transparent strip at the top when drawn, the coin 7 px) */
+.mn-intro{align-items:flex-start;}
+.mn-intro-it{gap:0;}
+.mn-intro-lbl{min-width:170px;box-sizing:border-box;text-align:center;}
+.mn-intro-it.is-note img{margin-top:-1px;}
+.mn-intro-it.is-coin img{margin-top:5px;}
+/* round 10 (user): the ₹1 coin as TALL as the ₹10 note — matched on the visible art (note 430 px wide -> its
+   art is ~174 px tall; the coin file's art fills 195 of its 210 px -> 187 px box), gap to «₹1» kept at 12 px */
+.mn-intro-it.is-coin img{width:187px;margin-top:6px;}
 
 /* sorting (MONEY_SORT): notes and coins scattered over the field, each with a small tilt (on the
    picture, so the pop / wiggle animations on the piece never fight it); the wallet sits bottom-right */
@@ -456,7 +466,21 @@
 @keyframes mnWiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-10deg)}40%{transform:rotate(9deg)}
   60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
 .mn-sp.mn-wiggle{animation:mnWiggle .5s ease-in-out 1;}
-.mn-sp.mn-sp-hint img{animation:mnHintGlow 1s ease-in-out 3;}
+/* round 9 (SME): the highlighted ₹10 coin's glow, brighter and wider so it reads on the wood — a pale core,
+   a gold band and a wide amber halo (~48 px), pulsing; the same three shadows at rest keep the transition smooth */
+/* round 12 (user, with a screenshot of the round-9 look: "use this type of golden/yellow colour on the highlight,
+   without any ring"): the round-9 halo restored exactly — a pale-gold core, a gold band and a wide amber glow,
+   pulsing; no ring, no outline */
+/* round 13 (user: "make it more bright, it's still not visible"): the same golden colours, STACKED — each
+   drop-shadow also glows the ones before it: a dense bright-yellow edge right at the piece's outline, then a
+   wide gold halo; the piece itself is lit a little (brightness) at the peak; the low point keeps a gold glow */
+@keyframes mnSortGlow{
+  0%,100%{filter:brightness(1.04) drop-shadow(0 0 3px rgba(255,250,190,.95)) drop-shadow(0 0 3px rgba(255,240,90,.9)) drop-shadow(0 0 8px rgba(255,225,0,.85))
+                 drop-shadow(0 0 16px rgba(255,205,0,.7)) drop-shadow(0 0 28px rgba(255,185,0,.55));}
+  50%{filter:brightness(1.12) drop-shadow(0 0 4px rgba(255,255,220,1)) drop-shadow(0 0 4px rgba(255,248,120,1)) drop-shadow(0 0 12px rgba(255,232,0,1))
+             drop-shadow(0 0 24px rgba(255,212,0,1)) drop-shadow(0 0 44px rgba(255,190,0,1));}}
+.mn-sp.mn-sp-hint img{animation:mnSortGlow 1s ease-in-out 3;}
+.mn-sp.mn-sp-handglow img{animation:mnSortGlow 1.1s ease-in-out infinite;}
 .mn-wallet{position:absolute;right:3%;bottom:2%;width:190px;pointer-events:none;}
 .mn-wallet img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 14px rgba(84,46,12,.22));}
 .mn-wallet.mn-bump{animation:mnBump .35s ease-out 1;}
@@ -482,6 +506,7 @@
 .mn-sp.is-coin{width:100px;}
 /* ======================= round 5 (user mockup): wooden table, purse, hand ======================= */
 .mn-sort-card{background-color:#F6D7A2;background-image:none;background-size:cover;background-position:center;}
+.mn-sort-card{overflow:hidden;}   /* round 13: a strong glow near the edge stays inside the card's blue border */
 .mn-sp.is-note{width:210px;}
 .mn-sp.is-coin{width:112px;}
 /* round 6 (user): shadows like the mockup — soft, offset down-right, warm brown on the wood */

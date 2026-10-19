@@ -859,8 +859,9 @@
       });
       /* round 5 (SME: "On the first wallet screen, show a hand nudge on the ₹10 coin to guide the child to
          tap it"): when the instruction ends, the standard hand taps a ₹10 COIN a few times; any tap ends it */
-      let hand = null;
-      const dropHand = ()=>{ if(hand){ hand.remove(); hand = null; } };
+      let hand = null, handCoin = null;
+      /* round 9 (SME): the coin the hand points at also glows (the brighter golden halo) while the hand is up */
+      const dropHand = ()=>{ if(hand){ hand.remove(); hand = null; } if(handCoin){ handCoin.classList.remove("mn-sp-handglow"); handCoin = null; } };
       const showHand = ()=>{
         if(!d.hand_nudge || done || got) return;
         const c = pieces.find(e => +e.dataset.value === T && e.classList.contains("is-coin") && !e.classList.contains("mn-sp-gone"))
@@ -871,6 +872,7 @@
         hand.style.left = (c.offsetLeft + c.offsetWidth / 2 - hw * 0.38) + "px";
         hand.style.top = (c.offsetTop + c.offsetHeight / 2 - hh * 0.06) + "px";
         field.appendChild(hand);
+        handCoin = c; c.classList.add("mn-sp-handglow");
         setTimeout(()=>{ if(hand) dropHand(); }, 4200);
       };
       root.addEventListener("pointerdown", dropHand, true);
