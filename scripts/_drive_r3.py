@@ -206,18 +206,23 @@ s = said()
 check("shop opens with Swiftee's line, then the instruction", s[:2] == ["vo_m_intro", "vo_m_prompt"], s)
 mk = "document.querySelector('.sg-make2')"
 js("document.querySelectorAll('.sg-cell2')[0].click()"); time.sleep(2.0)          # ₹14
+js("""window.__sshk=0; new MutationObserver(ms=>ms.forEach(m=>{ const t=m.target; if(t.classList && t.classList.contains('mn-target') && t.classList.contains('mn-shake')) window.__sshk++; }))
+      .observe(document.getElementById('stage'),{attributes:true, subtree:true, attributeFilter:['class']});""")
 def chk():
-    js("window.__said=[]; document.querySelector('.sg-checkpill').click()"); time.sleep(1.4)
+    js("window.__said=[]; window.__sshk=0; document.querySelector('.sg-checkpill').click()"); time.sleep(1.4)
 js("drag(src('c1', %s), %s)" % (mk, T)); time.sleep(4.0)                           # + the one-time tip
 chk()
 check("shop 1st wrong (less): «ओहो! रुपये कम हैं…», money stays", said()[:1] == ["vo_m_less1"] and placed() == 1, (said(), placed()))
+check("shop wrong «जाँचें»: the drop zone shakes (round 14)", js("return window.__sshk") >= 1, js("return window.__sshk"))
 chk()
 check("shop 2nd wrong (less): «ओहो! अभी भी … कम …», money stays", said()[:1] == ["vo_m_less2"] and placed() == 1, (said(), placed()))
 chk(); time.sleep(0.8)
 check("shop 3rd wrong: «फिर से कोशिश करें।» and the tray resets", said()[:1] == ["vo_m_retry"] and placed() == 0
       and js("return document.getElementById('promptText').textContent") in ("फिर से कोशिश करें।", "₹14 बनाइए।"), (said(), placed()))
+js("window.__sshk=0")
 for _ in range(2): js("drag(src('n10', %s), %s)" % (mk, T)); time.sleep(0.6)
 check("after the reset the silent caps hold: a 2nd ₹10 for ₹14 is refused", placed() == 1, placed())
+check("shop refused piece: bounces back and the drop zone shakes (round 14)", js("return window.__sshk") >= 1, js("return window.__sshk"))
 chk()
 check("after the reset the count starts again: 1st wrong «ओहो! रुपये कम हैं…»", said()[:1] == ["vo_m_less1"], said())
 # "too much" on a fresh item (no caps yet): ₹25 with three ₹10

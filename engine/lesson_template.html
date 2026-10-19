@@ -18142,10 +18142,11 @@ if(document.fonts && document.fonts.load){
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
           canStart: (kind)=> !working && !solved && !tipping && !srcs[kind].classList.contains("mn-off"),
-          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ rejectPiece(f, src, amt); return; } put(kind, f); },
+          /* round 14 (user): a refused piece in the shop also shakes the drop zone, as on ₹32 / ₹45 */
+          onDrop: (kind, f, src)=>{ if(!allowed(kind)){ rejectPiece(f, src, amt, true); return; } put(kind, f); },
           /* round 2p: tap works too (user: "giving the user both interactions") — same rules as a drop */
           onTap: (kind, src)=>{
-            if(!allowed(kind)){ rejectPiece(tapFloat(kind, src), src, amt); return; }   /* round 2t */
+            if(!allowed(kind)){ rejectPiece(tapFloat(kind, src), src, amt, true); return; }   /* round 2t / 14 */
             put(kind, floatAt(kind, box(src)));
           }
         }));
@@ -18164,6 +18165,7 @@ if(document.fonts && document.fonts.load){
           const more = s > T;
           SwiftPAL.emit("answer_wrong", { slide_id:slide.id, phase:slide.phase, item:it.id, attempts, kind: more ? "more" : "less" });
           fbWrong(); mood("tryagain");
+          restart(amt, "mn-shake");                          /* round 14 (user): a wrong «जाँचें» shakes the drop zone */
           /* round 3b (user): the 3rd wrong check empties the tray, so it does not say «कुछ और डालिए / कम करिए»
              — it says «फिर से कोशिश करें।» (the money is placed again from the start) */
           const key = wrongRun >= 3 ? "retry" : (more ? "more" : "less") + (wrongRun >= 2 ? "2" : "1");
