@@ -468,3 +468,13 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 - `_gate_r2p.py` fixed: it fired each transition while the previous page's queued line was still pending, which let that line replace the transition's voice (the guided title looked "complete" before its phrase). Now it waits, as a child would.
 - Manifest refreshed: all 39 "Recorded (SME, 2026-10-21)", the tutorial wording flagged.
 - Dist 9.92 MB; on dist: `_drive_r3`, `_gate_r2p` (×2: VO at ~1.97 s on all three, titles complete with the line), `_bgm_check`, `_celcheck` (lip-sync 100 %) — 0 FAIL. The previous TTS takes are in git history.
+
+## Round 16 — updated checklist title, drag-back sound, music 30 %, pause when hidden (user, 2026-10-21)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 16-1 | Teaching transition = «चलिए, शुरू करें!» (updated checklist) | ✅ | Title + script now «…चलिए, शुरू करें!» — the SME's recording already says it; the clip was re-prepared from her WAV after the script change; title typed 3.03–4.13 s. Manifest updated. |
+| 16-2 | Drag-back sound (checklist: SFX for every interaction) | ✅ | Shop: money dragged back out lands home with its note / coin drop sound. (The 3rd-check reset stays quiet - it has the wrong sound.) |
+| 16-3 | Background music to 30 % | ✅ | Engine patch (inject_money.py `r16`): 0.30 normal, dips scaled by the same ratio - 0.14 under a sound effect, 0.07 under a voice. Measured with real audio: 0.30 free, 0.02–0.18 under voice. |
+| 16-4 | Pause when the tab is switched / the browser minimised; resume on return | ✅ | `pauseWhenHidden` (money_modules.js): one frozen clock (performance.now / Date.now / rAF time stand still while hidden), every lesson setTimeout / setInterval held and re-armed with its remaining time, the Web Audio context (voice + sfx) suspended, every playing <audio> paused (the music's own loop held by patch `r16p`), every running animation paused. `_pause_check.py` (real audio, dist): music paused while hidden and back after; a VO hidden mid-line stays frozen (context suspended) and finishes after return (~5 s later for 5 s away); no idle nudge while hidden or right after, then one at ~7 s of visible idle; confetti frozen mid-fall; drag-back sound - 0 FAIL. |
+- Bug found on the way: a comment in the pause module quoted the music patch's marker, so the injector thought the patch was applied and skipped it — reworded.
+- Dist 9.93 MB; on dist: `_pause_check`, `_drive_r3`, `_bgm_check` 0 FAIL; `_gate_r2p` and `_celcheck` each failed once under load and passed twice on re-run (all three transitions: VO at ~1.97 s, titles complete with the line; celebration mismatches only at syllable edges).
