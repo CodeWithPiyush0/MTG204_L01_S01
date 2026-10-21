@@ -62,7 +62,12 @@ run_gate("tutorial", "document.getElementById('sgBtn').click()", 9.5)
 idx = {s: i for i, s in enumerate(js("return CARD.slides.map(s=>s.id)"))}
 # round 3: teaching -> guided (from T1), the ₹45 screen -> «अब आपकी बारी।» before the shop (from G5)
 for phase, frm in (("guided", "T1"), ("practice", "G5")):
-    js("mountSlide(arguments[0])", idx[frm]); time.sleep(0.4)
+    js("mountSlide(arguments[0])", idx[frm]); time.sleep(1.0)
+    # round 15: let the page's own (queued) lines play out first, as a child would — firing the transition
+    # while one was still queued let that line replace the transition's voice and skewed the title timing
+    t_w = time.time()
+    while time.time() - t_w < 15 and js("return isPlaying"): time.sleep(0.2)
+    time.sleep(0.5)
     js("try{stopAudio()}catch(e){}")
     run_gate(phase, "completeSlide(true)", 9.5)
 

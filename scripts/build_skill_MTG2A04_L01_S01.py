@@ -64,9 +64,9 @@ LANDING = vo("vo_landing", "नमस्ते दोस्त! मैं हू
 # round 3 (checklist): the transitions' on-screen titles, exactly as the checklist words them. The
 # tutorial line is re-recorded so Swiftee SAYS that title; the guided / practice clips already end in
 # «चलिए, साथ में करें» / «अब आपकी बारी».
-GATE_TITLES = {"tutorial": "चलिए, शुरू करते हैं।", "guided": "चलिए, साथ में करें।",
+GATE_TITLES = {"tutorial": "चलिए, शुरू करें!", "guided": "चलिए, साथ में करें।",   # round 16: updated checklist
                "practice": "अब आपकी बारी।", "independent": "अब आपकी बारी।"}
-PT_TUTORIAL = vo("vo_pt_tutorial", "ध्यान से देखिए और मेरे साथ जानिए। चलिए, शुरू करते हैं।")
+PT_TUTORIAL = vo("vo_pt_tutorial", "ध्यान से देखिए और मेरे साथ जानिए। चलिए, शुरू करें!")   # round 16: as recorded
 
 def s_intro():
     """round 3 (SME): the teaching screen — the ₹10 note, then the ₹1 coin, each with its label above
@@ -293,12 +293,17 @@ def gate_spec():
                   "rest": 37, "blink": [38, 39, 40],
                   "open": [[42, 43], [44, 45], [51, 52], [53, 54], [55, 56], [58, 59], [60, 61]]}}
     clips = {"tutorial": "vo_pt_tutorial", "guided": "vo_pt_guided", "practice": "vo_pt_practice"}
-    tp = os.path.join(AUD, clips["tutorial"] + ".ogg")
-    if os.path.isfile(tp):                                   # round 3: «चलिए, शुरू करते हैं» inside the re-recorded line
-        sp = AUDIO[clips["tutorial"]]
-        c0 = sp.index("चलिए, शुरू"); c1 = sp.index("हैं", c0) + len("हैं")
-        w = phrase_window(tp, sp, c0, c1)
-        g["title_cue_ms"]["tutorial"] = w[0]; g["title_dur_ms"]["tutorial"] = max(400, w[1] - w[0])
+    # round 15 (recorded voice): each title is the clip's LAST phrase — «चलिए, शुरू करें» / «चलिए, साथ में करें» /
+    # «अब आपकी बारी» — spoken after the longest pause in the line. Measured from each clip on every build,
+    # so a re-recording re-times the typing by itself (the fixed numbers above are only the fallback).
+    for ph, vid in clips.items():
+        pth = os.path.join(AUD, vid + ".ogg")
+        if not os.path.isfile(pth): continue
+        segs = voiced_segments(pth, bridge_ms=120)
+        if len(segs) < 2: continue
+        gaps = [(segs[k + 1][0] - segs[k][1], k + 1) for k in range(len(segs) - 1)]
+        k0 = max(gaps)[1]
+        g["title_cue_ms"][ph] = segs[k0][0]; g["title_dur_ms"][ph] = max(400, segs[-1][1] - segs[k0][0])
     lips, voice = {}, {}
     for ph, vid in clips.items():
         p = os.path.join(AUD, vid + ".ogg")

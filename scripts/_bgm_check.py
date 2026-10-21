@@ -38,8 +38,9 @@ check("music starts on the play tap", len(playing) > 10, samples[:3])
 under_vo = [s[1] for s in samples if s[0] and s[2]]
 free = [s[1] for s in samples if s[0] and not s[2]]
 print("  volume while a VO plays: min %.2f max %.2f | with no VO: max %.2f" % (min(under_vo or [0]), max(under_vo or [0]), max(free or [0])))
-check("music ducks to ~0.16 under the voice-over", under_vo and min(under_vo) <= 0.18 and sorted(under_vo)[len(under_vo)//2] <= 0.2, under_vo[:10])
-check("music at ~0.68 when nothing else is speaking", free and max(free) >= 0.6, free[-10:])
+# round 16 (user): the music at 30 % — under a voice it dips to ~0.07
+check("music ducks to ~0.07 under the voice-over", under_vo and min(under_vo) <= 0.09 and sorted(under_vo)[len(under_vo)//2] <= 0.1, under_vo[:10])
+check("music at ~0.30 when nothing else is speaking (round 16)", free and 0.27 <= max(free) <= 0.31, free[-10:])
 check("music is advancing (really playing)", playing and playing[-1][3] > 2, playing[-1] if playing else None)
 # (round 3: the ₹10 / ₹1 tap screens are gone, and their praise-text checks with them)
 errs = [l["message"][:160] for l in d.get_log("browser") if l["level"] == "SEVERE" and "favicon" not in l["message"]]

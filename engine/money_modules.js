@@ -30,6 +30,88 @@
 (function(){
   "use strict";
 
+  /* ============ PAUSE WHEN HIDDEN, round 16 (user, 2026-10-21) ============
+     "the game should pause when we switch the tab or even minimise the browser, and resume when we move
+     back". The whole lesson runs on ONE clock, frozen while the page is hidden:
+       time    performance.now(), Date.now() and the rAF timestamp stand still while hidden (the time spent
+               away is subtracted), so every "how long since" in the lesson — inactivity nudges, the VO
+               fallback timers, Swiftee's lip-sync, the title typing, the ₹ highlights — carries on exactly
+               where it stopped
+       timers  every setTimeout / setInterval created by the lesson is held (its remaining time kept) and
+               re-armed on return
+       sound   the Web Audio context (voice + sound effects) is suspended — a line resumes mid-word; every
+               <audio> element that was playing (the music, a fallback clip) is paused and resumed
+       motion  every running CSS / Web animation (confetti, a piece in flight, glows, the hand) is paused
+     The music's own loop is told by window.__lessonPaused (the inject_money.py patch 'r16p'). */
+  (function pauseWhenHidden(){
+    if(window.__lessonPauseInstalled) return; window.__lessonPauseInstalled = true;
+    const RT = { st:window.setTimeout.bind(window), ct:window.clearTimeout.bind(window),
+                 si:window.setInterval.bind(window), ci:window.clearInterval.bind(window),
+                 pn:performance.now.bind(performance), dn:Date.now, raf:window.requestAnimationFrame.bind(window) };
+    let paused = false, pausedReal = 0, offset = 0;              /* ms of real time spent paused, in total */
+    const vnow = ()=> paused ? pausedReal - offset : RT.pn() - offset;
+    try { performance.now = vnow; } catch(e){}
+    Date.now = ()=> Math.round(RT.dn() - offset - (paused ? RT.pn() - pausedReal : 0));
+    window.requestAnimationFrame = (cb)=> RT.raf(()=> cb(vnow()));
+
+    const T = new Map(), I = new Map(); let seq = 1e9;            /* ids far from the browser's own */
+    window.setTimeout = function(cb, ms){
+      const a = Array.prototype.slice.call(arguments, 2);
+      if(typeof cb !== "function") return RT.st.apply(null, arguments);
+      const id = ++seq, d = Math.max(0, +ms || 0);
+      const rec = { due:vnow() + d, h:null, left:d };
+      rec.fire = ()=>{ T.delete(id); cb.apply(window, a); };
+      if(!paused) rec.h = RT.st(rec.fire, d);
+      T.set(id, rec); return id;
+    };
+    window.clearTimeout = function(id){ const r = T.get(id); if(r){ if(r.h != null) RT.ct(r.h); T.delete(id); } else RT.ct(id); };
+    window.setInterval = function(cb, ms){
+      const a = Array.prototype.slice.call(arguments, 2);
+      if(typeof cb !== "function") return RT.si.apply(null, arguments);
+      const id = ++seq, rec = { ms:Math.max(0, +ms || 0), h:null };
+      rec.start = ()=>{ rec.h = RT.si(()=> cb.apply(window, a), rec.ms); };
+      if(!paused) rec.start();
+      I.set(id, rec); return id;
+    };
+    window.clearInterval = function(id){ const r = I.get(id); if(r){ if(r.h != null) RT.ci(r.h); I.delete(id); } else RT.ci(id); };
+
+    /* every <audio> the lesson plays is remembered, so it can be paused and resumed */
+    const media = new Set();
+    const _play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function(){ media.add(this); return _play.apply(this, arguments); };
+    let held = { anims:[], media:[], ctx:null };
+    const ctxOf = ()=>{ try { return (typeof _juiceAC !== "undefined" && _juiceAC) || (typeof _voiceContext === "function" ? _voiceContext() : null); } catch(e){ return null; } };
+
+    function pause(){
+      if(paused) return;
+      pausedReal = RT.pn(); paused = true; window.__lessonPaused = true;
+      T.forEach(r => { if(r.h != null){ RT.ct(r.h); r.h = null; r.left = Math.max(0, r.due - (pausedReal - offset)); } });
+      I.forEach(r => { if(r.h != null){ RT.ci(r.h); r.h = null; } });
+      held.media = [...media].filter(m => !m.paused && !m.ended);
+      held.media.forEach(m => { try { m.pause(); } catch(e){} });
+      const c = ctxOf(); held.ctx = (c && c.state === "running") ? c : null;
+      if(held.ctx) held.ctx.suspend().catch(()=>{});
+      try { held.anims = document.getAnimations().filter(a => a.playState === "running"); held.anims.forEach(a => a.pause()); } catch(e){ held.anims = []; }
+      try { SwiftPAL.emit("lesson_paused", { slide_id:(CARD.slides[state.idx] || {}).id }); } catch(e){}
+    }
+    function resume(){
+      if(!paused) return;
+      offset += RT.pn() - pausedReal; paused = false; window.__lessonPaused = false;
+      const now = vnow();
+      T.forEach(r => { if(r.h == null){ r.due = now + r.left; r.h = RT.st(r.fire, r.left); } });
+      I.forEach(r => { if(r.h == null) r.start(); });
+      if(held.ctx) held.ctx.resume().catch(()=>{});
+      held.media.forEach(m => { try { const p = m.play(); if(p && p.catch) p.catch(()=>{}); } catch(e){} });
+      held.anims.forEach(a => { try { if(a.playState === "paused") a.play(); } catch(e){} });
+      held = { anims:[], media:[], ctx:null };
+      try { SwiftPAL.emit("lesson_resumed", { slide_id:(CARD.slides[state.idx] || {}).id }); } catch(e){}
+    }
+    document.addEventListener("visibilitychange", ()=>{ if(document.hidden) pause(); else resume(); });
+    window.addEventListener("pagehide", pause);
+    window.addEventListener("pageshow", ()=>{ if(!document.hidden) resume(); });
+    window.__lessonPause = pause; window.__lessonResume = resume;   /* (tests / the host app) */
+  })();
+
   /* ---------------------------------------------------------------- engine wraps (this card only) */
   try { autoAdvances = function(){ return false; }; } catch(e){}
   try {
@@ -142,7 +224,7 @@
       const g = CARD && CARD.mastery_gate;
       if(g){ PHASE_ROUND.mastery = "mastery"; PHASE_GATE_TITLE.mastery = g.title || ""; PHASE_GATE_VO.mastery = g.audio || null; }
       /* round 3 (checklist): the transitions' on-screen titles, worded exactly as the checklist —
-         «चलिए, शुरू करते हैं।» / «चलिए, साथ में करें।» / «अब आपकी बारी।» (CARD.gate_titles) */
+         «चलिए, शुरू करें!» / «चलिए, साथ में करें।» / «अब आपकी बारी।» (CARD.gate_titles; round 16) */
       const tt = CARD && CARD.gate_titles;
       if(tt) Object.keys(tt).forEach(ph => { PHASE_GATE_TITLE[ph] = tt[ph]; });
       ok = true;
@@ -1540,12 +1622,15 @@
           if(v10 ? tens() >= 9 : ones() >= 9) return false;          /* the tray's physical room */
           return true;
         };
-        const giveBack = (rec, fromFloat)=>{
+        const giveBack = (rec, fromFloat, withSound)=>{
           const i2 = placed.indexOf(rec); if(i2 < 0 || !rec.el) return;
           placed.splice(i2, 1);
           const f = fromFloat || floatAt(rec.kind, box(rec.el));
           rec.el.remove();
-          bounceBack(f, srcs[rec.kind]);
+          const b = bounceBack(f, srcs[rec.kind]);
+          /* round 16 (checklist: "SFX for every interaction"): money the child drags back out lands home
+             with its own drop sound (note / coin); the 3rd-check reset stays quiet (it has the wrong sound) */
+          if(withSound) b.then(()=> sfxDrop(rec.kind));
           refresh();
         };
         /* a placed piece: drag it OUT of the drop zone to give it back (tap also gives it back) */
@@ -1572,7 +1657,7 @@
               if(ev.type !== "pointercancel" && inside(amt, ev.clientX, ev.clientY)){
                 /* dropped back inside: snap home */
                 animTo(f, box(p), 220, "ease-out").then(()=>{ f.remove(); p.style.visibility = ""; });
-              } else giveBack(rec, f);
+              } else giveBack(rec, f, true);
             };
             document.addEventListener("pointermove", mv);
             document.addEventListener("pointerup", up);

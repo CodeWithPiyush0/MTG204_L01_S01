@@ -459,3 +459,12 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 |---|---|---|---|
 | 14-1 | The game (shop) gets the same drop-zone wiggle on an error as ₹14 / ₹32 / ₹45 | ✅ | Same shake (`mn-shake`) on both shop errors: a wrong «जाँचें» (too much / too little — 1st, 2nd and 3rd), and a refused note / coin (tray row full, or past the silent caps after a reset — it bounces home with the shake, tap or drag). Feedback lines, money-stays / reset logic unchanged. `_drive_r3`: shake on a wrong «जाँचें» and on a refused ₹10. (This reverses round 2t's "no tray shake" for the shop, by the user's request.) |
 - Dist 9.92 MB; on dist: `_drive_r3`, `_gate_r2p`, `_bgm_check`, `_celcheck` (lip-sync 100 %) — 0 FAIL.
+
+## Round 15 — the SME's recorded voice-over (2026-10-21)
+- 39 recordings in `assets/Audio/voiceovers/<Audio ID>.wav` (all named by Audio ID — no renaming needed; 24 kHz mono WAV, −15.4…−20.6 LUFS, ~0.25 s leading silence each).
+- `scripts/prepare_vo.py` (the reference lesson's method): trim to 30 ms before / 120 ms after the voice, level to −16 LUFS with a −1 dBFS limiter, write 24 kHz mono WAV as `assets/Audio/<id>.ogg`. Result: all 39 at −16.0 ± 0.3 LUFS, peaks ≤ −1 dBFS, each line ~0.45 s shorter (dead air gone). Title line 9.66 s (≤ 10 s).
+- Transcribed every take (Gemini) against the script: 38 match word for word (spelling-only variants: रुपए / ये / «शब्बाश»). ⚑ `vo_pt_tutorial` says «…चलिए, शुरू करें।» — the script and the checklist title say «…चलिए, शुरू करते हैं।» (decision pending).
+- Builder: the three transition titles are now TIMED FROM EACH CLIP (the title = the last phrase, after the longest pause) instead of fixed numbers taken from the reference's old clips — tutorial 3.03–4.13 s, guided 3.85–5.03 s, practice 0.80–1.68 s. Re-measured on build: transition lip-sync, celebration lip-sync, the ₹10 / ₹1 / total highlights on ₹14 / ₹32 / ₹45.
+- `_gate_r2p.py` fixed: it fired each transition while the previous page's queued line was still pending, which let that line replace the transition's voice (the guided title looked "complete" before its phrase). Now it waits, as a child would.
+- Manifest refreshed: all 39 "Recorded (SME, 2026-10-21)", the tutorial wording flagged.
+- Dist 9.92 MB; on dist: `_drive_r3`, `_gate_r2p` (×2: VO at ~1.97 s on all three, titles complete with the line), `_bgm_check`, `_celcheck` (lip-sync 100 %) — 0 FAIL. The previous TTS takes are in git history.

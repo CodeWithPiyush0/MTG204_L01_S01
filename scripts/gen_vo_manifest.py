@@ -24,6 +24,9 @@ TEXT.setdefault("vo_pt_practice", "वाह! अब आपकी बारी�
 
 DRAFT = {"vo_t1_note", "vo_t1_coin"}                 # drafted by the developer, the SME to finalise
 EAR = {"vo_b45_prompt"}                              # TTS needed a retry (punctuation variant)
+SRC = os.path.join(AUD, "voiceovers")                # the SME's recordings (prepared by scripts/prepare_vo.py)
+# where the recording's words differ from the script (checked by transcription, 2026-10-21)
+SAYS = {}   # (round 16: vo_pt_tutorial's script now says «…चलिए, शुरू करें!», as recorded)
 
 def dur(i):
     p = os.path.join(AUD, i + ".ogg")
@@ -37,7 +40,7 @@ P1, P2, P3, P4, P5, P6, P7, P8 = ("Page %d" % n for n in range(1, 9))
 T1, T2, T3 = "Transition 1 (before page 1)", "Transition 2 (before page 2)", "Transition 3 (before page 7)"
 ROWS = [
  ("Start screen", "Start screen", "vo_landing", "greeting", "Start screen - Swiftee's greeting as it loads (the speaker button replays it); the play button appears when it ends", ""),
- (T1, "Transition «चलिए, शुरू करते हैं।»", "vo_pt_tutorial", "transition line", "After the play button - Swiftee rises, then says the line; the title types in as she says it", ""),
+ (T1, "Transition «चलिए, शुरू करें!»", "vo_pt_tutorial", "transition line", "After the play button - Swiftee rises, then says the line; the title types in as she says it", ""),
  (P1, "Teaching - ₹10 and ₹1", "vo_t1_note", "introduces the ₹10 note", "Page opens - the ₹10 note and its «₹10» label appear WITH this line", ""),
  (P1, "Teaching - ₹10 and ₹1", "vo_t1_coin", "introduces the ₹1 coin", "Right after - the ₹1 coin and its «₹1» label appear WITH this line; then the arrow", ""),
  (T2, "Transition «चलिए, साथ में करें।»", "vo_pt_guided", "transition line", "After page 1 - Swiftee rises, then says the line; the title types in as she says it", ""),
@@ -114,6 +117,10 @@ def sheet(ws, title, sub, head, widths, freeze="E5"):
 
 def status(i):
     if not os.path.isfile(os.path.join(AUD, i + ".ogg")): return "Missing - to record"
+    if os.path.isfile(os.path.join(SRC, i + ".wav")):
+        s = "Recorded (SME, %s)" % datetime.date.fromtimestamp(os.path.getmtime(os.path.join(SRC, i + ".wav"))).isoformat()
+        if i in SAYS: s += " - says «%s»" % SAYS[i].split("। ")[-1]
+        return s
     s = "TTS placeholder - to record"
     if i in DRAFT: s += " - DRAFT script, SME to finalise"
     if i in EAR: s += " - EAR-CHECK"
@@ -173,7 +180,7 @@ spec = [
  ("Order", "Game order. On each page: what plays as it opens, then the hints in the order they can occur (Hint 1 / 2 / 3), then the closing line. A clip heard again later is listed once more with 'plays again'."),
  ("Clips", "%d rows, %d distinct recordings (see 'Recording list')." % (len(ROWS), len(distinct))),
  ("Folder", "assets/Audio/<Audio ID>.ogg - the file name is the Audio ID."),
- ("Current takes", "All %d are Gemini text-to-speech placeholders (voice Leda), so the game is playable now - every one is to be replaced by the final recording." % len(distinct)),
+ ("Current takes", "%d of %d are the SME's recordings (assets/Audio/voiceovers/<id>.wav, trimmed and levelled into assets/Audio/<id>.ogg by scripts/prepare_vo.py); the rest are Gemini TTS placeholders (voice Leda)." % (sum(os.path.isfile(os.path.join(SRC, i + ".wav")) for i in distinct), len(distinct))),
  ("Deliver", "One file per Audio ID, named exactly as the Audio ID (e.g. vo_landing.wav). WAV preferred, mono; any sample rate - the developer converts to the build's format (24 kHz mono, about -16 LUFS, peaks at most -1 dBFS)."),
  ("Script", "Record exactly the text in the 'Hindi script' column - it is the build's own spoken text. Amounts are written out as spoken (₹14 = «चौदह रुपये»); the screen shows ₹ and digits."),
  ("Drafts", "vo_t1_note and vo_t1_coin (page 1) were drafted by the developer - please finalise the wording before recording."),

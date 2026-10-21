@@ -33,8 +33,8 @@ check("flow = teach -> sort ₹10 -> sort ₹1 -> ₹14 -> ₹32 -> ₹45 -> sho
 check("no «खरीदारी का खेल!» transition", js("return !CARD.mastery_gate"))
 time.sleep(0.5)
 titles = js("return [PHASE_GATE_TITLE.tutorial, PHASE_GATE_TITLE.guided, PHASE_GATE_TITLE.practice]")
-check("transition titles per checklist", titles == ["चलिए, शुरू करते हैं।", "चलिए, साथ में करें।", "अब आपकी बारी।"], titles)
-check("tutorial transition VO says «चलिए, शुरू करते हैं।»", js("return CARD.assets.audio_text.vo_pt_tutorial").endswith("चलिए, शुरू करते हैं।"))
+check("transition titles per checklist", titles == ["चलिए, शुरू करें!", "चलिए, साथ में करें।", "अब आपकी बारी।"], titles)
+check("tutorial transition VO says «चलिए, शुरू करें!»", js("return CARD.assets.audio_text.vo_pt_tutorial").endswith("चलिए, शुरू करें!"))
 sp = js("const v=document.getElementById('sgVo'); return v ? [Math.round(parseFloat(getComputedStyle(v).width)), Math.round(parseFloat(getComputedStyle(v).height))] : null")
 check("speaker button 70 x 70 px", sp == [70, 70], sp)
 

@@ -90,6 +90,21 @@ DEV_NEW = ("prev.onclick = ()=> go(cur() - 1); next.onclick = ()=>{ /* [MTG2A04 
 if "[MTG2A04 r2o]" not in src:
     if src.count(DEV_OLD) != 1: sys.exit("X  dev-bar next handler not found")
     src = src.replace(DEV_OLD, DEV_NEW)
+# round 16 (user): the background music at 30 % (was 0.68), its dips scaled by the same ratio (under a sound
+# effect 0.32 -> 0.14, under a voice 0.16 -> 0.07); and while the lesson is PAUSED (tab switched / browser
+# minimised - money_modules.js) the music's own steering loop leaves it paused instead of restarting it
+BGMV_OLD = "    const BASE = 0.68, SFX = 0.32, VO = 0.16;"
+BGMV_NEW = "    const BASE = 0.30, SFX = 0.14, VO = 0.07;   /* [MTG2A04 r16] user: music at 30 % */"
+BGMP_OLD = "    const tick = ()=>{\n      const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;"
+BGMP_NEW = ("    const tick = ()=>{\n      /* [MTG2A04 r16p] the lesson is paused (hidden tab) - keep the music paused */\n"
+            "      if(window.__lessonPaused){ if(el && !el.paused) el.pause(); return; }\n"
+            "      const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;")
+if "[MTG2A04 r16]" not in src:
+    if src.count(BGMV_OLD) != 1: sys.exit("X  bgm levels not found")
+    src = src.replace(BGMV_OLD, BGMV_NEW)
+if "[MTG2A04 r16p]" not in src:
+    if src.count(BGMP_OLD) != 1: sys.exit("X  bgm tick not found")
+    src = src.replace(BGMP_OLD, BGMP_NEW)
 io.open(ENGINE, "w", encoding="utf-8").write(src)
 out = io.open(ENGINE, encoding="utf-8").read()
 mods = ["MONEY_SHOW", "MONEY_PICK", "MONEY_SCENE", "MONEY_LIST", "MONEY_BUILD", "MONEY_DONE", "SHOP_GAME"]
@@ -98,5 +113,6 @@ for m in mods:
     print("   %-12s registered: %s" % (m, ("SlideModules." + m + " = {") in out))
 print("   injected once:", out.count(JS_BEGIN) == 1 and out.count(CSS_BEGIN) == 1)
 print("   asset gate on the loader:", out.count("[MTG2A04 r2n] ASSET GATE") == 1)
+print("   bgm 30 % + pause guard:", out.count("[MTG2A04 r16]") == 1 and out.count("[MTG2A04 r16p]") == 1)
 print("   dev ▶ shows transitions:", out.count("[MTG2A04 r2o]") == 1)
 print("   bgm + runner warm-up off:", out.count("[MTG2A04 r2p]") == 2)
