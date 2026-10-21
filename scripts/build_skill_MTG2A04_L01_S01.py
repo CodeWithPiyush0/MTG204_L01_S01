@@ -34,7 +34,8 @@ COPY_AUDIO = ["vo_pt_guided", "vo_pt_practice", "sfx_celebrate", "sfx_correct", 
               "sfx_tap", "sfx_pop", "sfx_fb_correct", "sfx_fb_incorrect",
               "sfx_play_button", "sfx_next_button",      # round 2k: the team's button sounds
               "sfx_drop_coin", "sfx_drop_note",          # round 2o: the team's coin / note drop sounds
-              "sfx_confetti", "sfx_nudge"]               # round 3: the team's Standard SFX pack (checklist)
+              "sfx_confetti", "sfx_nudge",               # round 3: the team's Standard SFX pack (checklist)
+              "sfx_whoosh"]                              # round 17: the reference's transition swish (r142)
 
 NUM = ("शून्य एक दो तीन चार पाँच छह सात आठ नौ दस ग्यारह बारह तेरह चौदह पंद्रह सोलह सत्रह अठारह उन्नीस "
        "बीस इक्कीस बाईस तेईस चौबीस पच्चीस छब्बीस सत्ताईस अट्ठाईस उनतीस तीस इकतीस बत्तीस तैंतीस चौंतीस "
@@ -316,7 +317,9 @@ def gate_spec():
             v = voiced_segments(p, lo=cue - 150, hi=cue + dur + 200)
             if v: voice[ph] = v
     g["lips"] = lips; g["title_voice_ms"] = voice
-    return g
+    # round 17: the reference lesson's r142 transition (peeking_talk_up.webp + a headline wipe) needs only
+    # WHEN each title phrase is spoken - the bird, the talk sheet and the lip-sync tracks are not used
+    return {"title_cue_ms": g["title_cue_ms"], "title_dur_ms": g["title_dur_ms"]}
 
 def done_cues(slide):
     """round 2p: where the closing line names the tens, the ones and the total (ms in the clip), so

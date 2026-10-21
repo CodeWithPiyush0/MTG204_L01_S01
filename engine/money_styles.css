@@ -558,6 +558,51 @@
 .mn-build.mn-tray-down .mn-target .mn-total{transform-origin:100% 100%;}
 .mn-build.mn-tray-down .mn-target .mn-row-t{transform-origin:50% 0;}
 
+/* ======================= round 17 (user, 2026-10-21): the reference lesson's r142 transition screen,
+   copied verbatim from HI02H11_L02_S02 4_ENGINE/lesson_template.html ======================= */
+/* [r142] THE TRANSITION SCREEN OF Hindi-game-gender-identify (HI02H11_L03_S02), rule for rule.
+   Yasir: "extract and replace the exact same all three transition screens and their animation from
+   this repo". The grey blurred wash was already the same; what changes is everything on it:
+   - Swifty is that repo's peeking_talk_up.webp (900x900, already up and talking), bottom-anchored,
+     square, 52.8% of the window's height, at most 624px and never wider than the screen. He comes in
+     with a short .3s lift (pgUpIn); on the first transition he sinks out (pgPeekDown, .34s) at the end.
+   - the line is its magenta headline with the white stroke, sized by --pgf, 271px down (higher on a
+     short screen), and it WIPES in left to right (pgWipe, .9s) when Swifty says it.
+   The engine's _fitGateTitle (same repo) keeps the line off his head on any screen. */
+.pg-title{font-family:var(--font-hi) !important;font-weight:800 !important;letter-spacing:0 !important;}
+.pg-title.pg-pop{animation:pgWipe .9s cubic-bezier(.25,.6,.3,1) both;}
+@keyframes pgWipe{from{clip-path:inset(-24px 100% -24px -24px);}to{clip-path:inset(-24px -24px -24px -24px);}}
+html.no-anim .pg-title.pg-pop{animation:none !important;}
+.phase-gate.pg-up #phaseGateImg{animation:pgUpIn .3s ease-out both !important;}
+@keyframes pgUpIn{from{transform:translate(-50%,28%);}to{transform:translate(-50%,0);}}
+html.no-anim .phase-gate.pg-up #phaseGateImg{animation:none !important;}
+.phase-gate.pg-talk.pg-sink #phaseGateImg{
+  animation:pgPeekDown .34s ease-in both !important;}
+@keyframes pgPeekDown{
+  from{transform:translate(-50%,0);}
+  to  {transform:translate(-50%,100%);}}
+html.no-anim .phase-gate.pg-talk #phaseGateImg{animation:none !important;}
+.phase-gate{align-items:center !important;}
+.phase-gate{--pgf:min(96px, 12.8vh, 13vw);}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+.phase-gate .pg-title{z-index:3 !important;}
+.phase-gate #phaseGateImg{z-index:1;}
+@supports (height: 1svh){
+  .phase-gate{--pgf:min(96px, 12.8svh, 13vw);}
+  .pg-title{top:max(8px, min(271px, calc(58.8svh - 1.2 * var(--pgf) - 12px))) !important;}
+  .phase-gate #phaseGateImg{height:min(52.8svh,624px,92vw) !important;width:min(52.8svh,624px,92vw) !important;}
+}
+.pg-title{left:50% !important;transform:translateX(-50%) !important;
+          top:max(8px, min(271px, calc(58.8vh - 1.2 * var(--pgf) - 12px))) !important;
+          width:max-content !important;max-width:94vw !important;white-space:nowrap !important;
+          font-size:var(--pgf) !important;line-height:1.14 !important;color:#CD0FD5 !important;
+          -webkit-text-stroke:calc(var(--pgf) * 0.104) #FFFFFF !important;paint-order:stroke fill !important;}
+.phase-gate #phaseGateImg{position:fixed !important;left:50% !important;bottom:0 !important;
+          height:min(52.8vh,624px,92vw) !important;width:min(52.8vh,624px,92vw) !important;
+          object-fit:contain !important;
+          transform:translateX(-50%);
+          animation:none !important;}
+
 /* ============ CONFETTI, round 2s (user, 2026-10-08): copied verbatim from MTG2A04_L02_S01 style.css —
    the FLN animation kit confetti block + that lesson's [13] body-level layer (whole window, pieces 1.5x,
    sized with the stage --scale). Used by confettiCannon (money_modules.js). ============ */

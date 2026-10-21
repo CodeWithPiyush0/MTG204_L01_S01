@@ -26,8 +26,7 @@ ANIM_PLAN = {
     "sw_head_hint_anim.webp":        {"q": 75, "max_side": 264},          # 132 px header avatar
     "sw_head_tryagain_anim.webp":    {"q": 75, "max_side": 264},
     "sw_head_celebrate_anim.webp":   {"q": 75, "max_side": 264},
-    "swifty_gate_seek.webp":         {"q": 70, "trim_to_talk": True},     # rise only (see below)
-    "swifty_gate_talk.webp":         {"q": 70},
+    "peeking_talk_up.webp":          {"q": 72, "max_side": 624},          # round 17: drawn at most 624 px
     "cel_shabaash.webp":             {"q": 70},                           # celebration sheets: no visible
     "cel_talk.webp":                 {"q": 70},                           # difference at 2x vs q80 (checked)
     "cel_idle.webp":                 {"q": 70},
@@ -76,7 +75,7 @@ def main():
     # is the gate bird ONLY when a card sets no CARD.gate (this one sets swifty_gate.webp). The gate
     # <img>'s initial src is pointed at the bird actually used, so nothing requests peeking at load.
     # round 2i: the gate plays gate_peek/talk/rest; the old 8.5 s swifty_gate.webp is never fetched
-    html = html.replace('id="phaseGateImg" src="assets/UI/peeking.webp"', 'id="phaseGateImg" src="assets/UI/swifty_gate_seek.webp"')
+    # (round 17: the gate <img> starts empty - the reference's r142 sets peeking_talk_up.webp per screen)
     SKIP.add("swifty_gate.webp")
     # round 2j: the celebration shows the team GIF (end_swiftee.gif, shipped unchanged); the stock
     # celebrating mascot is never shown, so its <img> starts on the GIF and the old file stays out
