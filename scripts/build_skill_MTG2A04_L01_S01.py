@@ -60,7 +60,8 @@ def vo(id_, shown):
     return id_
 
 # ============================================================== content
-LANDING = vo("vo_landing", "नमस्ते दोस्त! मैं हूँ स्विफ्टी। परी के स्कूल में पिकनिक होने वाली है। उसे पिकनिक के लिए कुछ सामान खरीदना है। चलिए, उसकी मदद करते हैं!")
+# round 18 (SME's new recording): the cover line introduces «परी चली बाज़ार»
+LANDING = vo("vo_landing", "नमस्ते दोस्त! मैं हूँ स्विफ्टी। आज परी बाज़ार जा रही है। उसे कुछ सामान खरीदना है। आइए, हम भी उसके साथ चलते हैं और उसकी मदद करते हैं।")
 
 # round 3 (checklist): the transitions' on-screen titles, exactly as the checklist words them. The
 # tutorial line is re-recorded so Swiftee SAYS that title; the guided / practice clips already end in

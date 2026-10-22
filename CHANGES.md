@@ -486,3 +486,9 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 - New test `_gate_r17.py` (real audio): on all three - whoosh at open, the reference's Swifty (fresh blob per screen), the voice at once, the headline appearing at the measured cue (±0.2 s) then wiping in, the screen staying ≥1.6 s after the headline and closing after the line; tutorial sinks out and lands on page 1; ₹14 highlight order. The old `_gate_r2p.py` (lip-sync sheet) moved to `scripts/_old_flow/`.
 - Dist: the old gate art (`swifty_gate_seek`, `swifty_gate_talk`) no longer ships; `peeking_talk_up.webp` re-encoded to 624 px (0.99 MB). Dist 9.78 MB (was 9.93).
 - On dist: `_gate_r17`, `_pause_check`, `_bgm_check` 0 FAIL; `_drive_r3` and `_celcheck` each failed one timing check under load and passed twice on re-run (lip-sync 92–98 %).
+
+## Round 18 — the SME's new title-screen line (2026-10-22)
+- `assets/Audio/voiceovers/title.wav` → renamed `vo_landing.wav` (the Audio ID the game plays); the previous take kept as `voiceovers/_replaced/vo_landing_2026-10-21.wav`.
+- Transcribed: «नमस्ते दोस्त! मैं हूँ स्विफ्टी। आज परी बाज़ार जा रही है। उसे कुछ सामान खरीदना है। आइए, हम भी उसके साथ चलते हैं और उसकी मदद करते हैं।» — the builder's script updated to it (the line now introduces «परी चली बाज़ार» instead of the picnic). Prepared with `prepare_vo.py` (−16 LUFS, trimmed): 10.76 → 10.31 s.
+- ⚑ 10.31 s is 0.31 s over the checklist's 10 s. Its four pauses are 0.25–0.38 s; shortening them would bring it under 10 s without touching a word — not done, awaiting the user's decision.
+- VO manifest refreshed.
