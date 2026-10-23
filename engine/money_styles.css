@@ -687,3 +687,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .fx-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5000;--fx-size:1.5;}
 .fx-layer .fx-confetti .f{width:calc(var(--w) * var(--z) * var(--scale, 1) * var(--fx-size, 1));
   height:calc(var(--h) * var(--z) * var(--scale, 1) * var(--fx-size, 1));}
+/* round 19 (QA bug): the speakers stay greyed (and untappable) through the short gaps inside a sequence of
+   lines - body.vo-busy (money_modules.js) is on while vo-lock is, and for 0.7 s after the voice stops */
+body.vo-busy .audio-chip,
+body.vo-busy .tut-audio,
+body.vo-busy .sg-vo{ pointer-events:none !important; opacity:.45; filter:grayscale(.75); }

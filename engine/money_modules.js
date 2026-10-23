@@ -112,6 +112,32 @@
     window.__lessonPause = pause; window.__lessonResume = resume;   /* (tests / the host app) */
   })();
 
+  /* ============ SPEAKER STAYS "BUSY" THROUGH A SEQUENCE OF LINES, round 19 (QA bug, 2026-10-23) ============
+     "the speaker turns blue then grey and so on, between the pauses of the VO - on every screen where
+     lines are announced". The engine greys the speakers (header chip, teaching-card chip, cover speaker)
+     under body.vo-lock, which is on EXACTLY while a clip sounds - so in the gap between two lines of one
+     sequence (page 1's ₹10 then ₹1, page 4's opening line then the instruction, the shop's intro then
+     its instruction ...) it flashed back to blue for a moment. body.vo-busy follows vo-lock ON at once,
+     but goes OFF only after the voice has been quiet for SPK_HOLD_MS - the speakers' look and their
+     tap-lock follow vo-busy (money_styles.css). vo-lock itself (the screen's tap / drag lock) is untouched. */
+  (function speakerBusy(){
+    const SPK_HOLD_MS = 700;
+    let offT = null;
+    const sync = ()=>{
+      const b = document.body; if(!b) return;
+      if(b.classList.contains("vo-lock")){
+        if(offT){ clearTimeout(offT); offT = null; }
+        /* only when missing: classList.add() of a class already there still rewrites the attribute, which
+           re-fires this observer - an endless loop that froze the page while a clip played */
+        if(!b.classList.contains("vo-busy")) b.classList.add("vo-busy");
+      } else if(b.classList.contains("vo-busy") && !offT){
+        offT = setTimeout(()=>{ offT = null; if(!document.body.classList.contains("vo-lock")) document.body.classList.remove("vo-busy"); }, SPK_HOLD_MS);
+      }
+    };
+    const start = ()=>{ sync(); new MutationObserver(sync).observe(document.body, { attributes:true, attributeFilter:["class"] }); };
+    if(document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+  })();
+
   /* ---------------------------------------------------------------- engine wraps (this card only) */
   try { autoAdvances = function(){ return false; }; } catch(e){}
   try {

@@ -4614,6 +4614,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .fx-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5000;--fx-size:1.5;}
 .fx-layer .fx-confetti .f{width:calc(var(--w) * var(--z) * var(--scale, 1) * var(--fx-size, 1));
   height:calc(var(--h) * var(--z) * var(--scale, 1) * var(--fx-size, 1));}
+/* round 19 (QA bug): the speakers stay greyed (and untappable) through the short gaps inside a sequence of
+   lines - body.vo-busy (money_modules.js) is on while vo-lock is, and for 0.7 s after the voice stops */
+body.vo-busy .audio-chip,
+body.vo-busy .tut-audio,
+body.vo-busy .sg-vo{ pointer-events:none !important; opacity:.45; filter:grayscale(.75); }
 
 /* == MONEY STYLES :: END == */
 </style>
@@ -16688,6 +16693,32 @@ if(document.fonts && document.fonts.load){
     window.addEventListener("pagehide", pause);
     window.addEventListener("pageshow", ()=>{ if(!document.hidden) resume(); });
     window.__lessonPause = pause; window.__lessonResume = resume;   /* (tests / the host app) */
+  })();
+
+  /* ============ SPEAKER STAYS "BUSY" THROUGH A SEQUENCE OF LINES, round 19 (QA bug, 2026-10-23) ============
+     "the speaker turns blue then grey and so on, between the pauses of the VO - on every screen where
+     lines are announced". The engine greys the speakers (header chip, teaching-card chip, cover speaker)
+     under body.vo-lock, which is on EXACTLY while a clip sounds - so in the gap between two lines of one
+     sequence (page 1's ₹10 then ₹1, page 4's opening line then the instruction, the shop's intro then
+     its instruction ...) it flashed back to blue for a moment. body.vo-busy follows vo-lock ON at once,
+     but goes OFF only after the voice has been quiet for SPK_HOLD_MS - the speakers' look and their
+     tap-lock follow vo-busy (money_styles.css). vo-lock itself (the screen's tap / drag lock) is untouched. */
+  (function speakerBusy(){
+    const SPK_HOLD_MS = 700;
+    let offT = null;
+    const sync = ()=>{
+      const b = document.body; if(!b) return;
+      if(b.classList.contains("vo-lock")){
+        if(offT){ clearTimeout(offT); offT = null; }
+        /* only when missing: classList.add() of a class already there still rewrites the attribute, which
+           re-fires this observer - an endless loop that froze the page while a clip played */
+        if(!b.classList.contains("vo-busy")) b.classList.add("vo-busy");
+      } else if(b.classList.contains("vo-busy") && !offT){
+        offT = setTimeout(()=>{ offT = null; if(!document.body.classList.contains("vo-lock")) document.body.classList.remove("vo-busy"); }, SPK_HOLD_MS);
+      }
+    };
+    const start = ()=>{ sync(); new MutationObserver(sync).observe(document.body, { attributes:true, attributeFilter:["class"] }); };
+    if(document.body) start(); else document.addEventListener("DOMContentLoaded", start);
   })();
 
   /* ---------------------------------------------------------------- engine wraps (this card only) */

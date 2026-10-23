@@ -492,3 +492,10 @@ Source: SME review pasted in chat + the user's answers to 21 questions + the upd
 - Transcribed: «नमस्ते दोस्त! मैं हूँ स्विफ्टी। आज परी बाज़ार जा रही है। उसे कुछ सामान खरीदना है। आइए, हम भी उसके साथ चलते हैं और उसकी मदद करते हैं।» — the builder's script updated to it (the line now introduces «परी चली बाज़ार» instead of the picnic). Prepared with `prepare_vo.py` (−16 LUFS, trimmed): 10.76 → 10.31 s.
 - ⚑ 10.31 s is 0.31 s over the checklist's 10 s. Its four pauses are 0.25–0.38 s; shortening them would bring it under 10 s without touching a word — not done, awaiting the user's decision.
 - VO manifest refreshed.
+
+## Round 19 — QA bug: the speaker flickers between lines (2026-10-23)
+| # | Bug | Status | Proof |
+|---|---|---|---|
+| 19-1 | "In VO, the speaker turns grey, then blue, then grey… in the pauses of the VO, on every screen where lines are announced" | ✅ fixed | Cause: the engine greys the speakers under `body.vo-lock`, which is on EXACTLY while a clip sounds — in the gap between two lines of one sequence (page 1's ₹10 then ₹1 lines, 0.25 s apart) the speaker flashed back to blue. Fix (money_modules.js `speakerBusy` + money_styles.css): a separate `body.vo-busy` — on with vo-lock at once, off only after the voice has been quiet 0.7 s; the speakers' grey look and tap-lock follow it. vo-lock itself (the screen's tap / drag lock) is unchanged. `_speaker_check.py` (real audio): page 1 — the voice lock drops between its lines, the speaker stays grey + untappable through the whole sequence and is back (blue, tappable) after; page 4 and the shop stall the same. |
+- Found on the way: the first version re-added the class on every class change, which itself counts as a change — an endless loop that froze the page while a clip played; it now acts only when something must change.
+- Dist 9.79 MB; on dist: `_speaker_check` (page 1: 1 gap between its lines, 0 blue frames; page 4 / shop: 0 blue frames), `_gate_r17`, `_pause_check`, `_drive_r3`, `_bgm_check`, `_celcheck` (lip-sync 100 %) — 0 FAIL.
