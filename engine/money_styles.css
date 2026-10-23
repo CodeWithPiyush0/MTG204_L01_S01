@@ -356,8 +356,6 @@
 .pg-title.pg-wait{visibility:hidden;}
 .pg-title.pg-write{animation:pgWrite .9s ease-out both;}
 
-/* round 2j: the team's celebration GIF (640x360, its own background kept as-is) */
-.end-screen .end-mascot.end-mascot-team{width:560px;height:auto;filter:none;border-radius:24px;}
 
 
 /* ======================= round 2k (user, 2026-09-30) ======================= */
@@ -365,24 +363,9 @@
 .mn-build.mn-tray-down .mn-target .mn-tray{top:64px;}
 /* while the drag-back tip speaks, the money cannot be picked up */
 .sg-make2.sg-tipping .mn-piece{cursor:default;}
-/* celebration: the team GIF at the reference mascot's height (358 px), so the arrow button below it
-   lands exactly where it does in HI02H11_L02_S02 (134 x 88 arrow-only pill, 22 px below the mascot) */
-.end-screen .end-mascot.end-mascot-team{height:358px;width:auto;}
 
-/* round 2l: the celebration Swiftie sprite — same 358 px height as the reference mascot, so the arrow
-   below keeps the reference position (22 px under it) */
-.end-screen .cel-sprite{height:358px;background-repeat:no-repeat;background-size:600% 600%;z-index:2;
-  filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
-
-/* round 2m: the three-sheet celebration Swiftie. The LAYOUT box stays 358 px tall, so the arrow keeps
-   the reference position (22 px under it); the art inside is 420 px tall, anchored at the bottom, with
-   the jump's head-room rising above the box. */
-.end-screen .cel-sprite{position:relative;height:358px;width:300px;background:none;aspect-ratio:auto;animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
-.end-screen .cel-sprite .cel-art{position:absolute;left:50%;bottom:0;height:420px;transform:translateX(-50%);
-  background-repeat:no-repeat;background-size:600% 600%;filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));}
-
-/* round 2n: invisible one-time paint of the talk/idle sheets (decode + upload before they are needed) */
-.end-screen .cel-sprite .cel-prepaint{opacity:.01;pointer-events:none;filter:none;}
+/* (rounds 2l-2n's own celebration sprite removed in round 25: celebration_kit's swiftie_celebration.css,
+   injected by the build as in HI02H11_L02_S02) */
 
 
 /* ======================= round 2o (user, 2026-10-07) ======================= */
@@ -410,11 +393,7 @@
 .mn-row.mn-say-hi{transform:scale(1.12);}
 .mn-row.mn-say-hi .mn-piece img{filter:drop-shadow(0 0 6px #FFC21A) drop-shadow(0 0 16px rgba(255,180,0,.85)) !important;}
 .mn-total.mn-say-hi{transform:scale(1.12);box-shadow:0 0 0 4px rgba(255,194,26,.55);transition:transform .25s, box-shadow .25s;}
-/* (2) the celebration arrow waits for the line, then pulses (scale only — no glow, no border) */
-#endBtn.cel-wait{pointer-events:none;filter:grayscale(1);opacity:.55;animation:none !important;}
-@keyframes celArrowPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
-#endBtn.cel-ready{animation:celArrowPulse 1.3s ease-in-out infinite;}
-@media (prefers-reduced-motion:reduce){ #endBtn.cel-ready{animation:none;} }
+/* (round 2p's waiting celebration arrow removed in round 25: the reference's own end button) */
 /* (7) the stall's idle reminder (renamed from .sg-glow, which the engine owns) */
 .sg-cell2.sg-hilite{animation:sgGlow 1s ease-in-out 3;}
 /* (8) the shop's complete screen reuses page 12's list card */

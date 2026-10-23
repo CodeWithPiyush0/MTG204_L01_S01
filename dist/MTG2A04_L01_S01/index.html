@@ -4284,8 +4284,6 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .pg-title.pg-wait{visibility:hidden;}
 .pg-title.pg-write{animation:pgWrite .9s ease-out both;}
 
-/* round 2j: the team's celebration GIF (640x360, its own background kept as-is) */
-.end-screen .end-mascot.end-mascot-team{width:560px;height:auto;filter:none;border-radius:24px;}
 
 
 /* ======================= round 2k (user, 2026-09-30) ======================= */
@@ -4293,24 +4291,9 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .mn-build.mn-tray-down .mn-target .mn-tray{top:64px;}
 /* while the drag-back tip speaks, the money cannot be picked up */
 .sg-make2.sg-tipping .mn-piece{cursor:default;}
-/* celebration: the team GIF at the reference mascot's height (358 px), so the arrow button below it
-   lands exactly where it does in HI02H11_L02_S02 (134 x 88 arrow-only pill, 22 px below the mascot) */
-.end-screen .end-mascot.end-mascot-team{height:358px;width:auto;}
 
-/* round 2l: the celebration Swiftie sprite — same 358 px height as the reference mascot, so the arrow
-   below keeps the reference position (22 px under it) */
-.end-screen .cel-sprite{height:358px;background-repeat:no-repeat;background-size:600% 600%;z-index:2;
-  filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
-
-/* round 2m: the three-sheet celebration Swiftie. The LAYOUT box stays 358 px tall, so the arrow keeps
-   the reference position (22 px under it); the art inside is 420 px tall, anchored at the bottom, with
-   the jump's head-room rising above the box. */
-.end-screen .cel-sprite{position:relative;height:358px;width:300px;background:none;aspect-ratio:auto;animation:endPop .55s cubic-bezier(.34,1.5,.6,1);}
-.end-screen .cel-sprite .cel-art{position:absolute;left:50%;bottom:0;height:420px;transform:translateX(-50%);
-  background-repeat:no-repeat;background-size:600% 600%;filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));}
-
-/* round 2n: invisible one-time paint of the talk/idle sheets (decode + upload before they are needed) */
-.end-screen .cel-sprite .cel-prepaint{opacity:.01;pointer-events:none;filter:none;}
+/* (rounds 2l-2n's own celebration sprite removed in round 25: celebration_kit's swiftie_celebration.css,
+   injected by the build as in HI02H11_L02_S02) */
 
 
 /* ======================= round 2o (user, 2026-10-07) ======================= */
@@ -4338,11 +4321,7 @@ body.vo-lock .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysca
 .mn-row.mn-say-hi{transform:scale(1.12);}
 .mn-row.mn-say-hi .mn-piece img{filter:drop-shadow(0 0 6px #FFC21A) drop-shadow(0 0 16px rgba(255,180,0,.85)) !important;}
 .mn-total.mn-say-hi{transform:scale(1.12);box-shadow:0 0 0 4px rgba(255,194,26,.55);transition:transform .25s, box-shadow .25s;}
-/* (2) the celebration arrow waits for the line, then pulses (scale only — no glow, no border) */
-#endBtn.cel-wait{pointer-events:none;filter:grayscale(1);opacity:.55;animation:none !important;}
-@keyframes celArrowPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
-#endBtn.cel-ready{animation:celArrowPulse 1.3s ease-in-out infinite;}
-@media (prefers-reduced-motion:reduce){ #endBtn.cel-ready{animation:none;} }
+/* (round 2p's waiting celebration arrow removed in round 25: the reference's own end button) */
 /* (7) the stall's idle reminder (renamed from .sg-glow, which the engine owns) */
 .sg-cell2.sg-hilite{animation:sgGlow 1s ease-in-out 3;}
 /* (8) the shop's complete screen reuses page 12's list card */
@@ -4637,7 +4616,16 @@ body.spk-done .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysc
 
 /* == MONEY STYLES :: END == */
 </style>
-<link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.webp"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.webp"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.webp"></head>
+<link rel="preload" as="image" fetchpriority="high" href="assets/Images/scn_landing.webp"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_note10.webp"><link rel="preload" as="image" fetchpriority="high" href="assets/Images/cur_coin1.webp"><style id="swcKitCss">
+/* Swiftie celebration kit — the sprite fills its host's HEIGHT; the art is 420/358 of the host so the
+   jump's head-room rises above the host box (the layout box, and anything placed under it, keeps the
+   standard 358 px mascot geometry). Give the host a height (e.g. 358px) and a width (~300px). */
+.swc-sprite{position:relative;width:100%;height:100%;animation:swcPop .55s cubic-bezier(.34,1.5,.6,1);}
+.swc-sprite .swc-art{position:absolute;left:50%;bottom:0;height:117.3%;transform:translateX(-50%);
+  background-repeat:no-repeat;background-size:600% 600%;filter:drop-shadow(0 12px 22px rgba(0,47,118,.22));}
+@keyframes swcPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+</style>
+</head>
 <body class="is-start">
 <div class="start-bg" aria-hidden="true"></div>
 <div class="sg-glow" aria-hidden="true"></div>
@@ -4724,7 +4712,7 @@ body.spk-done .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysc
     <div class="confetti" id="confetti"></div>
     <div class="end-title" id="endTitle"></div>
     <div class="end-subtitle" id="endSubtitle"></div>
-    <img class="end-mascot" src="assets/UI/cel_talk.webp" alt="Swiftee"
+    <img class="end-mascot" data-src="assets/UI/sw_lg_celebrating_anim.webp" alt="Swiftee"
          onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'end-mascot',textContent:'🎉'}))">
     <!-- [r5] the arrow is drawn by .end-btn::after now, exactly as .nav-btn draws its own.
          [r82] Yasir: the same button as HI02H11_L01_S01's celebration - the arrow alone, the
@@ -4797,110 +4785,6 @@ body.spk-done .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysc
   "next": "sfx_next_button"
  },
  "bgm": true,
- "end_anim": {
-  "cols": 6,
-  "fw": 329,
-  "fh": 440,
-  "step_ms": 25,
-  "bits": "0110000011110000000111000000111111111110001100111000000000000000011111111000000011111110011110000111100001111110000000",
-  "vo": "vo_cel_prompt",
-  "shabaash": {
-   "src": "assets/UI/cel_shabaash.webp",
-   "pre": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-   ],
-   "word": [
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    27,
-    28,
-    29
-   ],
-   "post": [
-    30,
-    31,
-    32,
-    33,
-    34,
-    35
-   ]
-  },
-  "talk": {
-   "src": "assets/UI/cel_talk.webp",
-   "open": [
-    0,
-    1,
-    2,
-    4,
-    5,
-    6,
-    8,
-    9,
-    10,
-    11,
-    15,
-    16,
-    20,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    28,
-    29,
-    30,
-    31,
-    32
-   ]
-  },
-  "idle": {
-   "src": "assets/UI/cel_idle.webp",
-   "loop": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    24,
-    25,
-    26,
-    27,
-    28,
-    29,
-    30,
-    31,
-    32,
-    33,
-    34,
-    35
-   ]
-  }
- },
  "scaffold_rules": {
   "max_attempts": 3,
   "hint_levels": 3
@@ -5507,6 +5391,117 @@ body.spk-done .sg-vo{ pointer-events:none !important; opacity:.45; filter:graysc
   },
   "audio_ext": "ogg",
   "img_ext": "webp"
+ },
+ "end_anim": {
+  "base": "assets/UI/",
+  "vo": "vo_cel_prompt",
+  "meta": {
+   "cols": 6,
+   "frames": 36,
+   "fw": 329,
+   "fh": 440,
+   "shabaash": {
+    "src": "cel_shabaash.webp",
+    "pre": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "word": [
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "post": [
+     30,
+     31,
+     32,
+     33,
+     34,
+     35
+    ]
+   },
+   "talk": {
+    "src": "cel_talk.webp",
+    "open": [
+     0,
+     1,
+     2,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     11,
+     15,
+     16,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     28,
+     29,
+     30,
+     31,
+     32
+    ]
+   },
+   "idle": {
+    "src": "cel_idle.webp",
+    "loop": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35
+    ]
+   }
+  },
+  "track": {
+   "bits": "0110000011110000000111000000111111111110001100111000000000000000011111111000000011111110011110000111100001111110000000",
+   "step_ms": 25,
+   "ms": 2964
+  }
  },
  "preload": {
   "images": [
@@ -17793,47 +17788,21 @@ if(document.fonts && document.fonts.load){
   /* (round 2i's own transition gate removed in round 2p: the engine's r107/r108 gate is used —
      rise animation, lip-synced talk sheet, typewriter title on the clip's clock; data on CARD.gate) */
 
-  /* round 2j: the celebration screen shows the team's own Swiftie GIF (CARD.end_mascot), used exactly as
-     supplied — background included (user instruction: do not remove or alter its background). */
-  setTimeout(()=> (function endMascot(tries){
-    try {
-      const src = CARD && CARD.end_mascot;
-      const im = document.querySelector("#endScreen .end-mascot");
-      if(!src) return;
-      if(!im){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); return; }
-      im.src = src; im.classList.add("end-mascot-team");
-    } catch(e){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); }
-  })(0), 0);
+  /* (round 2j's team GIF on the end screen removed in round 25: the reference's kit Swiftie is used) */
 
   /* (round 2k's button-sound listener removed in round 2p: the engine plays CARD.ui_sfx — the play
      sound on the press, the next sound on a real click of the arrow / celebration arrow) */
 
-  /* ============ CELEBRATION SWIFTIE, round 2l — lip-synced to the VO ============
-     The team's jumping + speaking Swiftie (36 frames) is a sprite sheet the page drives itself, because
-     a GIF runs on its own 4 s clock and cannot follow a 5.7 s line. The timeline comes from the VO:
-       before the voice      frame 21 (arms out, ready)
-       «शाबाश!» (1st word)    the jump, frames 22-32 (arms up, mouth open), stretched over that word
-       the pause after it     fist pump 33-35 (mouth closed)
-       the rest of the line   standing; every step the VO's loudness at THAT moment picks a mouth-open
-                              frame (loud) or a mouth-closed one (quiet) — so the mouth moves with the
-                              syllables and shuts on every pause
-       after the voice        two fist pumps, then a standing idle with a blink, mouth shut
-     The VO clock is the moment the engine's clip actually starts (isPlaying), not the mount. */
-  /* round 2p (user): "once the VO finishes, the button is enabled and pulses" — on the celebration too.
-     The engine shows its arrow at once; here it waits (dim, not pressable) until the celebration
-     line has ended, then it pulses like the in-lesson arrow (no glow, no border change). */
-  function celArrowAfterVO(){
-    const eb = document.getElementById("endBtn"); if(!eb) return;
-    eb.classList.remove("hint-glow"); eb.classList.add("cel-wait");
-    const t0 = performance.now(); let heard = false;
-    (function tick(){
-      if(!eb.isConnected) return;
-      if(isPlaying) heard = true;
-      if((heard && !isPlaying) || performance.now() - t0 > 15000){
-        eb.classList.remove("cel-wait"); eb.classList.add("cel-ready"); return; }
-      requestAnimationFrame(tick);
-    })();
-  }
+  /* ============ THE END SCREEN, round 25 (user, 2026-10-23): "extract and use the exact same end
+     screen celebration screen and its button and its logic" from HI02H11_L02_S02. ============
+     That lesson's end screen = the engine's CELEBRATION (identical here) + celebration_kit's lip-synced
+     Swiftie and its wrapper (its r85 / r106), which the BUILD injects after the engine, as there
+     (scripts/build_skill_MTG2A04_L01_S01.py, CEL_WRAP + inject_celebration). Its button is the engine's
+     own: shown, glowing and pressable from the moment the screen opens (its [30i]) - by the user's
+     choice the one exception to round 24's "nothing takes a tap while the voice plays".
+     Removed with it: our own sprite player and timeline (rounds 2l-2r), the arrow that waited grey for
+     the line (round 2p) and the round-2j GIF. What stays is ours only: the shop's held pictures are let
+     go when the end screen opens. */
   setTimeout(()=> (function wrapCel(tries){
     const C = (typeof SlideModules !== "undefined") && SlideModules.CELEBRATION;
     if(!C || !C.mount){ if(tries < 200) setTimeout(()=> wrapCel(tries + 1), 25); return; }
@@ -17842,121 +17811,9 @@ if(document.fonts && document.fonts.load){
     C.mount = function(host, slide){
       const r = _mount.apply(this, arguments);
       try { releaseShop(); } catch(e){}            /* round 2t: the shop's held pictures are no longer needed */
-      try { celArrowAfterVO(); } catch(e){}
-      try { runCelSprite(slide); } catch(e){}
       return r;
     };
   })(0), 0);
-  let _celGen = 0;
-  /* round 2m — THREE SHEETS, ONE CLOCK (timeline re-ordered in round 2r — see inside: jump first, then
-     the line). While she talks the clock is the celebration VO itself, from the moment it is sounding:
-     the cursor walks the talk sheet forward (so the body keeps moving naturally) but only ever lands on
-     a frame whose mouth matches the VO at that instant — open on each syllable, shut in every dip.
-     All three sheets share frame size and alignment (make_cel_sprite.py), so switching never jumps. */
-  function runCelSprite(slide){
-    const A = CARD && CARD.end_anim;
-    const im = document.querySelector("#endScreen .end-mascot");
-    if(!A || !im || !A.bits || !A.shabaash) return;
-    const gen = ++_celGen;
-    let sp = document.getElementById("celSprite");
-    if(!sp){
-      sp = document.createElement("div"); sp.id = "celSprite"; sp.className = "cel-sprite";
-      sp.innerHTML = '<div class="cel-art"></div>';
-      im.parentNode.insertBefore(sp, im);
-    }
-    im.style.display = "none";
-    const art = sp.querySelector(".cel-art");
-    /* paint the talk + idle sheets once, invisibly, while the screen opens — so the browser decodes and
-       uploads them now, not at the शाबाश -> talk switch (measured: a 130-180 ms stall there) */
-    [A.talk, A.idle].forEach(sh => {
-      const pp = document.createElement("div"); pp.className = "cel-art cel-prepaint";
-      pp.style.aspectRatio = A.fw + " / " + A.fh; pp.style.backgroundImage = 'url("' + sh.src + '")';
-      sp.appendChild(pp);
-      requestAnimationFrame(()=> requestAnimationFrame(()=> setTimeout(()=> pp.remove(), 120)));
-    });
-    art.style.aspectRatio = A.fw + " / " + A.fh;
-    let curSrc = "";
-    const show = (sheet, i)=>{
-      if(sheet.src !== curSrc){ art.style.backgroundImage = 'url("' + sheet.src + '")'; curSrc = sheet.src; }
-      const c = i % A.cols, r = Math.floor(i / A.cols);
-      art.style.backgroundPosition = (c * 100 / (A.cols - 1)) + "% " + (r * 100 / (A.cols - 1)) + "%";
-      sp.dataset.sheet = sheet === A.shabaash ? "shabaash" : (sheet === A.idle ? "idle" : "talk");
-      sp.dataset.f = i;
-    };
-    const S = A.shabaash, T = A.talk, I = A.idle;
-    const OPEN = new Set(T.open);
-    const bits = A.bits || "";
-    const step = A.step_ms || 25;
-    const loud = (t)=> bits.charAt(Math.floor(t / step)) === "1";
-    const lenMs = bits.length * step;
-    /* round 2r (user + reference HI02H11 r106): SHE JUMPS AND CELEBRATES FIRST, THEN SPEAKS. The line
-       («बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!») has no «शाबाश» to hang the jump on, so the page owns
-       the audio (ownsAudio: the engine's auto-play is skipped) and runs:
-         jump     «शाबाश» sheet 0-29 at 45 ms/frame (1.35 s) — silent but for the engine's celebration sfx
-         landing  «शाबाश» sheet 30-35 (mouth shut, 0.27 s)
-         the VO   starts here; the WHOLE line lip-syncs on the talk sheet (the clip speaks from 0 ms)
-         after    idle sheet, mouth-shut frames only, looping */
-    const JUMP = S.pre.concat(S.word), LAND = S.post, FMS = 45;
-    const src = (typeof audioFor === "function") ? audioFor(slide, "prompt") : null;
-    if(!src) return;                                   /* no clip: let the engine's own auto-play run */
-    state.ownsAudio = true;
-    show(S, JUMP[0]);
-    let m0 = 0, lastF = 0, smooth = 0, vclock = null;
-    let phase = "jump", tj = 0, t0 = 0, waitStart = 0, done = false, cursor = 0, curOpen = null, lastStep = 0;
-    const idle = ()=>{
-      let j = 0;
-      (function tick(){
-        if(gen !== _celGen || !sp.isConnected) return;
-        show(I, I.loop[j % I.loop.length]); j++;
-        setTimeout(tick, 110);
-      })();
-    };
-    (function frame(){
-      if(gen !== _celGen || !sp.isConnected || done) return;
-      if(CARD.slides[state.idx] !== slide){ done = true; return; }
-      const now = performance.now();
-      /* the jump's clock starts once the screen's opening work has settled — three smooth paints in a
-         row (sunburst, stars, sfx and the sheets' first decode stall the first ~0.2-0.5 s; a jump timed
-         from the mount skipped half its frames). Capped at 0.7 s, so she never stands still longer. */
-      if(!tj){
-        if(!m0){ m0 = now; lastF = now; }
-        smooth = (now - lastF < 40) ? smooth + 1 : 0; lastF = now;
-        if(smooth >= 3 || now - m0 > 700) tj = now;
-        else { requestAnimationFrame(frame); return; }
-      }
-      if(phase === "jump" || phase === "land"){
-        const list = phase === "jump" ? JUMP : LAND, k = Math.floor((now - tj) / FMS);
-        if(k < list.length){ show(S, list[k]); requestAnimationFrame(frame); return; }
-        if(phase === "jump"){ phase = "land"; tj = now; show(S, LAND[0]); requestAnimationFrame(frame); return; }
-        phase = "wait"; waitStart = now;
-        play(src, ()=>{});                             /* the line starts as she lands */
-        /* the clip's OWN clock (engine: when the source really started + output latency) — a paint
-           that runs late after play() no longer shifts the whole track (measured: 52 ms) */
-        vclock = (typeof _voiceClock === "function") ? _voiceClock() : null;
-      }
-      if(phase === "wait"){
-        if(isPlaying){ phase = "talk"; t0 = now; }
-        else if(now - waitStart > 1800){ done = true; idle(); return; }     /* the VO never started */
-        else { requestAnimationFrame(frame); return; }
-      }
-      const vt = vclock ? vclock().t : null;
-      const t = vt != null ? vt : now - t0;
-      if(!isPlaying || t > lenMs + 400){ done = true; idle(); return; }
-      const want = loud(t + 16);                       /* one paint ahead: the frame shows on the NEXT paint */
-      /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
-      if(want !== curOpen || now - lastStep > 80){
-        let k = 1;
-        while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
-        cursor = (cursor + k) % 36;
-        show(T, cursor); curOpen = want; lastStep = now;
-      }
-      sp.dataset.t = Math.round(t); sp.dataset.w = want ? 1 : 0;   /* the sprite's own clock + choice (tests) */
-      requestAnimationFrame(frame);
-    })();
-  }
-  /* warm the sheet during the lesson, so the end screen never opens on an empty box */
-  setTimeout(()=>{ try { const A = CARD && CARD.end_anim; if(A && A.shabaash){
-    window.__celWarm = [A.shabaash.src, A.talk.src, A.idle.src].map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; }); } } catch(e){} }, 1500);
 
   /* ============ ASSET GATE, round 2n (user, 2026-10-01) ============
      "The landing image should load completely before the loader disappears ... load all the assets
@@ -20415,6 +20272,219 @@ function buildDevNav(){
 }
 boot();
 
+</script>
+<script id="swcKit">
+/* ============================================================================================
+   SWIFTIE CELEBRATION KIT — player (framework-free, no dependencies)
+   ============================================================================================
+   Plays the three celebration sheets (cel_shabaash / cel_talk / cel_idle) lip-synced to a voice-over.
+
+     SwiftieCelebration.play({
+       host:     <element>,                 // where Swiftie goes (she fills its height)
+       meta:     <cel_meta.json object>,    // frame size, grid, open-mouth frames, roles
+       base:     "assets/UI/celebration/",  // folder the three .webp sheets are served from
+       bits:     "0001111...",              // lip-sync track from make_lipsync.py (25 ms per char)
+       step_ms:  25,
+       // THE CLOCK — give ONE of these:
+       audio:    <HTMLAudioElement>,        // best: time = audio.currentTime
+       isSounding: ()=> bool                // or: true while the VO is sounding (timer starts then)
+     })  -> { stop() }
+
+   Timeline (all from the VO clock):
+     before the first sound   shabaash 0-5    standing, mouth shut
+     first word («शाबाश!»)    shabaash 6-29   the jump, mouth open — stretched to that word
+     the pause after it       shabaash 30-35  lands, mouth shut
+     rest of the line         talk sheet: a cursor walks the sheet forward (so the body keeps moving)
+                              but only lands on frames whose mouth matches the track at that instant
+     after the VO             idle sheet, mouth-shut frames only, looping
+   Measured on MTG2A04_L01_S01: mouth = VO in 99.6-100 % of samples; every miss within one paint.
+   ============================================================================================ */
+(function(global){
+  "use strict";
+  function play(o){
+    const M = o.meta, base = (o.base || "").replace(/\/?$/, "/");
+    const bits = o.bits || "", step = o.step_ms || 25;
+    const S = M.shabaash, T = M.talk, I = M.idle, COLS = M.cols || 6, N = M.frames || 36;
+    const OPEN = new Set(T.open);
+    let stopped = false;
+
+    const sp = document.createElement("div");
+    sp.className = "swc-sprite";
+    sp.innerHTML = '<div class="swc-art"></div>';
+    o.host.appendChild(sp);
+    const art = sp.firstChild;
+    art.style.aspectRatio = M.fw + " / " + M.fh;
+    [S, T, I].forEach(s => { const i = new Image(); i.src = base + s.src; });   /* warm all three */
+
+    let cur = "";
+    const show = (sheet, i)=>{
+      const url = base + sheet.src;
+      if(url !== cur){ art.style.backgroundImage = 'url("' + url + '")'; cur = url; }
+      const c = i % COLS, r = Math.floor(i / COLS);
+      art.style.backgroundPosition = (c * 100 / (COLS - 1)) + "% " + (r * 100 / (COLS - 1)) + "%";
+      sp.dataset.sheet = sheet === S ? "shabaash" : (sheet === I ? "idle" : "talk"); sp.dataset.f = i;
+    };
+    show(S, S.pre[0]);
+
+    const loud = (t)=> bits.charAt(Math.floor(t / step)) === "1";
+    const GAP = Math.round(200 / step);                       /* a 200 ms silence ends the first word */
+    let s0 = bits.indexOf("1"), e0 = s0, gap = 0;
+    for(let k = s0; k >= 0 && k < bits.length; k++){ if(bits[k] === "1"){ e0 = k; gap = 0; } else if(++gap >= GAP) break; }
+    const speechStart = Math.max(0, s0) * step, wordEnd = (e0 + 1) * step;
+    const ns = bits.indexOf("1", e0 + GAP), nextStart = ns < 0 ? wordEnd : ns * step;
+    const lenMs = bits.length * step;
+    const seg = (list, t, a, b)=> list[Math.min(list.length - 1, Math.max(0, Math.floor((t - a) / Math.max(1, b - a) * list.length)))];
+
+    const idle = ()=>{ let j = 0; (function tick(){ if(stopped || !sp.isConnected) return;
+      show(I, I.loop[j % I.loop.length]); j++; setTimeout(tick, 110); })(); };
+
+    /* the clock */
+    let t0 = 0, started = false;
+    /* audio.currentTime advances in coarse steps in some browsers, so it only ANCHORS a smooth clock:
+       t0 is set once from it when the clip starts; after that time is performance.now() - t0 */
+    const t_now = ()=> performance.now() - t0;
+    const sounding = ()=> o.audio ? (!o.audio.paused && !o.audio.ended) : !!(o.isSounding && o.isSounding());
+    const waitStart = performance.now();
+    let cursor = 0, curOpen = null, lastStep = 0;
+    (function frame(){
+      if(stopped || !sp.isConnected) return;
+      const now = performance.now();
+      if(!started){
+        if(sounding() && (!o.audio || o.audio.currentTime > 0)){ started = true; t0 = now - (o.audio ? o.audio.currentTime * 1000 : 0); }
+        else if(now - waitStart > 1800){ idle(); return; }            /* the VO never started */
+        else { requestAnimationFrame(frame); return; }
+      }
+      const t = t_now(); sp.dataset.t = Math.round(t);
+      if(!sounding() || t > lenMs + 400){ idle(); return; }
+      if(t < speechStart) show(S, seg(S.pre, t, 0, speechStart));
+      else if(t < wordEnd) show(S, seg(S.word, t, speechStart, wordEnd));
+      else if(t < nextStart) show(S, seg(S.post, t, wordEnd, nextStart));
+      else {
+        const want = loud(t + 16);                        /* one paint ahead: the frame shows on the NEXT paint */
+        if(want !== curOpen || now - lastStep > 80){      /* at once on a mouth change, else every 80 ms */
+          let k = 1;
+          while(k < N && OPEN.has((cursor + k) % N) !== want) k++;
+          cursor = (cursor + k) % N; show(T, cursor); curOpen = want; lastStep = now;
+        }
+      }
+      requestAnimationFrame(frame);
+    })();
+    return { el: sp, stop(){ stopped = true; } };
+  }
+  global.SwiftieCelebration = { play };
+})(window);
+
+
+/* [r85] THE CELEBRATION SWIFTIE - the kit's README wrapper, verbatim in intent. The engine's
+   CELEBRATION module is wrapped, not edited: it still does everything it did (sfx, sunburst, stars,
+   the arrow), then the stock .end-mascot is hidden and a 300x358 host takes its place - the mascot's
+   own 358 px layout height, so the arrow below it keeps its exact size and position.
+   The clock is the clip's own - see THE CLOCK below. */
+(function(){
+  if(typeof SlideModules === "undefined" || !SlideModules.CELEBRATION || typeof CARD === "undefined"
+     || !CARD.end_anim || typeof SwiftieCelebration === "undefined") return;
+  const EA = CARD.end_anim;
+  /* the three sheets (~2 MB) are fetched quietly 12 s after the lesson loads, so on a first visit
+     they are in the cache long before the last page: the kit only starts loading them when the
+     celebration mounts, and on a slow connection the jump (350 ms in) would play before its sheet
+     had arrived. Kept referenced so the cached copies are not dropped. */
+  const _warm = [];
+  const warm = ()=> [EA.meta.shabaash, EA.meta.talk, EA.meta.idle].forEach(s => {
+    const i = new Image(); i.decoding = "async"; i.src = EA.base + s.src; _warm.push(i); });
+  const arm = ()=> setTimeout(warm, 12000);
+  if(document.readyState === "complete") arm(); else window.addEventListener("load", arm);
+  /* THE CLOCK. The kit takes `audio` - anything with paused / ended / currentTime - and anchors
+     itself as  t0 = now - currentTime  the first time it sees the clip sounding. Measured here: the
+     celebration mounts in a burst of work (sunburst, stars, sound), the page's main thread stalls
+     150-330 ms right as the clip starts, and a yes/no "sounding" signal is only noticed on the first
+     frame AFTER the stall - which put the whole lip-sync 170-1470 ms late when opened as a file.
+     So the clock below reports how long the clip has really been audible, from the moment it
+     became so, however late the next frame runs:
+       · Web Audio (served): when the engine started the source, + the context's output latency
+       · <audio> (opened as a file): the element's own "playing" event timestamp */
+  const _st = AudioBufferSourceNode.prototype.start;
+  AudioBufferSourceNode.prototype.start = function(when){
+    try{ const c = this.context;
+      this.__swcAt = performance.now() + ((when && when > c.currentTime) ? (when - c.currentTime) * 1000 : 0)
+                     + ((c.baseLatency || 0) + (c.outputLatency || 0)) * 1000; }catch(e){}
+    return _st.apply(this, arguments);
+  };
+  const heardAt = ()=>{
+    const a = currentAudio;
+    if(a){
+      if(!a.__swc){ a.__swc = true;
+        a.addEventListener("playing", (e)=>{ a.__swcAt = e.timeStamp - a.currentTime * 1000; }); }
+      return a.paused ? null : (a.__swcAt != null ? a.__swcAt
+                               : (a.currentTime > 0 ? performance.now() - a.currentTime * 1000 : null));
+    }
+    return currentVoiceSource && currentVoiceSource.__swcAt != null ? currentVoiceSource.__swcAt : null;
+  };
+  const clock = {
+    get paused(){ return !isPlaying || heardAt() == null; },
+    get ended(){ return !isPlaying; },
+    get currentTime(){ const t = heardAt(); return t == null ? 0 : Math.max(0, performance.now() - t) / 1000; }
+  };
+  const _cel = SlideModules.CELEBRATION.mount;
+  SlideModules.CELEBRATION.mount = function(host, slide){
+    const r = _cel.apply(this, arguments);
+    const img = document.querySelector("#endScreen .end-mascot");
+    let box = document.getElementById("celBox");
+    if(!box && img){ box = document.createElement("div"); box.id = "celBox";
+      /* the stock mascot's OWN layout height, measured before it is hidden: 330 px wide at its
+         516x476 art is 357.72 px, not the kit's 358 - and 0.28 px is a whole screen pixel of arrow
+         movement at 1920x1080. Falls back to the kit's 358 if the stock art never loaded. */
+      const h = (img.naturalWidth && img.offsetWidth) ? img.offsetWidth * img.naturalHeight / img.naturalWidth : 358;
+      box.style.cssText = "width:300px;height:" + h + "px;position:relative;z-index:2";
+      img.parentNode.insertBefore(box, img); }
+    if(!box) return r;
+    if(img) img.style.display = "none";
+    box.innerHTML = "";
+    /* [r106] SHE JUMPS AND CELEBRATES FIRST, THEN SPEAKS. Yasir: "in the last celebration screen Swifty
+       jumps and celebrates, then starts speaking - the VO should only play when she starts speaking".
+       So the line is NOT played by the page on arrival (ownsAudio): the jump - the kit's own शाबाश
+       sheet, its standing frames and its jump frames - plays first, silent but for the celebration
+       sound; then the line starts and the kit's player takes over, with a track arranged so that it
+       finishes the landing over the clip's lead-in and then lip-syncs the WHOLE line on the talk
+       sheet (a 25 ms stand-in "first word" stops the kit spending the real first words on a jump). */
+    state.ownsAudio = true;
+    const M = EA.meta, S = M.shabaash, COLS = M.cols || 6;
+    const sp = document.createElement("div"); sp.className = "swc-sprite";
+    sp.innerHTML = '<div class="swc-art"></div>'; box.appendChild(sp);
+    const art = sp.firstChild; art.style.aspectRatio = M.fw + " / " + M.fh;
+    art.style.backgroundImage = 'url("' + EA.base + S.src + '")';
+    const showF = (i)=>{ const c = i % COLS, rr = Math.floor(i / COLS);
+      art.style.backgroundPosition = (c * 100 / (COLS - 1)) + "% " + (rr * 100 / (COLS - 1)) + "%";
+      sp.dataset.sheet = "shabaash"; sp.dataset.f = i; };
+    const frames = S.pre.concat(S.word), FMS = 45;          /* ~22 fps: 30 frames, 1.35 s */
+    showF(frames[0]);
+    const bits = EA.track.bits, lead = Math.max(0, bits.indexOf("1"));
+    const step = EA.track.step_ms || 25;
+    const bits2 = "1" + "00000000" + bits.slice(lead);      /* stand-in word, 200 ms gap, the line */
+    const shift = (9 - lead) * step / 1000;                 /* keeps the line on the clip's clock */
+    const clock2 = {
+      get paused(){ return clock.paused; }, get ended(){ return clock.ended; },
+      get currentTime(){ const t = clock.currentTime; return t > 0 ? Math.max(0.001, t + shift) : 0; }
+    };
+    const t0 = performance.now();
+    (function jump(){
+      if(!sp.isConnected || CARD.slides[state.idx] !== slide) return;
+      const k = Math.floor((performance.now() - t0) / FMS);
+      if(k < frames.length){ showF(frames[k]); requestAnimationFrame(jump); return; }
+      /* the jump is over: the line starts, and the kit takes over the moment it is sounding */
+      const src = (typeof audioFor === "function") ? audioFor(slide, "prompt") : null;
+      if(src) play(src, ()=>{});
+      const h = SwiftieCelebration.play({ host: box, meta: M, base: EA.base, bits: bits2, step_ms: step, audio: clock2 });
+      h.el.style.animation = "none"; h.el.style.position = "absolute"; h.el.style.inset = "0";
+      h.el.style.visibility = "hidden";
+      (function swap(){
+        if(!h.el.isConnected) return;
+        if(h.el.dataset.t !== undefined || h.el.dataset.sheet === "idle"){ h.el.style.visibility = ""; sp.remove(); return; }
+        requestAnimationFrame(swap);
+      })();
+    })();
+    return r;
+  };
+})();
 </script>
 </body>
 </html>

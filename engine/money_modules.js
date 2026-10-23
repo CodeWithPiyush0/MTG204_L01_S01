@@ -319,47 +319,21 @@
   /* (round 2i's own transition gate removed in round 2p: the engine's r107/r108 gate is used —
      rise animation, lip-synced talk sheet, typewriter title on the clip's clock; data on CARD.gate) */
 
-  /* round 2j: the celebration screen shows the team's own Swiftie GIF (CARD.end_mascot), used exactly as
-     supplied — background included (user instruction: do not remove or alter its background). */
-  setTimeout(()=> (function endMascot(tries){
-    try {
-      const src = CARD && CARD.end_mascot;
-      const im = document.querySelector("#endScreen .end-mascot");
-      if(!src) return;
-      if(!im){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); return; }
-      im.src = src; im.classList.add("end-mascot-team");
-    } catch(e){ if(tries < 200) setTimeout(()=> endMascot(tries + 1), 25); }
-  })(0), 0);
+  /* (round 2j's team GIF on the end screen removed in round 25: the reference's kit Swiftie is used) */
 
   /* (round 2k's button-sound listener removed in round 2p: the engine plays CARD.ui_sfx — the play
      sound on the press, the next sound on a real click of the arrow / celebration arrow) */
 
-  /* ============ CELEBRATION SWIFTIE, round 2l — lip-synced to the VO ============
-     The team's jumping + speaking Swiftie (36 frames) is a sprite sheet the page drives itself, because
-     a GIF runs on its own 4 s clock and cannot follow a 5.7 s line. The timeline comes from the VO:
-       before the voice      frame 21 (arms out, ready)
-       «शाबाश!» (1st word)    the jump, frames 22-32 (arms up, mouth open), stretched over that word
-       the pause after it     fist pump 33-35 (mouth closed)
-       the rest of the line   standing; every step the VO's loudness at THAT moment picks a mouth-open
-                              frame (loud) or a mouth-closed one (quiet) — so the mouth moves with the
-                              syllables and shuts on every pause
-       after the voice        two fist pumps, then a standing idle with a blink, mouth shut
-     The VO clock is the moment the engine's clip actually starts (isPlaying), not the mount. */
-  /* round 2p (user): "once the VO finishes, the button is enabled and pulses" — on the celebration too.
-     The engine shows its arrow at once; here it waits (dim, not pressable) until the celebration
-     line has ended, then it pulses like the in-lesson arrow (no glow, no border change). */
-  function celArrowAfterVO(){
-    const eb = document.getElementById("endBtn"); if(!eb) return;
-    eb.classList.remove("hint-glow"); eb.classList.add("cel-wait");
-    const t0 = performance.now(); let heard = false;
-    (function tick(){
-      if(!eb.isConnected) return;
-      if(isPlaying) heard = true;
-      if((heard && !isPlaying) || performance.now() - t0 > 15000){
-        eb.classList.remove("cel-wait"); eb.classList.add("cel-ready"); return; }
-      requestAnimationFrame(tick);
-    })();
-  }
+  /* ============ THE END SCREEN, round 25 (user, 2026-10-23): "extract and use the exact same end
+     screen celebration screen and its button and its logic" from HI02H11_L02_S02. ============
+     That lesson's end screen = the engine's CELEBRATION (identical here) + celebration_kit's lip-synced
+     Swiftie and its wrapper (its r85 / r106), which the BUILD injects after the engine, as there
+     (scripts/build_skill_MTG2A04_L01_S01.py, CEL_WRAP + inject_celebration). Its button is the engine's
+     own: shown, glowing and pressable from the moment the screen opens (its [30i]) - by the user's
+     choice the one exception to round 24's "nothing takes a tap while the voice plays".
+     Removed with it: our own sprite player and timeline (rounds 2l-2r), the arrow that waited grey for
+     the line (round 2p) and the round-2j GIF. What stays is ours only: the shop's held pictures are let
+     go when the end screen opens. */
   setTimeout(()=> (function wrapCel(tries){
     const C = (typeof SlideModules !== "undefined") && SlideModules.CELEBRATION;
     if(!C || !C.mount){ if(tries < 200) setTimeout(()=> wrapCel(tries + 1), 25); return; }
@@ -368,121 +342,9 @@
     C.mount = function(host, slide){
       const r = _mount.apply(this, arguments);
       try { releaseShop(); } catch(e){}            /* round 2t: the shop's held pictures are no longer needed */
-      try { celArrowAfterVO(); } catch(e){}
-      try { runCelSprite(slide); } catch(e){}
       return r;
     };
   })(0), 0);
-  let _celGen = 0;
-  /* round 2m — THREE SHEETS, ONE CLOCK (timeline re-ordered in round 2r — see inside: jump first, then
-     the line). While she talks the clock is the celebration VO itself, from the moment it is sounding:
-     the cursor walks the talk sheet forward (so the body keeps moving naturally) but only ever lands on
-     a frame whose mouth matches the VO at that instant — open on each syllable, shut in every dip.
-     All three sheets share frame size and alignment (make_cel_sprite.py), so switching never jumps. */
-  function runCelSprite(slide){
-    const A = CARD && CARD.end_anim;
-    const im = document.querySelector("#endScreen .end-mascot");
-    if(!A || !im || !A.bits || !A.shabaash) return;
-    const gen = ++_celGen;
-    let sp = document.getElementById("celSprite");
-    if(!sp){
-      sp = document.createElement("div"); sp.id = "celSprite"; sp.className = "cel-sprite";
-      sp.innerHTML = '<div class="cel-art"></div>';
-      im.parentNode.insertBefore(sp, im);
-    }
-    im.style.display = "none";
-    const art = sp.querySelector(".cel-art");
-    /* paint the talk + idle sheets once, invisibly, while the screen opens — so the browser decodes and
-       uploads them now, not at the शाबाश -> talk switch (measured: a 130-180 ms stall there) */
-    [A.talk, A.idle].forEach(sh => {
-      const pp = document.createElement("div"); pp.className = "cel-art cel-prepaint";
-      pp.style.aspectRatio = A.fw + " / " + A.fh; pp.style.backgroundImage = 'url("' + sh.src + '")';
-      sp.appendChild(pp);
-      requestAnimationFrame(()=> requestAnimationFrame(()=> setTimeout(()=> pp.remove(), 120)));
-    });
-    art.style.aspectRatio = A.fw + " / " + A.fh;
-    let curSrc = "";
-    const show = (sheet, i)=>{
-      if(sheet.src !== curSrc){ art.style.backgroundImage = 'url("' + sheet.src + '")'; curSrc = sheet.src; }
-      const c = i % A.cols, r = Math.floor(i / A.cols);
-      art.style.backgroundPosition = (c * 100 / (A.cols - 1)) + "% " + (r * 100 / (A.cols - 1)) + "%";
-      sp.dataset.sheet = sheet === A.shabaash ? "shabaash" : (sheet === A.idle ? "idle" : "talk");
-      sp.dataset.f = i;
-    };
-    const S = A.shabaash, T = A.talk, I = A.idle;
-    const OPEN = new Set(T.open);
-    const bits = A.bits || "";
-    const step = A.step_ms || 25;
-    const loud = (t)=> bits.charAt(Math.floor(t / step)) === "1";
-    const lenMs = bits.length * step;
-    /* round 2r (user + reference HI02H11 r106): SHE JUMPS AND CELEBRATES FIRST, THEN SPEAKS. The line
-       («बहुत बढ़िया, दोस्त! तुमने कमाल कर दिया!») has no «शाबाश» to hang the jump on, so the page owns
-       the audio (ownsAudio: the engine's auto-play is skipped) and runs:
-         jump     «शाबाश» sheet 0-29 at 45 ms/frame (1.35 s) — silent but for the engine's celebration sfx
-         landing  «शाबाश» sheet 30-35 (mouth shut, 0.27 s)
-         the VO   starts here; the WHOLE line lip-syncs on the talk sheet (the clip speaks from 0 ms)
-         after    idle sheet, mouth-shut frames only, looping */
-    const JUMP = S.pre.concat(S.word), LAND = S.post, FMS = 45;
-    const src = (typeof audioFor === "function") ? audioFor(slide, "prompt") : null;
-    if(!src) return;                                   /* no clip: let the engine's own auto-play run */
-    state.ownsAudio = true;
-    show(S, JUMP[0]);
-    let m0 = 0, lastF = 0, smooth = 0, vclock = null;
-    let phase = "jump", tj = 0, t0 = 0, waitStart = 0, done = false, cursor = 0, curOpen = null, lastStep = 0;
-    const idle = ()=>{
-      let j = 0;
-      (function tick(){
-        if(gen !== _celGen || !sp.isConnected) return;
-        show(I, I.loop[j % I.loop.length]); j++;
-        setTimeout(tick, 110);
-      })();
-    };
-    (function frame(){
-      if(gen !== _celGen || !sp.isConnected || done) return;
-      if(CARD.slides[state.idx] !== slide){ done = true; return; }
-      const now = performance.now();
-      /* the jump's clock starts once the screen's opening work has settled — three smooth paints in a
-         row (sunburst, stars, sfx and the sheets' first decode stall the first ~0.2-0.5 s; a jump timed
-         from the mount skipped half its frames). Capped at 0.7 s, so she never stands still longer. */
-      if(!tj){
-        if(!m0){ m0 = now; lastF = now; }
-        smooth = (now - lastF < 40) ? smooth + 1 : 0; lastF = now;
-        if(smooth >= 3 || now - m0 > 700) tj = now;
-        else { requestAnimationFrame(frame); return; }
-      }
-      if(phase === "jump" || phase === "land"){
-        const list = phase === "jump" ? JUMP : LAND, k = Math.floor((now - tj) / FMS);
-        if(k < list.length){ show(S, list[k]); requestAnimationFrame(frame); return; }
-        if(phase === "jump"){ phase = "land"; tj = now; show(S, LAND[0]); requestAnimationFrame(frame); return; }
-        phase = "wait"; waitStart = now;
-        play(src, ()=>{});                             /* the line starts as she lands */
-        /* the clip's OWN clock (engine: when the source really started + output latency) — a paint
-           that runs late after play() no longer shifts the whole track (measured: 52 ms) */
-        vclock = (typeof _voiceClock === "function") ? _voiceClock() : null;
-      }
-      if(phase === "wait"){
-        if(isPlaying){ phase = "talk"; t0 = now; }
-        else if(now - waitStart > 1800){ done = true; idle(); return; }     /* the VO never started */
-        else { requestAnimationFrame(frame); return; }
-      }
-      const vt = vclock ? vclock().t : null;
-      const t = vt != null ? vt : now - t0;
-      if(!isPlaying || t > lenMs + 400){ done = true; idle(); return; }
-      const want = loud(t + 16);                       /* one paint ahead: the frame shows on the NEXT paint */
-      /* step the talk sheet forward: at once when the mouth must change, else every 80 ms */
-      if(want !== curOpen || now - lastStep > 80){
-        let k = 1;
-        while(k < 36 && OPEN.has((cursor + k) % 36) !== want) k++;
-        cursor = (cursor + k) % 36;
-        show(T, cursor); curOpen = want; lastStep = now;
-      }
-      sp.dataset.t = Math.round(t); sp.dataset.w = want ? 1 : 0;   /* the sprite's own clock + choice (tests) */
-      requestAnimationFrame(frame);
-    })();
-  }
-  /* warm the sheet during the lesson, so the end screen never opens on an empty box */
-  setTimeout(()=>{ try { const A = CARD && CARD.end_anim; if(A && A.shabaash){
-    window.__celWarm = [A.shabaash.src, A.talk.src, A.idle.src].map(u => { const i = new Image(); i.src = u; if(i.decode) i.decode().catch(()=>{}); return i; }); } } catch(e){} }, 1500);
 
   /* ============ ASSET GATE, round 2n (user, 2026-10-01) ============
      "The landing image should load completely before the loader disappears ... load all the assets

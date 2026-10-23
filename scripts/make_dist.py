@@ -81,7 +81,8 @@ def main():
     # celebrating mascot is never shown, so its <img> starts on the GIF and the old file stays out
     # round 2l: the celebration is the lip-synced sprite (cel_swiftee_sheet.webp); the hidden <img>
     # starts on that sheet, so neither the stock mascot nor the round-2j GIF ships
-    html = html.replace('class="end-mascot" src="assets/UI/sw_lg_celebrating_anim.webp"', 'class="end-mascot" src="assets/UI/cel_talk.webp"')
+    # round 25: the reference's end screen - the stock <img> only NAMES its art (data-src, never fetched;
+    # the kit's Swiftie takes its place), exactly as in HI02H11_L02_S02, so nothing is rewritten here
     SKIP.update({"sw_lg_celebrating_anim.webp", "Swiftee-end page gif.gif", "end_swiftee.gif", "cel_swiftee_sheet.webp"})
     ui = os.path.join(ROOT, "assets", "UI"); kept_ui = []
     for f in sorted(os.listdir(ui)):
