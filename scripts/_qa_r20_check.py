@@ -49,7 +49,8 @@ def tap_chip():
 def face(): return js("const b = document.getElementById('swBuddy'); return b && b.dataset.expr")
 def quiet(limit=20):
     t = time.time()
-    while time.time() - t < limit and js("return isPlaying || document.body.classList.contains('vo-lock')"): time.sleep(0.1)
+    # round 24: objects take no tap until the voice is done - the speaker's grey (body.vo-busy) is off
+    while time.time() - t < limit and js("return isPlaying || document.body.classList.contains('vo-lock') || document.body.classList.contains('vo-busy')"): time.sleep(0.1)
 def mount(sid, pre=""):
     js(pre + "; mountSlide(arguments[0])", idx[sid]); time.sleep(0.4)
 

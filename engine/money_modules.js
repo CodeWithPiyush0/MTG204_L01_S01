@@ -663,6 +663,14 @@
       if(typeof swMood === "undefined" || swMood === "tryagain") setSwMood("point");   /* her normal face */
     }, 50);
   };
+  /* round 24 (user: "whenever VO is playing do not let the user click on any object" - first seen on the
+     shop's stall): ONE rule for every note, coin, item and button of ours - nothing takes a tap or a drag
+     while the voice is busy. "Busy" is the speaker's own grey state (round 19's body.vo-busy: on while a
+     line plays, through the short pauses INSIDE a sequence of lines, off 0.7 s after the last), so the
+     child sees it: speaker grey = wait. isPlaying / vo-lock alone left those pauses open. */
+  const voBusy = ()=>{ const b = document.body;
+    return isPlaying || b.classList.contains("vo-lock") || b.classList.contains("vo-busy"); };
+
   /* round 20 (QA BUG_07): once a screen is solved the speaker is greyed and takes no tap until the next
      page - it used to replay the instruction of a screen already done. body.spk-done (money_styles.css)
      greys it; the replay is a no-op too (the engine's idle replay calls it). The next mount clears it. */
@@ -1019,7 +1027,7 @@
       root.addEventListener("pointerdown", dropHand, true);
       pieces.forEach(e => {
         e.addEventListener("click", ()=>{
-          if(!armed || done || isPlaying || e.classList.contains("mn-sp-gone") || e.classList.contains("mn-sp-wait")) return;
+          if(!armed || done || voBusy() || e.classList.contains("mn-sp-gone") || e.classList.contains("mn-sp-wait")) return;   /* round 24 */
           touch(); dropHand();
           if(+e.dataset.value !== T){
             e.classList.remove("mn-sp-in"); restart(e, "mn-wiggle"); fbWrong(); mood("tryagain"); wrongs++;
@@ -1401,7 +1409,7 @@
 
       Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
         zone: ()=> tgt,
-        canStart: (kind)=> armed && !done && !reached && !off.has(kind) && !isPlaying,
+        canStart: (kind)=> armed && !done && !reached && !off.has(kind) && !voBusy(),          /* round 24 */
         /* round 2p: a TAP on a note / coin works like dragging it into the tray (same rules) */
         onTap: (kind, src)=> handleDrop(kind, tapFloat(kind, src), src),
         onDrop: (kind, f, src)=> handleDrop(kind, f, src)
@@ -1425,7 +1433,7 @@
       }
 
       if(chk) chk.onclick = ()=>{
-        if(done || !(tc + oc) || isPlaying) return;
+        if(done || !(tc + oc) || voBusy()) return;                /* round 24 */
         touch();
         if(total() === T){ finish(); return; }
         state.attempts++;
@@ -1625,10 +1633,10 @@
           const p = PANELS[i];
           c.style.left = p[0] + "%"; c.style.top = p[1] + "%"; c.style.width = PW + "%"; c.style.height = PH + "%";
           c.style.animationDelay = (i % 3) * 0.4 + "s";
-          /* round 2k: never ignore a tap on an unbought item. It used to return while ANY clip was
-             playing (the idle reminder, the praise line tail), which read as "some sections are not
-             clickable". The tap now stops that clip and goes straight to the item. */
-          c.onclick = ()=>{ if(busy || bought.has(i)) return; if(isPlaying) stopAudio(); pick(i, c, cells); };
+          /* round 2k let a tap on an item cut the voice off and open the item. Round 24 (user): "we should
+             not be able to click on any object until the VO is finished" - an item takes no tap while the
+             voice is busy (Swiftee's opening, the instruction, the idle reminder). */
+          c.onclick = ()=>{ if(busy || bought.has(i) || voBusy()) return; pick(i, c, cells); };
           stall.appendChild(c);
           return c;
         });
@@ -1731,7 +1739,7 @@
           const p = rec.el;
           p.style.touchAction = "none"; p.style.cursor = "grab";
           p.addEventListener("pointerdown", (e)=>{
-            if(working || solved || tipping || e.button > 0) return;
+            if(working || solved || tipping || voBusy() || e.button > 0) return;   /* round 24 */
             e.preventDefault(); e.stopPropagation();
             const p0 = { x:e.clientX, y:e.clientY }, b0 = box(p), s0 = toStage(e.clientX, e.clientY);
             let f = null, moved = false;
@@ -1790,7 +1798,7 @@
         };
         Object.keys(srcs).forEach(kd => dragSource(srcs[kd], kd, {
           zone: ()=> amt,
-          canStart: (kind)=> !working && !solved && !tipping && !srcs[kind].classList.contains("mn-off"),
+          canStart: (kind)=> !working && !solved && !tipping && !voBusy() && !srcs[kind].classList.contains("mn-off"),   /* round 24 */
           /* round 14 (user): a refused piece in the shop also shakes the drop zone, as on ₹32 / ₹45 */
           onDrop: (kind, f, src)=>{ if(!allowed(kind)){ rejectPiece(f, src, amt, true); return; } put(kind, f); },
           /* round 2p: tap works too (user: "giving the user both interactions") — same rules as a drop */
@@ -1800,7 +1808,7 @@
           }
         }));
         chk.onclick = ()=>{
-          if(working || solved || !placed.length || isPlaying) return;
+          if(working || solved || !placed.length || voBusy()) return;   /* round 24 */
           const s = sum();
           if(s === T){ win(); return; }
           /* round 3 (SME): "the child should be able to correct the amount already placed instead of

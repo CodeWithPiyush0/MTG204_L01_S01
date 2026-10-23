@@ -91,7 +91,8 @@ js(r"""window.__h=[]; window.__h0=performance.now();
   window.__tap=(el)=>{ const [x,y]=C(el); PE('pointerdown',x,y,el); PE('pointerup',x,y); };""")
 for k in ["note", "c1", "c1", "c1", "c1"]:
     t_w = time.time()      # a tap only counts when no line is playing (as for a child)
-    while time.time() - t_w < 15 and js("return isPlaying"): time.sleep(0.1)
+    # round 24: objects take no tap until the voice is done (the speaker's grey, body.vo-busy, is off)
+    while time.time() - t_w < 15 and js("return isPlaying || document.body.classList.contains('vo-busy')"): time.sleep(0.1)
     time.sleep(0.3); js("__tap(document.querySelector('.mn-src.mn-%s'))" % k); time.sleep(1.2)
 time.sleep(10)
 print("  ₹14 screen finished:", js("return !!document.querySelector('.mn-finished')"), "| placed:", js("return document.querySelectorAll('.mn-target .mn-placed:not(.mn-slot)').length"))

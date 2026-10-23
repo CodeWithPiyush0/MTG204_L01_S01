@@ -87,9 +87,11 @@ time.sleep(5)
 
 # ---- shop: dragging money back out makes its sound
 js("window.__sgDragInShown = true; mountSlide(arguments[0])", idx["M1"]); time.sleep(1.0)
-while js("return isPlaying"): time.sleep(0.1)
+# round 24: nothing takes a tap until the voice is done (the speaker's grey, body.vo-busy, is off)
+DONE = "return isPlaying || document.body.classList.contains('vo-busy')"
+while js(DONE): time.sleep(0.1)
 js("document.querySelectorAll('.sg-cell2')[1].click()"); time.sleep(1.5)
-while js("return isPlaying"): time.sleep(0.1)
+while js(DONE): time.sleep(0.1)
 js(r"""window.C=(el)=>{const r=el.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]};
   window.PE=(t,x,y,g)=>(g||document).dispatchEvent(new PointerEvent(t,{clientX:x,clientY:y,bubbles:true,button:0,pointerId:1,isPrimary:true}));
   window.drag=(s,dd)=>{const [x0,y0]=C(s),[x1,y1]=C(dd);PE('pointerdown',x0,y0,s);for(let i=1;i<=6;i++)PE('pointermove',x0+(x1-x0)*i/6,y0+(y1-y0)*i/6);PE('pointerup',x1,y1);};""")
