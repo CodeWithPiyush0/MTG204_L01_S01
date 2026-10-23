@@ -510,3 +510,28 @@ The user's QA sheet for HI02H11 was checked against this game (BUG_01–BUG_10):
 | 20-4 | Tests are silent (user: the game's voice played through the speakers during meetings) | ✅ | Every Selenium test (`scripts/_*.py`, `_old_flow/`) starts Chrome with `--mute-audio`; `SOUND=1` turns the sound back on. The tests read the audio clocks, not the speakers — all suites pass muted. |
 - New test `_qa_r20_check.py` (13 checks: the translate markers; Swiftee on G1 and in the shop; the speaker after G1, G3, a shop item, then live again on G2 and on the stall).
 - Dist 9.79 MB; on dist, muted: `_qa_r20_check`, `_speaker_check`, `_gate_r17`, `_pause_check`, `_drive_r3`, `_bgm_check`, `_celcheck` (lip-sync 99.4 %) — 0 FAIL.
+
+## Round 21 — the lead's review: four fixes (2026-10-23)
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 21-1 | Page 1: on the speaker replay, the ₹10 and then the ₹1 pulsate one by one, in sync with the VO | ✅ | MONEY_INTRO `run()`: on a replay (speaker or idle replay) the picture + label being named carries `.mn-say` — a 0.8 s pulse (scale 1 → 1.1) that repeats while its own line plays, removed when the line ends (was a single small bump). Measured: ₹10 pulsing 0.06–1.79 s (its line), ₹1 2.06–4.49 s, never both, still after. The first play is unchanged (each appears with its line). |
+| 21-2 | ₹14: no lock while the VO plays; the ₹1 locks automatically when the ghost ₹10 comes | ✅ | MONEY_BUILD, mode "ghost" only: the ₹10 / ₹1 locks (`seqLocks`) are applied when the instruction ends, with the first ghost ₹10 — during the opening line and the instruction both are shown as they are (not greyed; nothing can be taken yet, as before). ₹32 / ₹45 unchanged. |
+| 21-3 | Equations always «₹10 + ₹4 = ₹14», «₹30 + ₹2 = ₹32», «₹40 + ₹5 = ₹45» — one total for the ₹10s, one for the ₹1s | ✅ | `equation()` in MONEY_BUILD — the only equation in the game (G3–G5; the shop has none). No VO change. |
+| 21-4 | Shop: placed money also comes back with a TAP (drag still works) | ✅ | `armPlaced`: a tap (no movement) gives the piece back to the tray with its landing sound, like a drag out (was drag-only since round 2g). No VO change. |
+- Tests: `_drive_r3` updated (₹14 both shown while talking, ₹1 locks with the ghost; the three equations; a tap on placed money returns it with its sound); `_qa_r20_check` + the page 1 replay pulse.
+- Dist 9.79 MB; on dist, muted: `_qa_r20_check`, `_drive_r3`, `_speaker_check`, `_gate_r17`, `_pause_check`, `_bgm_check`, `_celcheck` (lip-sync 100 %) — 0 FAIL.
+
+## Round 22 — ₹14: the ₹10 and the ₹1 light up as Swiftee names them (lead, 2026-10-23)
+"we removed the lock initially, so when it says «10 रुपये और 1 रुपये से…» highlight the currency in sync with the VO."
+| # | Ask | Status | Proof |
+|---|---|---|---|
+| 22-1 | ₹14: highlight the ₹10 / ₹1 in sync with «दस रुपये … एक रुपये …» | ✅ | Both lines say it — the opening line «चलिए, दस रुपये और एक रुपये के सिक्कों से…» and the instruction «दस रुपये और एक रुपये से चौदह रुपये बनाइए।» — so both light them, and so does the speaker's replay of the instruction. While «दस रुपये» is said the ₹10 note glows golden and pulses (`.mn-say-src`), while «एक रुपये (के सिक्कों)» is said the ₹1 coin does; never both. Timing measured from the clips by the build (`word_times` / `say_cues`, `data.say_cues`): the words are laid over the clip's own pauses (each pause falls between words; the split that best fits the syllable counts, preferring a pause after a comma), so a re-recording re-times itself. Played on the clip's own clock (`_voiceClock`), like the closing line's rows. ₹32 / ₹45 unchanged (their ₹1 is still locked while the instruction plays). |
+- Measured in the clips: opening line ₹10 0.85–1.55 s, ₹1 2.18–3.47 s; instruction ₹10 0.03–0.85 s, ₹1 1.28–1.96 s. Measured on screen (real clips): opening line ₹10 lit 0.86–1.76 s, ₹1 2.17–3.67 s; instruction ₹10 0.05–1.07 s, ₹1 1.30–2.18 s (a 0.15 s hold after each phrase); replay the same; nothing lit after the lines.
+- `_qa_r20_check.py` + the three round-22 checks. Dist 9.79 MB; on dist, muted: `_qa_r20_check`, `_drive_r3`, `_speaker_check`, `_gate_r17`, `_pause_check`, `_bgm_check` — 0 FAIL; `_celcheck` failed one frame-timing check once (celebration, untouched) and passed twice on re-run (lip-sync 100 %).
+
+## Round 23 — ₹14: the currency blinked out after its highlight (user, 2026-10-23)
+| # | Bug | Status | Proof |
+|---|---|---|---|
+| 23-1 | "After highlighting for a fraction of a second the currency disappears and then re-appears" | ✅ fixed | Cause: the ₹10 / ₹1 kept their pop-in class (`.mn-pop`: `mnPop`, which starts invisible, with a 150 / 450 ms delay and backwards fill) after they had popped in. The round-22 highlight's animation replaced it; when the highlight ended, `mnPop` started again from scratch — invisible for its delay, then a second pop-in. Fix (MONEY_BUILD): the pop-in class and its delay are taken off as soon as the pop-in has played (and, to be safe, before a highlight starts). This also covers any other animation on those pieces (a hint pulse) on ₹14 / ₹32 / ₹45. |
+- `_qa_r20_check.py`: the ₹10 / ₹1 opacity sampled every frame through both lines — lowest 1.00, 0 frames below 0.95; the round-22 sync unchanged.
+- Dist 9.79 MB; on dist, muted: `_qa_r20_check`, `_drive_r3`, `_speaker_check`, `_gate_r17`, `_pause_check`, `_bgm_check`, `_celcheck` (lip-sync 99.3 %) — 0 FAIL.

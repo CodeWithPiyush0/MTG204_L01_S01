@@ -337,6 +337,60 @@ def done_cues(slide):
         if m: cues[key] = phrase_window(p, sp, m.start(), m.end())
     return cues or None
 
+def word_times(path, spoken, bridge_ms=60):
+    """round 22: when each word of `spoken` is said in the clip -> [(word, start_ms, end_ms), ...]. The
+    clip's pauses (voiced stretches, gaps >= bridge_ms) fall BETWEEN words, so the words are split over
+    the stretches in order (each stretch gets a run of whole words): the split whose stretch lengths
+    best fit the words' syllable counts, preferring a pause after a comma / full stop. Inside a stretch
+    the words share its time by syllables. (Plain character proportions put «दस» inside the slowly
+    said «चलिए,» - this keeps each word in its own stretch.)"""
+    import math
+    segs = voiced_segments(path, bridge_ms=bridge_ms)
+    toks = [(m.start(), m.end(), m.group()) for m in re.finditer(r"\S+", spoken)]
+    if not segs or len(segs) > len(toks): return None
+    # syllables ~ consonants + independent vowels (matras, virama and nasal marks add none)
+    wt = [max(1, len(re.findall(r"[अ-औक-हक़-य़]", t[2]))) for t in toks]
+    n, m = len(toks), len(segs)
+    rate = sum(e - s for s, e in segs) / float(sum(wt))
+    INF = float("inf")
+    best = [[INF] * (n + 1) for _ in range(m + 1)]; back = [[0] * (n + 1) for _ in range(m + 1)]
+    best[0][0] = 0
+    for j in range(1, m + 1):
+        dur = segs[j - 1][1] - segs[j - 1][0]
+        for i in range(1, n + 1):
+            for k in range(j - 1, i):
+                if best[j - 1][k] == INF: continue
+                c = best[j - 1][k] + math.log(dur / (rate * sum(wt[k:i]))) ** 2
+                if j < m and re.search(r"[,।!?]$", toks[i - 1][2]): c -= 1.0
+                if c < best[j][i]: best[j][i] = c; back[j][i] = k
+    out, i = [None] * n, n
+    for j in range(m, 0, -1):
+        k = back[j][i]; s, e = segs[j - 1]; W = float(sum(wt[k:i])); t = s
+        for q in range(k, i):
+            d = (e - s) * wt[q] / W; out[q] = (toks[q], int(t), int(t + d)); t += d
+        i = k
+    return out
+
+def say_cues(slide):
+    """round 22 (lead, ₹14): where the opening line and the instruction say «दस रुपये» and «एक रुपये (के
+    सिक्कों)» (ms in each clip) - the ₹10 and the ₹1 below light up while they are named."""
+    cues = {}
+    for key in ("intro", "prompt"):
+        vid = (slide.get("audio") or {}).get(key)
+        p = os.path.join(AUD, (vid or "x") + ".ogg")
+        if not vid or not os.path.isfile(p): continue
+        sp = AUDIO[vid]
+        wt = word_times(p, sp)
+        if not wt: continue
+        c = {}
+        for kd, pat in (("n10", r"दस रुपये"), ("c1", r"एक रुपये(?: के सिक्कों)?")):
+            mt = re.search(pat, sp)
+            if not mt: continue
+            ws = [x for x in wt if mt.start() <= x[0][0] < mt.end()]
+            if ws: c[kd] = [ws[0][1], ws[-1][2]]
+        if c: cues[key] = c
+    return cues or None
+
 def cel_anim():
     """round 2l: lip-sync track for the celebration VO + the sprite facts (scripts/make_cel_sprite.py).
     talk = one char per 25 ms of vo_cel_prompt, '1' on a syllable beat (open mouth), '0' between them.
@@ -391,6 +445,9 @@ def main():
         if sl["type"] == "MONEY_BUILD":
             c = done_cues(sl)
             if c: sl["data"]["done_cues"] = c
+            if sl["data"].get("mode") == "ghost":            # round 22 (lead): ₹14 only
+                c = say_cues(sl)
+                if c: sl["data"]["say_cues"] = c; print("  OK  %s say_cues %s" % (sl["id"], c))
     ms = {k: v for k, v in ms.items() if v}
     dist = {}
     for s in slides: dist[s["phase"]] = dist.get(s["phase"], 0) + 1

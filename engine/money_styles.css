@@ -696,3 +696,13 @@ body.vo-busy .sg-vo,
 body.spk-done .audio-chip,
 body.spk-done .tut-audio,
 body.spk-done .sg-vo{ pointer-events:none !important; opacity:.45; filter:grayscale(.75); }
+
+/* round 21 (lead): page 1 replay - the picture (and its ₹ label) being named pulsates for as long as its
+   line plays (money_modules.js MONEY_INTRO adds / removes .mn-say) */
+@keyframes mnIntroSay{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.mn-intro-it.mn-say{animation:mnIntroSay .8s ease-in-out infinite;transform-origin:50% 60%;}
+
+/* round 22 (lead, ₹14): the ₹10 / ₹1 below light up while the line names them (MONEY_BUILD sayCued) -
+   the closing line's golden glow + the page-1 pulse */
+.mn-piece.mn-src.mn-say-src{animation:mnIntroSay .8s ease-in-out infinite;}
+.mn-piece.mn-src.mn-say-src img{filter:drop-shadow(0 0 6px #FFC21A) drop-shadow(0 0 16px rgba(255,180,0,.85)) !important;}

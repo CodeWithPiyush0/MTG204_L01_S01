@@ -51,6 +51,7 @@ window.C = (el)=>{ const r = el.getBoundingClientRect(); return [r.left + r.widt
 window.PE = (type, x, y, tgt)=> (tgt||document).dispatchEvent(new PointerEvent(type, {clientX:x, clientY:y, bubbles:true, button:0, pointerId:1, isPrimary:true}));
 window.drag = (src, dst)=>{ const [x0,y0] = C(src), [x1,y1] = C(dst);
   PE('pointerdown', x0, y0, src); for(let i=1;i<=6;i++) PE('pointermove', x0+(x1-x0)*i/6, y0+(y1-y0)*i/6); PE('pointerup', x1, y1); };
+window.tap = (el)=>{ const [x,y] = C(el); PE('pointerdown', x, y, el); PE('pointerup', x, y); };
 window.src = (k, root)=> (root||document).querySelector('.mn-src.mn-' + ({n10:'note', c10:'c10', c1:'c1'})[k]);
 """)
 idx = {s: i for i, s in enumerate(js("return CARD.slides.map(s=>s.id)"))}
@@ -149,10 +150,17 @@ def make(sid, Tv, ghost):
     check("%s only the amount (no item picture), ₹10 note + ₹1 coin below" % sid,
           js("return !document.querySelector('.mn-item-img') && document.querySelector('.mn-tag-big').textContent") == "₹%d" % Tv
           and js("return document.querySelectorAll('.mn-src').length") == 2 and js("return !!src('n10') && !!src('c1')"))
-    check("%s starts: ₹10 unlocked, ₹1 locked" % sid, (not off("n10")) and off("c1"))
+    if sid == "G3":   # round 21 (lead): while Swiftee talks both are shown as they are; the ₹1 locks with the first ghost
+        check("G3 while the lines play: ₹10 AND ₹1 shown, not greyed", (not off("n10")) and not off("c1"))
+    else:
+        check("%s starts: ₹10 unlocked, ₹1 locked" % sid, (not off("n10")) and off("c1"))
     time.sleep(1.4 if sid != "G3" else 1.8)
     if sid == "G3":
         check("G3 then the instruction «₹14 बनाइए।»", said()[:2] == ["vo_b14_intro", "vo_b14_prompt"] and js("return document.getElementById('promptText').textContent") == "₹14 बनाइए।", said())
+    if sid == "G3":
+        t_w = time.time()
+        while time.time() - t_w < 12 and not js("return window.__ghosts"): time.sleep(0.05)
+        check("G3 the instruction ends: the ₹1 locks together with the ghost ₹10", js("return window.__ghosts") >= 1 and off("c1") and not off("n10"))
     g0 = js("return window.__ghosts")
     check("%s %s" % (sid, "ghost ₹10 after the instruction" if ghost else "no ghost"), (g0 >= 1) if ghost else (g0 == 0), g0)
     TP, OP = Tv // 10, Tv % 10
@@ -187,6 +195,8 @@ def make(sid, Tv, ghost):
     check("%s no note / coin under the «कुल» counter" % sid, cov == 0, cov)
     check("%s completes itself at ₹%d (child-placed only) + closing line" % (sid, Tv),
           placed() == Tv // 10 + Tv % 10 and js("return !!document.querySelector('.mn-finished')") and any(x.endswith("_done") for x in said()), said())
+    eq = js("return document.querySelector('.mn-eq').textContent")
+    check("%s equation «₹%d + ₹%d = ₹%d» (round 21: one total per kind)" % (sid, Tv // 10 * 10, Tv % 10, Tv), eq == "₹%d + ₹%d = ₹%d" % (Tv // 10 * 10, Tv % 10, Tv), eq)
 make("G3", 14, True)
 make("G4", 32, False)
 make("G5", 45, False)
@@ -240,7 +250,8 @@ js("""window.__gb=[]; new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEac
 time.sleep(8.0)
 gb = js("return window.__gb")
 check("idle 7 s after «ज़्यादा»: a ghost starts IN the tray (drag-back hint) + chime", gb[:1] == [True] and "sfx_nudge" in js("return window.__sfx"), (gb, js("return window.__sfx")))
-js("drag(document.querySelector('.sg-make2 .mn-target .mn-placed'), src('n10', %s))" % mk); time.sleep(1.0)
+js("window.__sfx=[]; tap(document.querySelector('.sg-make2 .mn-target .mn-placed:not(.mn-slot)'))"); time.sleep(1.0)
+check("shop: a TAP on placed money sends it back to the tray, with its sound (round 21)", placed() == 2 and "sfx_drop_note" in js("return window.__sfx"), (placed(), js("return window.__sfx")))
 js("window.__gb=[]"); time.sleep(8.0)
 gb = js("return window.__gb")
 check("idle 7 s with too little: a ghost starts OUTSIDE the tray (drag-in hint)", gb[:1] == [False], gb)

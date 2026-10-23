@@ -872,10 +872,13 @@
       });
       host.appendChild(root);
       const show = (i)=>{ const c = cols[i]; if(!c) return; c.classList.remove("mn-intro-wait"); restart(c, "mn-pop"); sfxPop(); };
+      /* round 21 (lead): on a replay (the speaker, or the idle replay) the ₹10 and then the ₹1 PULSATE one
+         by one, each for as long as its own line is being said (it used to be a single small bump) */
       const run = (i, first)=>{
+        cols.forEach(c => c.classList.remove("mn-say"));
         if(i >= cols.length){ if(first) setNavActive(true); return; }
-        if(first) show(i); else restart(cols[i], "mn-bump");
-        say(d.items[i].say, ()=> setTimeout(()=> run(i + 1, first), 250));
+        if(first) show(i); else { cols[i].classList.remove("mn-pop"); restart(cols[i], "mn-say"); }
+        say(d.items[i].say, ()=>{ cols[i].classList.remove("mn-say"); setTimeout(()=> run(i + 1, first), 250); });
       };
       state.replayAudio = ()=> run(0, false);
       setTimeout(()=> run(0, true), 350);
@@ -1193,8 +1196,14 @@
       (d.sources || []).forEach(kd => { const s = piece(kd, "mn-src"); srcs[kd] = s; bank.appendChild(s); });
       bottom.appendChild(bank);
       /* round 3 (checklist): the notes / coins arrive one by one, each with a soft pop */
+      /* round 23 (user: "after highlighting for a fraction of a second the currency disappears and re-appears"):
+         the pop-in must be TAKEN OFF once it has played. While .mn-pop stayed on, any later animation on the
+         piece (the round-22 highlight, a hint pulse) replaced it - and when that one ended, mnPop started
+         again from scratch: invisible for its delay (backwards fill), then a second pop-in. */
+      const unPop = (s)=>{ s.classList.remove("mn-pop"); s.style.animationDelay = ""; };
       if(d.pop_sources) Object.keys(srcs).forEach((kd, i)=>{ const s = srcs[kd]; s.style.animationDelay = (150 + i * 300) + "ms";
-        s.classList.add("mn-pop"); setTimeout(()=>{ if(s.isConnected) sfxPop(); }, 150 + i * 300); });
+        s.classList.add("mn-pop"); setTimeout(()=>{ if(s.isConnected) sfxPop(); }, 150 + i * 300);
+        s.addEventListener("animationend", (ev)=>{ if(ev.animationName === "mnPop") unPop(s); }); });
       { const nx = CARD.slides[state.idx + 1]; if(nx && nx.type === "SHOP_GAME") warmShop(); }   /* round 3 */
       let chk = null;
       if(d.check_label){ chk = el("button", "mn-check", d.check_label); chk.disabled = true; bottom.appendChild(chk); }
@@ -1278,10 +1287,12 @@
       idleTimer = setInterval(idleTick, 500);
 
       /* ---- completion ---- */
+      /* round 21 (lead): the equation is always "₹<all the tens> + ₹<all the ones> = ₹T" — ₹10 + ₹4 = ₹14,
+         ₹30 + ₹2 = ₹32, ₹40 + ₹5 = ₹45 — never every ₹10 and every ₹1 written out */
       const equation = ()=>{
         const parts = [];
-        for(let i = 0; i < tc; i++) parts.push("₹10");
-        for(let i = 0; i < oc; i++) parts.push("₹1");
+        if(tc) parts.push("₹" + tc * 10);
+        if(oc) parts.push("₹" + oc);
         return parts.join(" + ") + " = ₹" + T;
       };
       const finish = ()=>{
@@ -1461,18 +1472,43 @@
         state.replayAudio = ()=>{ if(curLine) say(curLine); };
         runStep();
       } else {
-        state.replayAudio = ()=> say(A(slide, "prompt"));
+        /* round 22 (lead, ₹14): while a line says «दस रुपये» the ₹10 below lights up, while it says «एक
+           रुपये (के सिक्कों)» the ₹1 does - in the opening line, the instruction, and the instruction's
+           replay. data.say_cues = per line, the ms windows in the clip (measured by the build, word by
+           word over the clip's pauses); read on the clip's own clock, like the closing line's rows. */
+        const sayCued = (key, next)=>{
+          say(A(slide, key), next);
+          const C = d.say_cues && d.say_cues[key]; if(!C) return;
+          const clock = (typeof _voiceClock === "function") ? _voiceClock() : null;
+          const t0 = performance.now(), g = _gen;
+          const set = (kd, on)=>{ const s = srcs[kd]; if(!s) return;
+            if(on && s.classList.contains("mn-pop")) unPop(s);          /* round 23: never return to the pop-in */
+            s.classList.toggle("mn-say-src", !!on); };
+          (function tick(){
+            if(!root.isConnected || g !== _gen){ Object.keys(srcs).forEach(kd => set(kd, 0)); return; }
+            let t = null, ended = false;
+            if(clock){ const c = clock(); t = c.t; ended = c.ended; } else t = performance.now() - t0 - 80;
+            if(clock && t == null && !ended && performance.now() - t0 > 2500) ended = true;
+            if(t != null && t > (AMS()[A(slide, key)] || 8000) + 300) ended = true;
+            Object.keys(C).forEach(kd => set(kd, !ended && t != null && t >= C[kd][0] - 60 && t <= C[kd][1] + 150));
+            if(!ended) requestAnimationFrame(tick);
+          })();
+        };
+        state.replayAudio = ()=> sayCued("prompt");
         restart(item.querySelector(".mn-tag"), d.tag_fx === "glow" ? "mn-tagglow" : "mn-pulse");
-        seqLocks();
+        /* round 21 (lead, ₹14): while Swiftee is still talking («…₹10 और ₹1 से…») BOTH the ₹10 and the ₹1 are
+           shown as they are (not greyed; nothing can be taken until the lines end - `armed`). The ₹1 locks
+           when the building starts: with the first ghost ₹10. ₹32 / ₹45 lock from the start, as before. */
+        if(!ghostMode) seqLocks();
         const startPrompt = ()=>{
           if(d.intro_text) $("promptText").textContent = slide.prompt_hi || "";
-          say(A(slide, "prompt"), ()=>{ armed = true; touch(); stepGhost(); });
+          sayCued("prompt", ()=>{ armed = true; touch(); if(ghostMode) seqLocks(); stepGhost(); });
         };
         /* round 4 (SME, ₹14): Swiftee's line from the earlier version plays first —
            «चलिए, दस रुपये और एक रुपये के सिक्कों से इस राशि को बनाते हैं।» — then the existing flow */
         if(A(slide, "intro")){
           if(d.intro_text) $("promptText").textContent = d.intro_text;
-          say(A(slide, "intro"), startPrompt);
+          sayCued("intro", startPrompt);
         } else startPrompt();
       }
     }
@@ -1710,7 +1746,9 @@
               document.removeEventListener("pointermove", mv);
               document.removeEventListener("pointerup", up);
               document.removeEventListener("pointercancel", up);
-              if(!moved) return;                           /* drag-only (round 2g): a tap does nothing */
+              /* round 21 (lead): a TAP gives it back too (it was drag-only since round 2g) - both ways, as
+                 for putting money in; the same landing sound. The tip line is unchanged. */
+              if(!moved){ if(ev.type !== "pointercancel") giveBack(rec, null, true); return; }
               if(ev.type !== "pointercancel" && inside(amt, ev.clientX, ev.clientY)){
                 /* dropped back inside: snap home */
                 animTo(f, box(p), 220, "ease-out").then(()=>{ f.remove(); p.style.visibility = ""; });
