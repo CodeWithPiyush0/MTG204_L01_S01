@@ -140,6 +140,11 @@
 
   /* ---------------------------------------------------------------- engine wraps (this card only) */
   try { autoAdvances = function(){ return false; }; } catch(e){}
+  /* round 20 (QA BUG_07): a new page takes the solved screen's grey off the speaker */
+  try {
+    const _msd = mountSlide;
+    mountSlide = function(){ document.body.classList.remove("spk-done"); return _msd.apply(this, arguments); };
+  } catch(e){}
   try {
     const _arm = armIdleVo;
     armIdleVo = function(){
@@ -636,7 +641,32 @@
     } catch(e){}
   }
   const sfxNudge  = ()=> sfxVol("sfx_nudge", 0.4);      /* with every inactivity nudge */
-  const mood = (m)=>{ if(typeof setSwMood === "function") setSwMood(m); };
+  /* round 20 (QA BUG_06, 2026-10-23): "Swiftee stays SAD after a wrong answer" - and, from the other
+     lesson's 2nd QA round, she must not turn back BEFORE the wrong-answer line is over either. The sad
+     face now lasts for the whole wrong-attempt sequence (the wrong sound, the shake, any hint line) and
+     goes back to her normal face 250 ms after the voice is quiet; a wrong attempt with nothing spoken
+     turns back after 3 s. Any other mood (a correct answer) or a new page ends the watch. */
+  let _sadT = 0;
+  const mood = (m)=>{
+    clearInterval(_sadT); _sadT = 0;
+    if(typeof setSwMood === "function") setSwMood(m);
+    if(m !== "tryagain") return;
+    const g = _gen, t0 = performance.now();
+    let spoke = false, quiet = 0;
+    _sadT = setInterval(()=>{
+      if(g !== _gen){ clearInterval(_sadT); _sadT = 0; return; }
+      const now = performance.now();
+      if(isPlaying || document.body.classList.contains("vo-lock")){ spoke = true; quiet = 0; return; }
+      if(!spoke){ if(now - t0 < 3000) return; }
+      else { if(!quiet) quiet = now; if(now - quiet < 250) return; }
+      clearInterval(_sadT); _sadT = 0;
+      if(typeof swMood === "undefined" || swMood === "tryagain") setSwMood("point");   /* her normal face */
+    }, 50);
+  };
+  /* round 20 (QA BUG_07): once a screen is solved the speaker is greyed and takes no tap until the next
+     page - it used to replay the instruction of a screen already done. body.spk-done (money_styles.css)
+     greys it; the replay is a no-op too (the engine's idle replay calls it). The next mount clears it. */
+  function speakerDone(){ state.replayAudio = ()=>{}; document.body.classList.add("spk-done"); }
 
   /* ---------------------------------------------------------------- stage geometry */
   function stageEl(){ return document.getElementById("stage"); }
@@ -931,7 +961,7 @@
       pieces.forEach(e => e.addEventListener("animationend", (ev)=>{ if(ev.animationName === "mnSpIn") e.classList.remove("mn-sp-in"); }));
       const ready = 200 + shown.length * 170 + 250;
       const finish = ()=>{
-        done = true; state.locked = true;
+        done = true; state.locked = true; speakerDone();
         restart(wallet, "mn-bump");
         fbCorrect(); mood("celebrate");
         if(typeof confettiCannon === "function") confettiCannon();
@@ -1268,7 +1298,7 @@
         const clean = wrongN.tens + wrongN.ones === 0;
         SwiftPAL.emit("money_build_done", { slide_id:slide.id, phase:slide.phase, value:clean, target:T,
           tens:tc, ones:oc, wrong_tens:wrongN.tens, wrong_ones:wrongN.ones, latency_ms:Date.now() - state.slideStart });
-        state.replayAudio = ()=>{ say(A(slide, "done")); spokenHighlight(); };
+        speakerDone();                                            /* round 20 (QA BUG_07) */
         say(A(slide, "done"), ()=>{
           setNavActive(true);
           $("navBtn").onclick = ()=> completeSlide(clean);
@@ -1546,6 +1576,7 @@
       function showChoose(speak){
         clearTimeout(idleT);
         if(view) view.remove();
+        document.body.classList.remove("spk-done");               /* round 20: the stall is a new question */
         band(d.text.choose);
         const v = el("div", "sg-choose");
         v.innerHTML = '<img class="sg-pari" src="' + img(d.pari_img) + '" alt="">';
@@ -1764,6 +1795,7 @@
         };
         const win = ()=>{
           working = true; solved = true; refresh();
+          speakerDone();                                          /* round 20 (QA BUG_07): until the stall is back */
           Object.keys(srcs).forEach(kd => { srcs[kd].classList.add("mn-off"); syncArt(srcs[kd]); });
           amt.classList.add("mn-done");
           fbCorrect(); mood("celebrate");
@@ -1878,7 +1910,7 @@
         if(typeof confettiCannon === "function") confettiCannon();
         mood("celebrate");
         $("navBtn").style.display = "";
-        state.replayAudio = ()=> say(A(slide, "done"));
+        speakerDone();                                            /* round 20 (QA BUG_07): the game is solved */
         say(A(slide, "done"), ()=>{
           setNavActive(true);
           $("navBtn").onclick = ()=> completeSlide(true);

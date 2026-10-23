@@ -8,7 +8,7 @@ class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = TS(("127.0.0.1", 0), functools.partial(Q, directory=ROOT)); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-o = Options(); o.add_argument("--headless=new"); o.add_argument("--window-size=1333,750"); o.add_argument("--autoplay-policy=no-user-gesture-required")
+o = Options(); o.add_argument("--headless=new"); os.environ.get("SOUND") or o.add_argument("--mute-audio"); o.add_argument("--window-size=1333,750"); o.add_argument("--autoplay-policy=no-user-gesture-required")   # muted unless SOUND=1 (the tests read the clocks, not the speakers)
 d = webdriver.Chrome(options=o); d.get("http://127.0.0.1:%d/%s" % (port, PAGE)); time.sleep(3.5)
 js = d.execute_script
 js("try{stopAudio()}catch(e){};document.getElementById('startGate').classList.add('hidden');document.body.classList.remove('is-start');")

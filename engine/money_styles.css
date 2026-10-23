@@ -691,4 +691,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
    lines - body.vo-busy (money_modules.js) is on while vo-lock is, and for 0.7 s after the voice stops */
 body.vo-busy .audio-chip,
 body.vo-busy .tut-audio,
-body.vo-busy .sg-vo{ pointer-events:none !important; opacity:.45; filter:grayscale(.75); }
+body.vo-busy .sg-vo,
+/* round 20 (QA BUG_07): ... and once the screen is solved, until the next page (body.spk-done) */
+body.spk-done .audio-chip,
+body.spk-done .tut-audio,
+body.spk-done .sg-vo{ pointer-events:none !important; opacity:.45; filter:grayscale(.75); }

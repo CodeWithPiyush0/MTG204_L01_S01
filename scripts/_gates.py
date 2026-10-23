@@ -7,7 +7,7 @@ class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = TS(("127.0.0.1", 0), functools.partial(Q, directory=ROOT)); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-o = Options(); o.add_argument("--headless=new"); o.add_argument("--window-size=1333,750")
+o = Options(); o.add_argument("--headless=new"); os.environ.get("SOUND") or o.add_argument("--mute-audio"); o.add_argument("--window-size=1333,750")   # muted unless SOUND=1 (the tests read the clocks, not the speakers)
 d = webdriver.Chrome(options=o); d.get("http://127.0.0.1:%d/MTG2A04_L01_S01.html" % port); time.sleep(3)
 d.execute_script("window.__said=[];window.play=function(s,cb){window.__said.push(String(s||'').split('/').pop().split('.')[0]);setTimeout(()=>cb&&cb(),300)};")
 # real start button -> tutorial gate -> T1

@@ -13,7 +13,7 @@ class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 srv = TS(("127.0.0.1", 0), functools.partial(Q, directory=ROOT)); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-o = Options(); o.add_argument("--headless=new"); o.add_argument("--window-size=1333,750")
+o = Options(); o.add_argument("--headless=new"); os.environ.get("SOUND") or o.add_argument("--mute-audio"); o.add_argument("--window-size=1333,750")   # muted unless SOUND=1 (the tests read the clocks, not the speakers)
 o.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 d = webdriver.Chrome(options=o)
 d.get("http://127.0.0.1:%d/%s?dev=1" % (port, PAGE))
